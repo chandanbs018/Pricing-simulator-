@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cineprice Simulator – Prototype</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --panel-bg: #ffffff;
+      --border: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --accent: #020617;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+    }
+    .app { display: flex; min-height: 100vh; }
+    aside {
+      width: 260px;
+      background: #ffffff;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar-header {
+      height: 64px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+    }
+    .logo-placeholder {
+      width: 110px;
+      height: 40px;
+      border-radius: 8px;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .sidebar-title { font-size: 13px; font-weight: 600; }
+    .sidebar-subtitle { font-size: 11px; color: var(--text-muted); }
+    nav { padding: 12px 0; }
+    .tab-button {
+      width: 100%;
+      padding: 8px 16px;
+      text-align: left;
+      font-size: 13px;
+      border: none;
+      background: transparent;
+      color: #0f172a;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .tab-button:hover { background: #f1f5f9; }
+    .tab-button.active { background: var(--accent); color: #ffffff; }
+    main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    header {
+      height: 64px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+    }
+    header h1 { font-size: 16px; margin: 0; }
+    header p { font-size: 11px; margin: 2px 0 0; color: var(--text-muted); }
+    .header-right { font-size: 11px; color: var(--text-muted); }
+    .content { padding: 24px; overflow-y: auto; }
+    .panel { max-width: 960px; margin-bottom: 24px; }
+    .card {
+      background: var(--panel-bg);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 16px 20px;
+      margin-bottom: 16px;
+    }
+    .card h2 { font-size: 15px; margin: 0 0 8px; }
+    .card h3 { font-size: 14px; margin: 0 0 6px; }
+    .card p { font-size: 13px; margin: 4px 0; }
+    .muted { color: var(--text-muted); font-size: 12px; }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      color: #0f172a;
+      font-size: 11px;
+      margin-right: 6px;
+      margin-top: 4px;
+    }
+    label {
+      display: block;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    input[type="number"],
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 5px 7px;
+      font-size: 13px;
+      border-radius: 4px;
+      border: 1px solid #cbd5e1;
+    }
+    input[disabled], select[disabled] {
+      background: #e5e7eb;
+      color: #6b7280;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      padding: 6px 8px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    th { font-weight: 600; font-size: 12px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 12px;
+      font-size: 13px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      background: var(--accent);
+      color: #ffffff;
+      margin-top: 8px;
+    }
+    .btn:disabled { opacity: 0.6; cursor: default; }
+    .results-box {
+      margin-top: 12px;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 10px;
+    }
+    .results-box p { font-size: 12px; }
+    .small-note { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+    .city-pill { font-weight: 600; margin-bottom: 4px; }
+    @media (max-width: 768px) {
+      aside { display: none; }
+      header { padding: 0 16px; }
+      .content { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div class="sidebar-header">
+        <div class="logo-placeholder">Company Logo</div>
+        <div>
+          <div class="sidebar-title">Cineprice Simulator</div>
+          <div class="sidebar-subtitle">MBA Pricing Exercise</div>
+        </div>
+      </div>
+      <nav>
+        <button class="tab-button active" data-tab="intro">Introduction</button>
+        <button class="tab-button" data-tab="instructor">Instructor</button>
+        <button class="tab-button" data-tab="student">Student Round</button>
+      </nav>
+    </aside>
+
+    <main>
+      <header>
+        <div>
+          <h1>Cineprice Strategic Pricing Simulation</h1>
+          <p>Each round represents one month of multiplex operations.</p>
+        </div>
+        <div class="header-right" id="roundInfo">
+          Round 1 of 6
+        </div>
+      </header>
+
+      <div class="content">
+        <!-- INTRO TAB -->
+        <section class="panel tab-panel" id="tab-intro">
+          <div class="card">
+            <h2>Welcome</h2>
+            <p>
+              You are the regional pricing manager for a multiplex cinema chain
+              operating in <strong>Mumbai</strong>, <strong>Delhi</strong>, and
+              <strong>Bengaluru</strong>. Your task is to set ticket prices
+              month by month and manage profit under capacity constraints and
+              competitive pressure.
+            </p>
+            <p>
+              In each round (one month), you choose weekday and weekend ticket
+              prices for each city. Demand responds to your prices, the current
+              season, and competitor positioning. Your objective is cumulative
+              <strong>profit</strong>, not just revenue.
+            </p>
+            <p class="muted">
+              This prototype uses a hard-coded version of the Excel demand and
+              financial model to compute realistic results for the current round.[file:1]
+            </p>
+          </div>
+
+          <div class="grid-3">
+            <div class="card">
+              <h3>Cities</h3>
+              <p class="muted">
+                Mumbai, Delhi, and Bengaluru, each with fixed screen capacity,
+                seats per screen, and shows per day as in the Excel model.[file:1]
+              </p>
+            </div>
+            <div class="card">
+              <h3>Your decisions</h3>
+              <p class="muted">
+                Set a weekday and weekend ticket price for each city, based on
+                the limited information you receive about season, competition,
+                and capacity tightness.
+              </p>
+            </div>
+            <div class="card">
+              <h3>Outcomes</h3>
+              <p class="muted">
+                The simulator computes demand, attendance, revenue, cost, and
+                profit using the same parameters as the spreadsheet (base
+                demand, elasticities, season multipliers, capacities, and
+                costs).[file:1]
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- INSTRUCTOR TAB -->
+        <section class="panel tab-panel" id="tab-instructor" style="display:none;">
+          <div class="card">
+            <h2>Simulation Settings (Instructor)</h2>
+            <p class="muted">
+              Configure the scenario for this round. These settings feed into the
+              demand and financial calculations.
+            </p>
+
+            <div class="grid-3">
+              <div>
+                <label for="rounds">Number of rounds</label>
+                <input type="number" id="rounds" min="1" value="6" />
+              </div>
+              <div>
+                <label for="currentRound">Current round</label>
+                <input type="number" id="currentRound" min="1" value="1" />
+              </div>
+              <div>
+                <label for="complexity">Complexity level</label>
+                <select id="complexity">
+                  <option value="1">Level 1 – Elasticity &amp; seasonality</option>
+                  <option value="2" selected>Level 2 – Add competitor reactions</option>
+                  <option value="3">Level 3 – Add segment demand</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid-3" style="margin-top:12px;">
+              <div>
+                <label for="season">Season</label>
+                <select id="season">
+                  <option>Normal</option>
+                  <option>Festive</option>
+                  <option>Exam</option>
+                  <option>Monsoon</option>
+                </select>
+              </div>
+              <div>
+                <label for="scenario">Scenario / shock</label>
+                <select id="scenario">
+                  <option value="none">None</option>
+                  <option value="demand_drop">Demand drop</option>
+                  <option value="blockbuster">Blockbuster release</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Competitor price bands &amp; capacity type</h3>
+            <p class="muted">
+              Students will only see these as qualitative hints, not exact competitor prices or capacities.
+            </p>
+
+            <div class="grid-3">
+              <!-- Mumbai -->
+              <div>
+                <div class="city-pill">Mumbai</div>
+                <label for="mumbaiWeekday">Competitor weekday range</label>
+                <input type="text" id="mumbaiWeekday" value="₹220 – ₹280" />
+                <label for="mumbaiWeekend">Competitor weekend range</label>
+                <input type="text" id="mumbaiWeekend" value="₹280 – ₹360" />
+                <label for="mumbaiCapacity">Capacity type (student-visible)</label>
+                <select id="mumbaiCapacity">
+                  <option>Balanced</option>
+                  <option>Tight</option>
+                  <option>Slack</option>
+                </select>
+              </div>
+              <!-- Delhi -->
+              <div>
+                <div class="city-pill">Delhi</div>
+                <label for="delhiWeekday">Competitor weekday range</label>
+                <input type="text" id="delhiWeekday" value="₹200 – ₹260" />
+                <label for="delhiWeekend">Competitor weekend range</label>
+                <input type="text" id="delhiWeekend" value="₹260 – ₹340" />
+                <label for="delhiCapacity">Capacity type (student-visible)</label>
+                <select id="delhiCapacity">
+                  <option>Tight</option>
+                  <option>Balanced</option>
+                  <option>Slack</option>
+                </select>
+              </div>
+              <!-- Bengaluru -->
+              <div>
+                <div class="city-pill">Bengaluru</div>
+                <label for="blrWeekday">Competitor weekday range</label>
+                <input type="text" id="blrWeekday" value="₹180 – ₹240" />
+                <label for="blrWeekend">Competitor weekend range</label>
+                <input type="text" id="blrWeekend" value="₹240 – ₹320" />
+                <label for="blrCapacity">Capacity type (student-visible)</label>
+                <select id="blrCapacity">
+                  <option>Slack</option>
+                  <option>Balanced</option>
+                  <option>Tight</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="btn" id="applySettingsBtn">
+              Apply settings to student view
+            </button>
+            <div class="small-note">
+              Scenario (e.g. blockbuster) can later be wired to extra demand
+              multipliers or segment effects; currently it is stored but not
+              applied for simplicity.[file:1]
+            </div>
+          </div>
+        </section>
+
+        <!-- STUDENT TAB -->
+        <section class="panel tab-panel" id="tab-student" style="display:none;">
+          <div class="card">
+            <h2>Round context (Student)</h2>
+            <p>
+              You are setting ticket prices for the current month. Below you see
+              the season, indicative competitor price bands, and a qualitative
+              sense of capacity in each city.
+            </p>
+            <p class="muted">
+              Use this limited information to choose weekday and weekend prices.
+              You will not see the exact model or competitor prices.
+            </p>
+            <div id="studentBadges"></div>
+          </div>
+
+          <div class="card">
+            <h3>Competitor bands &amp; capacity type</h3>
+            <div class="grid-3" id="studentContextCities">
+              <!-- Filled dynamically from instructor settings -->
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Set your prices for this month</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>City</th>
+                  <th>Weekday price (₹)</th>
+                  <th>Weekend price (₹)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Mumbai</td>
+                  <td><input type="number" id="mumbaiWeekdayPrice" placeholder="₹" /></td>
+                  <td><input type="number" id="mumbaiWeekendPrice" placeholder="₹" /></td>
+                </tr>
+                <tr>
+                  <td>Delhi</td>
+                  <td><input type="number" id="delhiWeekdayPrice" placeholder="₹" /></td>
+                  <td><input type="number" id="delhiWeekendPrice" placeholder="₹" /></td>
+                </tr>
+                <tr>
+                  <td>Bengaluru</td>
+                  <td><input type="number" id="blrWeekdayPrice" placeholder="₹" /></td>
+                  <td><input type="number" id="blrWeekendPrice" placeholder="₹" /></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <button class="btn" id="submitPricesBtn">Submit prices for this month</button>
+
+            <div class="results-box" id="resultsBox" style="display:none;"></div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // ---------------- UI TABS ----------------
+    const tabButtons = document.querySelectorAll(".tab-button");
+    const tabPanels = document.querySelectorAll(".tab-panel");
+    tabButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const tabId = btn.getAttribute("data-tab");
+        tabButtons.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        tabPanels.forEach((panel) => {
+          panel.style.display = panel.id === "tab-" + tabId ? "block" : "none";
+        });
+      });
+    });
+
+    // ---------------- MODEL PARAMETERS FROM EXCEL (hard-coded) ----------------
+    const CITY_PARAMS = {
+      Mumbai: {
+        baseWeekday: 2200,
+        baseWeekend: 4200,
+        elasticity: -1.4,
+        capacity: 11000,
+        variableCost: 35,
+        fixedDailyCost: 250000
+      },
+      Delhi: {
+        baseWeekday: 2000,
+        baseWeekend: 3900,
+        elasticity: -1.3,
+        capacity: 8000,
+        variableCost: 30,
+        fixedDailyCost: 200000
+      },
+      Bengaluru: {
+        baseWeekday: 1800,
+        baseWeekend: 3600,
+        elasticity: -1.5,
+        capacity: 6300,
+        variableCost: 28,
+        fixedDailyCost: 180000
+      }
+    };
+
+    const SEASON_MULTIPLIER = {
+      Normal: 1,
+      Festive: 1.25,
+      Exam: 0.85,
+      Monsoon: 0.9
+    };
+
+    // Baseline competitor prices from PricingDecisions example in the workbook.[file:1]
+    const BASE_COMPETITOR_PRICE = {
+      Mumbai: { weekday: 240, weekend: 340 },
+      Delhi: { weekday: 210, weekend: 310 },
+      Bengaluru: { weekday: 190, weekend: 290 }
+    };
+
+    // CompetitorReaction step table from Excel.[file:1]
+    function competitorAdjustment(priceDiff) {
+      if (priceDiff <= -50) return -30;
+      if (priceDiff <= -20) return -10;
+      if (priceDiff <= 0) return 0;
+      if (priceDiff <= 20) return 10;
+      return 25;
+    }
+
+    // ---------------- SIMPLE STATE ----------------
+    const settings = {
+      rounds: 6,
+      currentRound: 1,
+      season: "Normal",
+      complexity: "2",
+      scenario: "none",
+      competitors: {
+        Mumbai: { weekdayBand: "₹220 – ₹280", weekendBand: "₹280 – ₹360", capacityLabel: "Balanced" },
+        Delhi: { weekdayBand: "₹200 – ₹260", weekendBand: "₹260 – ₹340", capacityLabel: "Tight" },
+        Bengaluru: { weekdayBand: "₹180 – ₹240", weekendBand: "₹240 – ₹320", capacityLabel: "Slack" }
+      }
+    };
+
+    const roundInfoEl = document.getElementById("roundInfo");
+    const studentBadgesEl = document.getElementById("studentBadges");
+    const studentContextCitiesEl = document.getElementById("studentContextCities");
+
+    function updateHeader() {
+      roundInfoEl.textContent =
+        "Round " + settings.currentRound + " of " + settings.rounds;
+    }
+
+    function renderStudentContext() {
+      // badges
+      studentBadgesEl.innerHTML = "";
+      const seasonBadge = document.createElement("span");
+      seasonBadge.className = "badge";
+      seasonBadge.textContent = "Season: " + settings.season;
+      const complexityBadge = document.createElement("span");
+      complexityBadge.className = "badge";
+      complexityBadge.textContent = "Complexity level: " + settings.complexity;
+      studentBadgesEl.appendChild(seasonBadge);
+      studentBadgesEl.appendChild(complexityBadge);
+
+      // city cards
+      studentContextCitiesEl.innerHTML = "";
+      Object.keys(settings.competitors).forEach((city) => {
+        const data = settings.competitors[city];
+        const div = document.createElement("div");
+        div.className = "card";
+        div.style.padding = "10px 12px";
+        div.style.marginBottom = "0";
+        div.innerHTML =
+          '<div class="city-pill">' +
+          city +
+          "</div>" +
+          '<p class="muted">Competitor weekday: ' +
+          data.weekdayBand +
+          "</p>" +
+          '<p class="muted">Competitor weekend: ' +
+          data.weekendBand +
+          "</p>" +
+          '<p class="muted">Capacity feels: ' +
+          data.capacityLabel +
+          "</p>";
+        studentContextCitiesEl.appendChild(div);
+      });
+    }
+
+    updateHeader();
+    renderStudentContext();
+
+    // Apply settings from Instructor tab
+    document.getElementById("applySettingsBtn").addEventListener("click", () => {
+      settings.rounds = Number(document.getElementById("rounds").value || 1);
+      settings.currentRound = Number(
+        document.getElementById("currentRound").value || 1
+      );
+      settings.season = document.getElementById("season").value;
+      settings.complexity = document.getElementById("complexity").value;
+      settings.scenario = document.getElementById("scenario").value;
+
+      settings.competitors.Mumbai.weekdayBand =
+        document.getElementById("mumbaiWeekday").value;
+      settings.competitors.Mumbai.weekendBand =
+        document.getElementById("mumbaiWeekend").value;
+      settings.competitors.Mumbai.capacityLabel =
+        document.getElementById("mumbaiCapacity").value;
+
+      settings.competitors.Delhi.weekdayBand =
+        document.getElementById("delhiWeekday").value;
+      settings.competitors.Delhi.weekendBand =
+        document.getElementById("delhiWeekend").value;
+      settings.competitors.Delhi.capacityLabel =
+        document.getElementById("delhiCapacity").value;
+
+      settings.competitors.Bengaluru.weekdayBand =
+        document.getElementById("blrWeekday").value;
+      settings.competitors.Bengaluru.weekendBand =
+        document.getElementById("blrWeekend").value;
+      settings.competitors.Bengaluru.capacityLabel =
+        document.getElementById("blrCapacity").value;
+
+      updateHeader();
+      renderStudentContext();
+      alert("Settings applied to student view.");
+    });
+
+    // ---------------- DEMAND & PROFIT MODEL ----------------
+    function simulateCity(city, season, weekdayPrice, weekendPrice) {
+      const p = CITY_PARAMS[city];
+      const seasonMult = SEASON_MULTIPLIER[season] || 1;
+
+      // Reference competitor prices (from Excel example) with reaction.[file:1]
+      const compBase = BASE_COMPETITOR_PRICE[city];
+      const compWeekdayAdj = competitorAdjustment(weekdayPrice - compBase.weekday);
+      const compWeekendAdj = competitorAdjustment(weekendPrice - compBase.weekend);
+      const compWeekday = compBase.weekday + compWeekdayAdj;
+      const compWeekend = compBase.weekend + compWeekendAdj;
+
+      // Price ratio vs reacted competitor price
+      const weekdayPriceRatio = weekdayPrice / compWeekday;
+      const weekendPriceRatio = weekendPrice / compWeekend;
+
+      // Demand: base * season * (priceRatio ^ elasticity), close to Excel’s elasticity behavior.[file:1]
+      const adjWeekdayDemand =
+        p.baseWeekday *
+        seasonMult *
+        Math.pow(weekdayPriceRatio, p.elasticity);
+      const adjWeekendDemand =
+        p.baseWeekend *
+        seasonMult *
+        Math.pow(weekendPriceRatio, p.elasticity);
+
+      // Attendance capped by capacity
+      const weekdayAttendance = Math.min(adjWeekdayDemand, p.capacity);
+      const weekendAttendance = Math.min(adjWeekendDemand, p.capacity);
+
+      // Assume 22 weekdays and 8 weekend days per month
+      const weekdayDays = 22;
+      const weekendDays = 8;
+
+      const totalWeekdayTickets = weekdayAttendance * weekdayDays;
+      const totalWeekendTickets = weekendAttendance * weekendDays;
+      const totalTickets = totalWeekdayTickets + totalWeekendTickets;
+
+      const weekdayRevenue = totalWeekdayTickets * weekdayPrice;
+      const weekendRevenue = totalWeekendTickets * weekendPrice;
+      const totalRevenue = weekdayRevenue + weekendRevenue;
+
+      const totalVariableCost = totalTickets * p.variableCost;
+      const totalFixedCost = p.fixedDailyCost * 30; // monthly
+      const totalCost = totalVariableCost + totalFixedCost;
+      const profit = totalRevenue - totalCost;
+
+      const avgDailyAttendance =
+        (weekdayAttendance * weekdayDays + weekendAttendance * weekendDays) / 30;
+      const utilization = avgDailyAttendance / p.capacity;
+
+      return {
+        weekdayAttendance,
+        weekendAttendance,
+        weekdayRevenue,
+        weekendRevenue,
+        totalRevenue,
+        totalTickets,
+        totalCost,
+        profit,
+        utilization
+      };
+    }
+
+    function simulateRound(season, pricesByCity) {
+      const cityResults = {};
+      let totalProfit = 0;
+      Object.keys(CITY_PARAMS).forEach((city) => {
+        const res = simulateCity(
+          city,
+          season,
+          pricesByCity[city].weekday,
+          pricesByCity[city].weekend
+        );
+        cityResults[city] = res;
+        totalProfit += res.profit;
+      });
+      return { cityResults, totalProfit };
+    }
+
+    // ---------------- STUDENT SUBMIT ----------------
+    document
+      .getElementById("submitPricesBtn")
+      .addEventListener("click", function () {
+        const btn = this;
+
+        const pricesByCity = {
+          Mumbai: {
+            weekday: Number(
+              document.getElementById("mumbaiWeekdayPrice").value || 0
+            ),
+            weekend: Number(
+              document.getElementById("mumbaiWeekendPrice").value || 0
+            )
+          },
+          Delhi: {
+            weekday: Number(
+              document.getElementById("delhiWeekdayPrice").value || 0
+            ),
+            weekend: Number(
+              document.getElementById("delhiWeekendPrice").value || 0
+            )
+          },
+          Bengaluru: {
+            weekday: Number(
+              document.getElementById("blrWeekdayPrice").value || 0
+            ),
+            weekend: Number(
+              document.getElementById("blrWeekendPrice").value || 0
+            )
+          }
+        };
+
+        // basic validation
+        if (
+          !pricesByCity.Mumbai.weekday ||
+          !pricesByCity.Mumbai.weekend ||
+          !pricesByCity.Delhi.weekday ||
+          !pricesByCity.Delhi.weekend ||
+          !pricesByCity.Bengaluru.weekday ||
+          !pricesByCity.Bengaluru.weekend
+        ) {
+          alert("Please enter all weekday and weekend prices before submitting.");
+          return;
+        }
+
+        const season = settings.season;
+
+        const result = simulateRound(season, pricesByCity);
+
+        // lock UI
+        btn.disabled = true;
+        btn.textContent = "Prices submitted";
+        document.getElementById("mumbaiWeekdayPrice").disabled = true;
+        document.getElementById("mumbaiWeekendPrice").disabled = true;
+        document.getElementById("delhiWeekdayPrice").disabled = true;
+        document.getElementById("delhiWeekendPrice").disabled = true;
+        document.getElementById("blrWeekdayPrice").disabled = true;
+        document.getElementById("blrWeekendPrice").disabled = true;
+
+        const resultsBox = document.getElementById("resultsBox");
+        const { cityResults, totalProfit } = result;
+
+        resultsBox.style.display = "block";
+        resultsBox.innerHTML =
+          "<p><strong>Round results (Excel-style model)</strong></p>" +
+          '<p class="muted">These numbers are generated from a hard-coded version of the Excel demand and financial logic using the instructor\'s season and the student\'s prices.</p>' +
+          Object.keys(cityResults)
+            .map((city) => {
+              const r = cityResults[city];
+              return (
+                "<p><strong>" +
+                city +
+                ":</strong> Profit ≈ ₹" +
+                Math.round(r.profit).toLocaleString("en-IN") +
+                ", Utilization ≈ " +
+                Math.round(r.utilization * 100) +
+                "%</p>"
+              );
+            })
+            .join("") +
+          "<p><strong>Total profit this round:</strong> ₹" +
+          Math.round(totalProfit).toLocaleString("en-IN") +
+          "</p>";
+      });
+  </script>
+</body>
+</html>
