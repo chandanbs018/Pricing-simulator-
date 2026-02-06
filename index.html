@@ -55,33 +55,10 @@
         }
 
         .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo-mark {
-            width: 40px;
-            height: 40px;
-            border-radius: 999px;
-            border: 3px solid var(--color-primary);
-        }
-
-        .logo-text {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .logo-text-main {
-            font-weight: 700;
-            font-size: 1.2em;
-            color: var(--color-text);
-        }
-
-        .logo-text-sub {
-            font-weight: 600;
-            color: var(--color-primary);
-            font-size: 0.9em;
+            height: 60px;
+            width: auto;
+            max-width: 100%;
+            border-radius: 4px;
         }
 
         .header-banner {
@@ -277,6 +254,15 @@
             background: #e67e22;
         }
 
+        .btn-success {
+            background: var(--color-success);
+            color: var(--color-white);
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
         .btn:disabled {
             background: var(--color-border);
             cursor: not-allowed;
@@ -397,6 +383,78 @@
             margin-bottom: 10px;
         }
 
+        .round-result-card {
+            background: var(--color-white);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border: 1px solid var(--color-border);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .round-result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .round-number {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--color-primary);
+        }
+
+        .round-date {
+            color: #6b7280;
+            font-size: 0.9em;
+        }
+
+        .city-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .city-result {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 3px solid var(--color-primary);
+        }
+
+        .city-name {
+            font-weight: bold;
+            color: var(--color-primary);
+            margin-bottom: 8px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .result-label {
+            color: #6b7280;
+        }
+
+        .result-value {
+            font-weight: 600;
+        }
+
+        .profit-positive {
+            color: var(--color-success);
+        }
+
+        .profit-negative {
+            color: var(--color-danger);
+        }
+
         @media (max-width: 1024px) {
             .main-grid {
                 grid-template-columns: 1fr;
@@ -433,6 +491,9 @@
             .status-card {
                 min-width: 100%;
             }
+            .city-results {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -441,13 +502,7 @@
         <!-- Header with Logo and Green Banner aligned with grid -->
         <div class="header-wrapper">
             <div class="logo-container">
-                <div class="logo">
-                    <div class="logo-mark"></div>
-                    <div class="logo-text">
-                        <div class="logo-text-main">ZeroZeta</div>
-                        <div class="logo-text-sub">Simulator</div>
-                    </div>
-                </div>
+                <img src="logo.png" alt="Cineprice Simulation Logo" class="logo">
             </div>
             
             <div class="header-banner">
@@ -462,6 +517,7 @@
                 <div class="nav-item active" onclick="switchModule('intro')">Introduction</div>
                 <div class="nav-item" onclick="switchModule('instructor')">Instructor</div>
                 <div class="nav-item" onclick="switchModule('student')">Student Round</div>
+                <div class="nav-item" onclick="switchModule('results')">Results</div>
                 <div class="nav-item" onclick="switchModule('progress')">Progress</div>
             </div>
 
@@ -663,14 +719,114 @@
 
                         <button class="btn btn-primary" id="submitPricesBtn">Submit prices for this month</button>
 
-                        <div class="results-box" id="resultsBox" style="display:none;"></div>
+                        <!-- Simple confirmation message instead of detailed results -->
+                        <div class="results-box" id="confirmationBox" style="display:none;">
+                            <div class="alert alert-success">
+                                <strong>✓ Prices submitted successfully!</strong>
+                                <p style="margin-top: 10px;">Your prices have been submitted for Round <span id="submitted-round">1</span>. Go to the <strong>Results</strong> tab to see detailed analysis and performance metrics.</p>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Quick Actions moved here -->
+                    <!-- Quick Actions -->
                     <div class="quick-actions">
                         <h4>Quick Actions</h4>
                         <button class="btn btn-primary" style="margin-right: 10px;" onclick="nextRound()">Next Round</button>
                         <button class="btn btn-warning" onclick="resetSimulation()">Reset Simulation</button>
+                    </div>
+                </div>
+
+                <!-- RESULTS SECTION -->
+                <div id="results-section" class="hidden">
+                    <h2>Simulation Results</h2>
+                    <p class="muted">Detailed analysis of your pricing decisions across all completed rounds.</p>
+
+                    <!-- Overall Statistics -->
+                    <div class="simulation-status">
+                        <div class="status-card">
+                            <h4>Total Rounds Completed</h4>
+                            <div class="status-value" id="results-rounds-completed">0</div>
+                        </div>
+                        <div class="status-card">
+                            <h4>Cumulative Profit</h4>
+                            <div class="status-value" id="results-total-profit">₹0</div>
+                        </div>
+                        <div class="status-card">
+                            <h4>Average Profit/Round</h4>
+                            <div class="status-value" id="results-avg-profit">₹0</div>
+                        </div>
+                        <div class="status-card">
+                            <h4>Avg Utilization</h4>
+                            <div class="status-value" id="results-avg-utilization">0%</div>
+                        </div>
+                    </div>
+
+                    <!-- Round-by-Round Results -->
+                    <div id="round-results-container">
+                        <h3 style="margin-top: 30px;">Round-by-Round Performance</h3>
+                        <p class="muted" style="margin-bottom: 20px;">Click on any round to see detailed city-level results.</p>
+                        
+                        <div id="round-results-list">
+                            <div class="card" style="text-align: center; padding: 30px;">
+                                <p class="muted">No rounds completed yet. Complete rounds in the Student tab to see results here.</p>
+                                <button class="btn btn-primary" onclick="switchModule('student')" style="margin-top: 15px;">Go to Student Round</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Round View -->
+                    <div id="detailed-round-view" class="hidden">
+                        <div class="round-result-header">
+                            <div>
+                                <div class="round-number" id="detailed-round-title">Round 1</div>
+                                <div class="round-date" id="detailed-round-date"></div>
+                            </div>
+                            <button class="btn" onclick="showRoundList()">← Back to All Rounds</button>
+                        </div>
+
+                        <div class="simulation-status">
+                            <div class="status-card">
+                                <h4>Round Profit</h4>
+                                <div class="status-value" id="detailed-round-profit">₹0</div>
+                            </div>
+                            <div class="status-card">
+                                <h4>Avg Utilization</h4>
+                                <div class="status-value" id="detailed-round-utilization">0%</div>
+                            </div>
+                            <div class="status-card">
+                                <h4>Season</h4>
+                                <div class="status-value" id="detailed-round-season">Normal</div>
+                            </div>
+                            <div class="status-card">
+                                <h4>Scenario</h4>
+                                <div class="status-value" id="detailed-round-scenario">Normal</div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h4>City-wise Performance</h4>
+                            <div class="city-results" id="detailed-city-results">
+                                <!-- City results will be populated here -->
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h4>Pricing Decisions</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>City</th>
+                                        <th>Weekday Price</th>
+                                        <th>Weekend Price</th>
+                                        <th>Competitor Weekday</th>
+                                        <th>Competitor Weekend</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="detailed-pricing-table">
+                                    <!-- Pricing data will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
@@ -681,22 +837,22 @@
                     <div class="simulation-status">
                         <div class="status-card">
                             <h4>Rounds Completed</h4>
-                            <div class="status-value" id="rounds-completed">0</div>
+                            <div class="status-value" id="progress-rounds-completed">0</div>
                         </div>
                         <div class="status-card">
                             <h4>Total Profit</h4>
-                            <div class="status-value" id="total-profit">₹0</div>
+                            <div class="status-value" id="progress-total-profit">₹0</div>
                         </div>
                         <div class="status-card">
                             <h4>Average Utilization</h4>
-                            <div class="status-value" id="avg-utilization">0%</div>
+                            <div class="status-value" id="progress-avg-utilization">0%</div>
                         </div>
                     </div>
 
                     <div class="card">
                         <h4>Round Completion Progress</h4>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                            <strong>Progress</strong>
+                            <strong>Overall Progress</strong>
                             <span id="progress-percent">0%</span>
                         </div>
                         <div class="progress-bar">
@@ -705,9 +861,9 @@
                     </div>
 
                     <div class="card">
-                        <h4>Performance History</h4>
-                        <div id="performance-history" style="margin-top: 15px;">
-                            <p class="muted">Complete rounds to see your performance history</p>
+                        <h4>Performance Summary</h4>
+                        <div id="performance-summary" style="margin-top: 15px;">
+                            <p class="muted">Complete rounds to see your performance summary</p>
                         </div>
                     </div>
                 </div>
@@ -733,7 +889,8 @@
         const simulationState = {
             completedRounds: 0,
             totalProfit: 0,
-            performanceHistory: []
+            performanceHistory: [],
+            roundResults: [] // Store detailed round results
         };
 
         // ---------------- MODEL PARAMETERS ----------------
@@ -793,6 +950,10 @@
             if (module === 'progress') {
                 updateProgressSection();
             }
+            
+            if (module === 'results') {
+                updateResultsSection();
+            }
         }
 
         function updateStudentStatus() {
@@ -806,6 +967,8 @@
             
             document.getElementById('round-status').textContent = 
                 settings.currentRound <= simulationState.completedRounds ? 'Completed' : 'Active';
+            document.getElementById('round-status').style.color = 
+                settings.currentRound <= simulationState.completedRounds ? '#27ae60' : '#f39c12';
         }
 
         function updateProgressSection() {
@@ -813,26 +976,174 @@
             document.getElementById('progress-percent').textContent = `${progressPercent}%`;
             document.getElementById('progress-bar-fill').style.width = `${progressPercent}%`;
             
-            document.getElementById('total-profit').textContent = `₹${simulationState.totalProfit.toLocaleString('en-IN')}`;
-            document.getElementById('rounds-completed').textContent = simulationState.completedRounds;
+            document.getElementById('progress-rounds-completed').textContent = simulationState.completedRounds;
+            document.getElementById('progress-total-profit').textContent = `₹${simulationState.totalProfit.toLocaleString('en-IN')}`;
             
             // Calculate average utilization
             const avgUtil = simulationState.performanceHistory.length > 0 ? 
                 Math.round(simulationState.performanceHistory.reduce((sum, round) => sum + round.avgUtilization, 0) / simulationState.performanceHistory.length) : 0;
-            document.getElementById('avg-utilization').textContent = `${avgUtil}%`;
+            document.getElementById('progress-avg-utilization').textContent = `${avgUtil}%`;
             
-            // Update performance history
-            const historyEl = document.getElementById('performance-history');
+            // Update performance summary
+            const summaryEl = document.getElementById('performance-summary');
             if (simulationState.performanceHistory.length > 0) {
-                historyEl.innerHTML = simulationState.performanceHistory.map((round, idx) => `
-                    <div style="margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #eee;">
-                        <strong>Round ${idx + 1}:</strong> Profit: ₹${round.profit.toLocaleString('en-IN')}, 
-                        Utilization: ${round.avgUtilization}%
+                const avgProfit = Math.round(simulationState.totalProfit / simulationState.completedRounds);
+                const bestRound = simulationState.performanceHistory.reduce((best, round) => round.profit > best.profit ? round : best, {profit: -Infinity});
+                const worstRound = simulationState.performanceHistory.reduce((worst, round) => round.profit < worst.profit ? round : worst, {profit: Infinity});
+                
+                summaryEl.innerHTML = `
+                    <div class="result-row">
+                        <span class="result-label">Average profit per round:</span>
+                        <span class="result-value">₹${avgProfit.toLocaleString('en-IN')}</span>
                     </div>
-                `).join('');
+                    <div class="result-row">
+                        <span class="result-label">Best round:</span>
+                        <span class="result-value">Round ${bestRound.round} (₹${bestRound.profit.toLocaleString('en-IN')})</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Worst round:</span>
+                        <span class="result-value">Round ${worstRound.round} (₹${worstRound.profit.toLocaleString('en-IN')})</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Total rounds:</span>
+                        <span class="result-value">${simulationState.completedRounds} of ${settings.rounds}</span>
+                    </div>
+                `;
             } else {
-                historyEl.innerHTML = '<p class="muted">Complete rounds to see your performance history</p>';
+                summaryEl.innerHTML = '<p class="muted">Complete rounds to see your performance summary</p>';
             }
+        }
+
+        function updateResultsSection() {
+            document.getElementById('results-rounds-completed').textContent = simulationState.completedRounds;
+            document.getElementById('results-total-profit').textContent = `₹${simulationState.totalProfit.toLocaleString('en-IN')}`;
+            
+            const avgProfit = simulationState.completedRounds > 0 ? 
+                Math.round(simulationState.totalProfit / simulationState.completedRounds) : 0;
+            document.getElementById('results-avg-profit').textContent = `₹${avgProfit.toLocaleString('en-IN')}`;
+            
+            const avgUtil = simulationState.performanceHistory.length > 0 ? 
+                Math.round(simulationState.performanceHistory.reduce((sum, round) => sum + round.avgUtilization, 0) / simulationState.performanceHistory.length) : 0;
+            document.getElementById('results-avg-utilization').textContent = `${avgUtil}%`;
+            
+            // Update round results list
+            const resultsListEl = document.getElementById('round-results-list');
+            if (simulationState.roundResults.length > 0) {
+                resultsListEl.innerHTML = simulationState.roundResults.map((result, index) => {
+                    const roundNum = index + 1;
+                    return `
+                        <div class="round-result-card" onclick="showDetailedRound(${roundNum})">
+                            <div class="round-result-header">
+                                <div>
+                                    <div class="round-number">Round ${roundNum}</div>
+                                    <div class="round-date">${result.timestamp}</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div class="result-value ${result.totalProfit >= 0 ? 'profit-positive' : 'profit-negative'}" style="font-size: 1.2em;">
+                                        ₹${Math.round(result.totalProfit).toLocaleString('en-IN')}
+                                    </div>
+                                    <div class="result-label">Profit</div>
+                                </div>
+                            </div>
+                            <div class="city-results">
+                                ${Object.keys(result.cityResults).map(city => {
+                                    const cityResult = result.cityResults[city];
+                                    return `
+                                        <div class="city-result">
+                                            <div class="city-name">${city}</div>
+                                            <div class="result-row">
+                                                <span class="result-label">Profit:</span>
+                                                <span class="result-value ${cityResult.profit >= 0 ? 'profit-positive' : 'profit-negative'}">
+                                                    ₹${Math.round(cityResult.profit).toLocaleString('en-IN')}
+                                                </span>
+                                            </div>
+                                            <div class="result-row">
+                                                <span class="result-label">Utilization:</span>
+                                                <span class="result-value">${Math.round(cityResult.utilization * 100)}%</span>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                resultsListEl.innerHTML = `
+                    <div class="card" style="text-align: center; padding: 30px;">
+                        <p class="muted">No rounds completed yet. Complete rounds in the Student tab to see results here.</p>
+                        <button class="btn btn-primary" onclick="switchModule('student')" style="margin-top: 15px;">Go to Student Round</button>
+                    </div>
+                `;
+            }
+        }
+
+        function showDetailedRound(roundNumber) {
+            if (roundNumber <= 0 || roundNumber > simulationState.roundResults.length) return;
+            
+            const result = simulationState.roundResults[roundNumber - 1];
+            
+            // Show detailed view, hide list
+            document.getElementById('round-results-container').classList.add('hidden');
+            document.getElementById('detailed-round-view').classList.remove('hidden');
+            
+            // Update detailed view
+            document.getElementById('detailed-round-title').textContent = `Round ${roundNumber}`;
+            document.getElementById('detailed-round-date').textContent = result.timestamp;
+            document.getElementById('detailed-round-profit').textContent = `₹${Math.round(result.totalProfit).toLocaleString('en-IN')}`;
+            document.getElementById('detailed-round-profit').className = `status-value ${result.totalProfit >= 0 ? 'profit-positive' : 'profit-negative'}`;
+            document.getElementById('detailed-round-utilization').textContent = `${Math.round(result.avgUtilization * 100)}%`;
+            document.getElementById('detailed-round-season').textContent = result.season;
+            document.getElementById('detailed-round-scenario').textContent = result.scenario;
+            
+            // Update city results
+            const cityResultsEl = document.getElementById('detailed-city-results');
+            cityResultsEl.innerHTML = Object.keys(result.cityResults).map(city => {
+                const cityResult = result.cityResults[city];
+                return `
+                    <div class="city-result">
+                        <div class="city-name">${city}</div>
+                        <div class="result-row">
+                            <span class="result-label">Profit:</span>
+                            <span class="result-value ${cityResult.profit >= 0 ? 'profit-positive' : 'profit-negative'}">
+                                ₹${Math.round(cityResult.profit).toLocaleString('en-IN')}
+                            </span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">Utilization:</span>
+                            <span class="result-value">${Math.round(cityResult.utilization * 100)}%</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">Weekday Price:</span>
+                            <span class="result-value">₹${cityResult.prices.weekday}</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">Weekend Price:</span>
+                            <span class="result-value">₹${cityResult.prices.weekend}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Update pricing table
+            const pricingTableEl = document.getElementById('detailed-pricing-table');
+            pricingTableEl.innerHTML = Object.keys(result.cityResults).map(city => {
+                const cityResult = result.cityResults[city];
+                return `
+                    <tr>
+                        <td>${city}</td>
+                        <td>₹${cityResult.prices.weekday}</td>
+                        <td>₹${cityResult.prices.weekend}</td>
+                        <td>${result.competitors[city].weekdayBand}</td>
+                        <td>${result.competitors[city].weekendBand}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function showRoundList() {
+            document.getElementById('round-results-container').classList.remove('hidden');
+            document.getElementById('detailed-round-view').classList.add('hidden');
         }
 
         function renderStudentContext() {
@@ -1002,6 +1313,38 @@
             const season = settings.season;
             const result = simulateRound(season, pricesByCity);
 
+            // Store detailed round results
+            const roundResult = {
+                round: settings.currentRound,
+                timestamp: new Date().toLocaleString('en-IN', { 
+                    day: '2-digit', 
+                    month: 'short', 
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }),
+                season: settings.season,
+                scenario: settings.scenario,
+                cityResults: {},
+                totalProfit: result.totalProfit,
+                avgUtilization: result.avgUtilization,
+                competitors: JSON.parse(JSON.stringify(settings.competitors))
+            };
+
+            // Store city results with prices
+            Object.keys(result.cityResults).forEach(city => {
+                roundResult.cityResults[city] = {
+                    profit: result.cityResults[city].profit,
+                    utilization: result.cityResults[city].utilization,
+                    prices: {
+                        weekday: pricesByCity[city].weekday,
+                        weekend: pricesByCity[city].weekend
+                    }
+                };
+            });
+
+            simulationState.roundResults.push(roundResult);
+
             // Update simulation state
             simulationState.completedRounds++;
             simulationState.totalProfit += result.totalProfit;
@@ -1020,26 +1363,10 @@
                 document.getElementById(id).disabled = true;
             });
 
-            // Show results
-            const resultsBox = document.getElementById('resultsBox');
-            const { cityResults, totalProfit, avgUtilization } = result;
-
-            resultsBox.style.display = 'block';
-            resultsBox.innerHTML = `
-                <div class="alert alert-success">
-                    <strong>Round ${settings.currentRound} Results</strong>
-                    <p style="margin-top: 10px;">Profits and utilization are based on the demand and cost model for ${season} season.</p>
-                </div>
-                ${Object.keys(cityResults).map(city => {
-                    const r = cityResults[city];
-                    return `
-                        <p><strong>${city}:</strong> Profit ≈ ₹${Math.round(r.profit).toLocaleString('en-IN')}, 
-                        Utilization ≈ ${Math.round(r.utilization * 100)}%</p>
-                    `;
-                }).join('')}
-                <p><strong>Total profit this round:</strong> ₹${Math.round(totalProfit).toLocaleString('en-IN')}</p>
-                <p><strong>Average utilization:</strong> ${Math.round(avgUtilization * 100)}%</p>
-            `;
+            // Show confirmation message (not detailed results)
+            const confirmationBox = document.getElementById('confirmationBox');
+            document.getElementById('submitted-round').textContent = settings.currentRound;
+            confirmationBox.style.display = 'block';
 
             // Update status
             updateStudentStatus();
@@ -1063,7 +1390,7 @@
             
             document.getElementById('submitPricesBtn').disabled = false;
             document.getElementById('submitPricesBtn').textContent = 'Submit prices for this month';
-            document.getElementById('resultsBox').style.display = 'none';
+            document.getElementById('confirmationBox').style.display = 'none';
             
             updateStudentStatus();
             renderStudentContext();
@@ -1074,6 +1401,7 @@
                 simulationState.completedRounds = 0;
                 simulationState.totalProfit = 0;
                 simulationState.performanceHistory = [];
+                simulationState.roundResults = [];
                 settings.currentRound = 1;
                 
                 // Reset form
@@ -1084,9 +1412,11 @@
                 
                 document.getElementById('submitPricesBtn').disabled = false;
                 document.getElementById('submitPricesBtn').textContent = 'Submit prices for this month';
-                document.getElementById('resultsBox').style.display = 'none';
+                document.getElementById('confirmationBox').style.display = 'none';
                 
                 updateStudentStatus();
+                updateResultsSection();
+                updateProgressSection();
                 renderStudentContext();
                 
                 switchModule('intro');
@@ -1095,6 +1425,8 @@
 
         // Initialize
         updateStudentStatus();
+        updateResultsSection();
+        updateProgressSection();
         renderStudentContext();
     </script>
 </body>
