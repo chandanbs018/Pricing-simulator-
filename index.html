@@ -5,491 +5,181 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cineprice Strategic Pricing Simulation</title>
     <style>
-        :root {
-            --color-primary: #4F82CC;
-            --color-primary-light: #4F82CC;
-            --color-success: #27ae60;
-            --color-warning: #f39c12;
-            --color-danger: #e74c3c;
-            --color-bg: #f4f5fb;
-            --color-text: #2c3e50;
-            --color-white: #ffffff;
-            --color-border: #e2e8f0;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--color-bg);
-            color: var(--color-text);
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header-wrapper {
+        /* Add new styles for round configuration */
+        .round-config-grid {
             display: grid;
-            grid-template-columns: 250px 1fr;
-            gap: 20px;
-            margin-bottom: 30px;
-            align-items: center;
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-        }
-
-        .logo {
-            height: 70px;
-            width: auto;
-            max-width: 100%;
-            border-radius: 4px;
-        }
-
-        .header-banner {
-            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
-            color: var(--color-white);
-            padding: 25px 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            min-height: 80px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            width: 100%;
-        }
-
-        .header-banner h1 {
-            font-size: 2.2em;
-            margin-bottom: 10px;
-            width: 100%;
-        }
-
-        .header-banner p {
-            font-size: 1.1em;
-            opacity: 0.95;
-            width: 100%;
-            max-width: 800px;
-        }
-
-        .main-grid {
-            display: grid;
-            grid-template-columns: 250px 1fr;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .sidebar {
-            background: var(--color-white);
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .sidebar h3 {
-            color: var(--color-primary);
-            margin-bottom: 15px;
-            border-bottom: 2px solid var(--color-primary);
-            padding-bottom: 10px;
-        }
-
-        .nav-item {
-            padding: 12px 15px;
-            margin: 8px 0;
-            background: var(--color-bg);
-            border: 2px solid transparent;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-            text-align: left;
-            font-weight: 500;
-        }
-
-        .nav-item:hover {
-            background: var(--color-primary);
-            color: var(--color-white);
-        }
-
-        .nav-item.active {
-            background: var(--color-primary);
-            color: var(--color-white);
-            border-color: var(--color-primary-light);
-        }
-
-        .content {
-            background: var(--color-white);
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            min-height: 600px;
-        }
-
-        .content h2 {
-            color: var(--color-primary);
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--color-primary);
-            padding-bottom: 10px;
-        }
-
-        .content h3 {
-            color: var(--color-primary-light);
-            margin-top: 20px;
-            margin-bottom: 10px;
-        }
-
-        .card {
-            background: var(--color-bg);
-            padding: 20px;
-            border-left: 4px solid var(--color-primary);
-            margin: 15px 0;
-            border-radius: 5px;
-        }
-
-        .card h4 {
-            color: var(--color-primary);
-            margin-bottom: 10px;
-        }
-
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 15px;
             margin-top: 15px;
         }
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        label {
-            display: block;
-            font-size: 0.9em;
-            color: #6b7280;
-            margin-bottom: 5px;
-        }
-
-        input[type="number"],
-        input[type="text"],
-        select {
-            width: 100%;
-            padding: 8px 10px;
-            font-size: 0.95em;
-            border-radius: 4px;
-            border: 1px solid var(--color-border);
-            margin-bottom: 10px;
-        }
-
-        input:disabled,
-        select:disabled {
-            background: #e5e7eb;
-            color: #6b7280;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-            font-size: 0.95em;
-        }
-
-        th, td {
-            padding: 12px 15px;
-            border-bottom: 1px solid var(--color-border);
-            text-align: left;
-        }
-
-        th {
-            background: #f3f4f6;
-            font-weight: 600;
-            color: var(--color-primary);
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-size: 0.95em;
-            margin-top: 10px;
-        }
-
-        .btn-primary {
-            background: var(--color-primary);
-            color: var(--color-white);
-        }
-
-        .btn-primary:hover {
-            background: var(--color-primary-light);
-        }
-
-        .btn-warning {
-            background: var(--color-warning);
-            color: var(--color-white);
-        }
-
-        .btn-warning:hover {
-            background: #e67e22;
-        }
-
-        .btn-success {
-            background: var(--color-success);
-            color: var(--color-white);
-        }
-
-        .btn-success:hover {
-            background: #229954;
-        }
-
-        .btn:disabled {
-            background: var(--color-border);
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 5px 12px;
-            background: var(--color-primary);
-            color: var(--color-white);
-            border-radius: 20px;
-            font-size: 0.85em;
-            margin: 3px;
-        }
-
-        .badge-warning {
-            background: var(--color-warning);
-        }
-
-        .badge-info {
-            background: #3498db;
-        }
-
-        .badge-success {
-            background: var(--color-success);
-        }
-
-        .muted {
-            color: #6b7280;
-            font-size: 0.9em;
-        }
-
-        .results-box {
-            margin-top: 20px;
-            border-top: 1px solid var(--color-border);
-            padding-top: 15px;
-            font-size: 0.95em;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background: var(--color-border);
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--color-success);
-            transition: width 0.3s ease;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .alert {
+        
+        .round-config-card {
+            background: var(--color-white);
             padding: 15px;
-            border-radius: 5px;
-            margin: 15px 0;
+            border-radius: 6px;
+            border: 1px solid var(--color-border);
+            transition: all 0.3s ease;
         }
-
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border-left: 4px solid var(--color-success);
+        
+        .round-config-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
         }
-
-        .alert-info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border-left: 4px solid var(--color-primary);
+        
+        .round-config-card.active {
+            border-color: var(--color-primary);
+            background: #f0f9f4;
         }
-
-        .simulation-status {
+        
+        .round-config-header {
             display: flex;
             justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        .status-card {
-            flex: 1;
-            min-width: 200px;
-            background: var(--color-white);
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid var(--color-border);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .status-card h4 {
-            color: var(--color-primary);
+            align-items: center;
             margin-bottom: 10px;
-            font-size: 0.95em;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--color-border);
         }
-
-        .status-value {
-            font-size: 1.5em;
+        
+        .round-number-badge {
+            background: var(--color-primary);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
             font-weight: bold;
-            color: var(--color-primary);
+            font-size: 0.9em;
         }
-
-        .quick-actions {
-            margin-top: 20px;
+        
+        .round-status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        
+        .status-planned {
+            background: #6b7280;
+        }
+        
+        .status-active {
+            background: var(--color-success);
+        }
+        
+        .status-completed {
+            background: var(--color-primary);
+        }
+        
+        .round-summary {
+            font-size: 0.9em;
+            color: #6b7280;
+        }
+        
+        .quick-actions-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .round-navigation {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .nav-btn {
+            padding: 8px 15px;
+            border: 1px solid var(--color-border);
+            background: var(--color-white);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn:hover {
+            background: var(--color-bg);
+        }
+        
+        .nav-btn.active {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+        
+        .student-round-info {
+            margin: 20px 0;
             padding: 15px;
             background: var(--color-bg);
-            border-radius: 8px;
+            border-radius: 6px;
             border-left: 4px solid var(--color-warning);
         }
-
-        .quick-actions h4 {
-            color: var(--color-primary);
-            margin-bottom: 10px;
-        }
-
-        .round-result-card {
-            background: var(--color-white);
-            padding: 20px;
-            margin: 15px 0;
-            border-radius: 8px;
-            border: 1px solid var(--color-border);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .round-result-header {
+        
+        .round-preview {
             display: flex;
-            justify-content: space-between;
+            gap: 20px;
             align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--color-border);
-        }
-
-        .round-number {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: var(--color-primary);
-        }
-
-        .round-date {
-            color: #6b7280;
-            font-size: 0.9em;
-        }
-
-        .city-results {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .city-result {
+            margin: 15px 0;
             padding: 15px;
-            background: #f8f9fa;
+            background: white;
             border-radius: 6px;
-            border-left: 3px solid var(--color-primary);
+            border: 1px solid var(--color-border);
         }
-
-        .city-name {
+        
+        .round-preview-number {
+            font-size: 2em;
             font-weight: bold;
             color: var(--color-primary);
-            margin-bottom: 8px;
+            min-width: 60px;
+            text-align: center;
         }
-
-        .result-row {
+        
+        .round-preview-details {
+            flex: 1;
+        }
+        
+        .round-preview-actions {
             display: flex;
-            justify-content: space-between;
-            margin: 5px 0;
+            gap: 10px;
+        }
+        
+        .compact-table {
             font-size: 0.9em;
         }
-
-        .result-label {
-            color: #6b7280;
+        
+        .compact-table th,
+        .compact-table td {
+            padding: 8px 10px;
         }
-
-        .result-value {
-            font-weight: 600;
+        
+        .student-round-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
-
-        .profit-positive {
-            color: var(--color-success);
+        
+        .round-select-btn {
+            padding: 10px 20px;
+            border: 2px solid var(--color-border);
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
         }
-
-        .profit-negative {
-            color: var(--color-danger);
+        
+        .round-select-btn:hover {
+            background: var(--color-bg);
         }
-
-        @media (max-width: 1024px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-            .header-wrapper {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-            .logo-container {
-                justify-content: center;
-                margin-bottom: 0;
-            }
-            .header-banner h1 {
-                font-size: 1.8em;
-            }
+        
+        .round-select-btn.active {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
         }
-
-        @media (max-width: 768px) {
-            .header-banner h1 {
-                font-size: 1.5em;
-            }
-            .header-banner p {
-                font-size: 1em;
-            }
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-            .grid-3, .grid-2 {
-                grid-template-columns: 1fr;
-            }
-            .simulation-status {
-                flex-direction: column;
-            }
-            .status-card {
-                min-width: 100%;
-            }
-            .city-results {
-                grid-template-columns: 1fr;
-            }
+        
+        .round-select-btn.completed {
+            border-color: var(--color-success);
         }
     </style>
 </head>
@@ -503,6 +193,7 @@
             
             <div class="header-banner">
                 <h1>Cineprice Strategic Pricing Simulation</h1>
+                <p>Multi-round strategic pricing simulation with instructor configuration</p>
             </div>
         </div>
 
@@ -510,8 +201,8 @@
             <div class="sidebar">
                 <h3>Modules</h3>
                 <div class="nav-item active" onclick="switchModule('intro')">Introduction</div>
-                <div class="nav-item" onclick="switchModule('instructor')">Instructor</div>
-                <div class="nav-item" onclick="switchModule('student')">Student Round</div>
+                <div class="nav-item" onclick="switchModule('instructor')">Instructor Setup</div>
+                <div class="nav-item" onclick="switchModule('student')">Student Rounds</div>
                 <div class="nav-item" onclick="switchModule('results')">Results</div>
                 <div class="nav-item" onclick="switchModule('progress')">Progress</div>
             </div>
@@ -523,304 +214,212 @@
                     <p class="muted">You play the role of regional pricing manager for a multiplex chain in Mumbai, Delhi, and Bengaluru. Each round is one month of operations.</p>
 
                     <div class="card">
-                        <h4>Business context</h4>
-                        <p>You set weekday and weekend ticket prices for each city. Demand responds to your prices, the current season, and competitive positioning. Capacity is fixed; once seats are full, extra demand is lost.</p>
-                        <p class="muted">The objective is to maximise cumulative profit, not just revenue or occupancy.</p>
+                        <h4>Multi-Round Structure</h4>
+                        <p>Instructors can configure all rounds in advance with different scenarios, seasons, and market conditions. Students then progress through each round sequentially.</p>
+                        <p class="muted">Each round builds on previous learning, with increasing complexity and varying market conditions.</p>
                     </div>
 
                     <div class="grid-3">
                         <div class="card">
-                            <h4>Cities & capacity</h4>
-                            <p class="muted">Mumbai, Delhi, and Bengaluru each have fixed screens, seats per screen, and shows per day, which set a daily capacity limit.</p>
+                            <h4>Round Configuration</h4>
+                            <p class="muted">Instructors set up all rounds in advance with different seasons, scenarios, and competitor settings.</p>
                         </div>
                         <div class="card">
-                            <h4>Your decisions</h4>
-                            <p class="muted">For every month you choose one weekday price and one weekend price per city based on limited information about season, competitor bands, and capacity tightness.</p>
+                            <h4>Student Progression</h4>
+                            <p class="muted">Students see each round's specific context and make pricing decisions accordingly.</p>
                         </div>
                         <div class="card">
-                            <h4>How outcomes are calculated</h4>
-                            <p class="muted">A demand model with price elasticity and season multipliers estimates attendance, then revenue, variable costs, fixed costs, and profit are computed for each city.</p>
+                            <h4>Cumulative Learning</h4>
+                            <p class="muted">Results from all rounds are saved and can be analyzed to understand pricing strategy impact over time.</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- INSTRUCTOR SECTION -->
                 <div id="instructor-section" class="hidden">
-                    <h2>Instructor Control Panel</h2>
-                    <p class="muted">Configure the scenario for the current round. These settings drive the demand and financial model, and a simplified view is shown to students.</p>
+                    <h2>Instructor Setup: Configure All Rounds</h2>
+                    <p class="muted">Set up all simulation rounds in advance. Configure seasons, scenarios, and market conditions for each round.</p>
 
                     <div class="card">
-                        <h4>Simulation settings</h4>
+                        <h4>Simulation Settings</h4>
                         <div class="grid-3">
                             <div>
                                 <label for="rounds">Number of rounds</label>
-                                <input type="number" id="rounds" min="1" value="6">
-                            </div>
-                            <div>
-                                <label for="currentRound">Current round</label>
-                                <input type="number" id="currentRound" min="1" value="1">
+                                <input type="number" id="rounds" min="1" max="12" value="6" onchange="updateRoundConfig()">
                             </div>
                             <div>
                                 <label for="complexity">Complexity level</label>
-                                <select id="complexity">
+                                <select id="complexity" onchange="updateRoundConfig()">
                                     <option value="1" selected>Level 1 – Elasticity & seasonality</option>
                                     <option value="2">Level 2 – Add competitor reactions</option>
                                     <option value="3">Level 3 – Segmented demand</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="grid-3">
-                            <div>
-                                <label for="season">Season</label>
-                                <select id="season">
-                                    <option>Normal</option>
-                                    <option selected>Festive</option>
-                                    <option>Exam</option>
-                                    <option>Monsoon</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="scenario">Scenario / shock</label>
-                                <select id="scenario">
-                                    <option value="none">None</option>
-                                    <option value="demand_drop">Demand drop</option>
-                                    <option value="blockbuster" selected>Blockbuster release</option>
-                                </select>
-                            </div>
-                        </div>
+                        
+                        <button class="btn btn-primary" onclick="initializeRounds()">Initialize All Rounds</button>
+                        <button class="btn btn-success" onclick="saveAllRounds()" style="margin-left: 10px;">Save All Round Configurations</button>
                     </div>
 
                     <div class="card">
-                        <h4>Competitor bands & capacity type (student view)</h4>
-                        <p class="muted">These ranges are shown to students as qualitative hints. The internal model uses hidden reference prices and elasticity parameters.</p>
-
-                        <div class="grid-3">
-                            <!-- Mumbai -->
-                            <div>
-                                <h4>Mumbai</h4>
-                                <label for="mumbaiWeekday">Competitor weekday range</label>
-                                <input type="text" id="mumbaiWeekday" value="₹220 – ₹280">
-                                <label for="mumbaiWeekend">Competitor weekend range</label>
-                                <input type="text" id="mumbaiWeekend" value="₹280 – ₹360">
-                                <label for="mumbaiCapacity">Capacity type</label>
-                                <select id="mumbaiCapacity">
-                                    <option selected>Balanced</option>
-                                    <option>Tight</option>
-                                    <option>Slack</option>
-                                </select>
-                            </div>
-                            <!-- Delhi -->
-                            <div>
-                                <h4>Delhi</h4>
-                                <label for="delhiWeekday">Competitor weekday range</label>
-                                <input type="text" id="delhiWeekday" value="₹200 – ₹260">
-                                <label for="delhiWeekend">Competitor weekend range</label>
-                                <input type="text" id="delhiWeekend" value="₹260 – ₹340">
-                                <label for="delhiCapacity">Capacity type</label>
-                                <select id="delhiCapacity">
-                                    <option>Tight</option>
-                                    <option selected>Balanced</option>
-                                    <option>Slack</option>
-                                </select>
-                            </div>
-                            <!-- Bengaluru -->
-                            <div>
-                                <h4>Bengaluru</h4>
-                                <label for="blrWeekday">Competitor weekday range</label>
-                                <input type="text" id="blrWeekday" value="₹180 – ₹240">
-                                <label for="blrWeekend">Competitor weekend range</label>
-                                <input type="text" id="blrWeekend" value="₹240 – ₹320">
-                                <label for="blrCapacity">Capacity type</label>
-                                <select id="blrCapacity">
-                                    <option selected>Balanced</option>
-                                    <option>Tight</option>
-                                    <option>Slack</option>
-                                </select>
-                            </div>
+                        <h4>Round-by-Round Configuration</h4>
+                        <p class="muted">Configure each round individually. Click on a round to edit its settings.</p>
+                        
+                        <div class="quick-actions-row">
+                            <button class="btn" onclick="applyToAllRounds('season')">Apply Current Season to All</button>
+                            <button class="btn" onclick="applyToAllRounds('scenario')">Apply Current Scenario to All</button>
+                            <button class="btn" onclick="randomizeAllRounds()">Randomize All Rounds</button>
                         </div>
-
-                        <button class="btn btn-primary" id="applySettingsBtn">Apply settings to student view</button>
-                        <p class="muted">In a full version, "blockbuster release" and higher complexity levels can enable additional demand multipliers or segment behaviour.</p>
+                        
+                        <div id="round-config-container" class="round-config-grid">
+                            <!-- Round configuration cards will be generated here -->
+                        </div>
+                        
+                        <div id="round-detail-editor" class="hidden" style="margin-top: 20px;">
+                            <h4>Editing Round <span id="editing-round-number">1</span></h4>
+                            <div class="grid-3">
+                                <div>
+                                    <label>Season</label>
+                                    <select id="edit-season" onchange="updateCurrentRoundConfig()">
+                                        <option value="Normal">Normal</option>
+                                        <option value="Festive" selected>Festive</option>
+                                        <option value="Exam">Exam</option>
+                                        <option value="Monsoon">Monsoon</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Scenario / Shock</label>
+                                    <select id="edit-scenario" onchange="updateCurrentRoundConfig()">
+                                        <option value="none">None</option>
+                                        <option value="demand_drop">Demand Drop</option>
+                                        <option value="blockbuster" selected>Blockbuster Release</option>
+                                        <option value="economic_boom">Economic Boom</option>
+                                        <option value="recession">Recession</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Round Status</label>
+                                    <select id="edit-status" onchange="updateCurrentRoundConfig()">
+                                        <option value="planned">Planned</option>
+                                        <option value="active" selected>Active</option>
+                                        <option value="completed">Completed</option>
+                                        <option value="locked">Locked</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-top: 15px;">
+                                <h4>Competitor Settings for This Round</h4>
+                                <div class="grid-3">
+                                    <!-- Mumbai -->
+                                    <div>
+                                        <h4>Mumbai</h4>
+                                        <label>Competitor weekday range</label>
+                                        <input type="text" id="edit-mumbaiWeekday" value="₹220 – ₹280" onchange="updateCurrentRoundConfig()">
+                                        <label>Competitor weekend range</label>
+                                        <input type="text" id="edit-mumbaiWeekend" value="₹280 – ₹360" onchange="updateCurrentRoundConfig()">
+                                        <label>Capacity type</label>
+                                        <select id="edit-mumbaiCapacity" onchange="updateCurrentRoundConfig()">
+                                            <option selected>Balanced</option>
+                                            <option>Tight</option>
+                                            <option>Slack</option>
+                                        </select>
+                                    </div>
+                                    <!-- Delhi -->
+                                    <div>
+                                        <h4>Delhi</h4>
+                                        <label>Competitor weekday range</label>
+                                        <input type="text" id="edit-delhiWeekday" value="₹200 – ₹260" onchange="updateCurrentRoundConfig()">
+                                        <label>Competitor weekend range</label>
+                                        <input type="text" id="edit-delhiWeekend" value="₹260 – ₹340" onchange="updateCurrentRoundConfig()">
+                                        <label>Capacity type</label>
+                                        <select id="edit-delhiCapacity" onchange="updateCurrentRoundConfig()">
+                                            <option>Tight</option>
+                                            <option selected>Balanced</option>
+                                            <option>Slack</option>
+                                        </select>
+                                    </div>
+                                    <!-- Bengaluru -->
+                                    <div>
+                                        <h4>Bengaluru</h4>
+                                        <label>Competitor weekday range</label>
+                                        <input type="text" id="edit-blrWeekday" value="₹180 – ₹240" onchange="updateCurrentRoundConfig()">
+                                        <label>Competitor weekend range</label>
+                                        <input type="text" id="edit-blrWeekend" value="₹240 – ₹320" onchange="updateCurrentRoundConfig()">
+                                        <label>Capacity type</label>
+                                        <select id="edit-blrCapacity" onchange="updateCurrentRoundConfig()">
+                                            <option selected>Balanced</option>
+                                            <option>Tight</option>
+                                            <option>Slack</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary" onclick="saveRoundConfig()" style="margin-top: 15px;">Save Round Configuration</button>
+                            <button class="btn" onclick="cancelEdit()" style="margin-left: 10px;">Cancel</button>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h4>Round Preview</h4>
+                        <div id="round-preview-container">
+                            <!-- Round preview will be generated here -->
+                        </div>
                     </div>
                 </div>
 
                 <!-- STUDENT SECTION -->
                 <div id="student-section" class="hidden">
-                    <h2>Round Context (Student)</h2>
-                    <p class="muted">You are setting ticket prices for this month. Use the limited information on season, competitor ranges, and capacity tightness to choose weekday and weekend prices.</p>
-
-                    <!-- Simulation Status Cards -->
-                    <div class="simulation-status">
-                        <div class="status-card">
-                            <h4>Current Round</h4>
-                            <div class="status-value" id="current-round">1</div>
-                        </div>
-                        <div class="status-card">
-                            <h4>Total Rounds</h4>
-                            <div class="status-value" id="total-rounds">6</div>
-                        </div>
-                        <div class="status-card">
-                            <h4>Season</h4>
-                            <div class="status-value" id="current-season">Festive</div>
-                        </div>
-                        <div class="status-card">
-                            <h4>Status</h4>
-                            <div class="status-value" id="round-status">Active</div>
-                        </div>
+                    <h2>Student Rounds</h2>
+                    <p class="muted">Navigate through configured rounds and submit pricing decisions for each month.</p>
+                    
+                    <div class="student-round-info">
+                        <h4>Round Navigation</h4>
+                        <p>Complete rounds in sequence. You must complete the current round before moving to the next one.</p>
                     </div>
-
-                    <div class="card">
-                        <h4>Scenario summary</h4>
-                        <div id="studentBadges"></div>
-                        <div style="margin-top: 10px;">
-                            <p><strong>Complexity:</strong> <span id="scenario-complexity">Level 1</span></p>
-                            <p><strong>Market Condition:</strong> <span id="market-condition">Blockbuster Release</span></p>
-                        </div>
+                    
+                    <div class="student-round-selector" id="round-selector">
+                        <!-- Round selection buttons will be generated here -->
                     </div>
-
-                    <div class="card">
-                        <h4>Competitor bands & capacity type</h4>
-                        <div class="grid-3" id="studentContextCities"></div>
-                    </div>
-
-                    <div class="card">
-                        <h4>Set your prices for this month</h4>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>City</th>
-                                    <th>Weekday price (₹)</th>
-                                    <th>Weekend price (₹)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Mumbai</td>
-                                    <td><input type="number" id="mumbaiWeekdayPrice" placeholder="₹"></td>
-                                    <td><input type="number" id="mumbaiWeekendPrice" placeholder="₹"></td>
-                                </tr>
-                                <tr>
-                                    <td>Delhi</td>
-                                    <td><input type="number" id="delhiWeekdayPrice" placeholder="₹"></td>
-                                    <td><input type="number" id="delhiWeekendPrice" placeholder="₹"></td>
-                                </tr>
-                                <tr>
-                                    <td>Bengaluru</td>
-                                    <td><input type="number" id="blrWeekdayPrice" placeholder="₹"></td>
-                                    <td><input type="number" id="blrWeekendPrice" placeholder="₹"></td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <button class="btn btn-primary" id="submitPricesBtn">Submit prices for this month</button>
-
-                        <!-- Simple confirmation message instead of detailed results -->
-                        <div class="results-box" id="confirmationBox" style="display:none;">
-                            <div class="alert alert-success">
-                                <strong>✓ Prices submitted successfully!</strong>
-                                <p style="margin-top: 10px;">Your prices have been submitted for Round <span id="submitted-round">1</span>. Go to the <strong>Results</strong> tab to see detailed analysis and performance metrics.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Quick Actions -->
-                    <div class="quick-actions">
-                        <h4>Quick Actions</h4>
-                        <button class="btn btn-primary" style="margin-right: 10px;" onclick="nextRound()">Next Round</button>
-                        <button class="btn btn-warning" onclick="resetSimulation()">Reset Simulation</button>
+                    
+                    <div id="current-round-display">
+                        <!-- Current round content will be loaded here -->
                     </div>
                 </div>
 
                 <!-- RESULTS SECTION -->
                 <div id="results-section" class="hidden">
                     <h2>Simulation Results</h2>
-                    <p class="muted">Detailed analysis of your pricing decisions across all completed rounds.</p>
+                    <p class="muted">Detailed analysis of your pricing decisions across all configured rounds.</p>
 
                     <!-- Overall Statistics -->
                     <div class="simulation-status">
                         <div class="status-card">
-                            <h4>Total Rounds Completed</h4>
-                            <div class="status-value" id="results-rounds-completed">0</div>
+                            <h4>Total Rounds</h4>
+                            <div class="status-value" id="results-total-rounds">0</div>
+                        </div>
+                        <div class="status-card">
+                            <h4>Completed Rounds</h4>
+                            <div class="status-value" id="results-completed-rounds">0</div>
                         </div>
                         <div class="status-card">
                             <h4>Cumulative Profit</h4>
                             <div class="status-value" id="results-total-profit">₹0</div>
                         </div>
                         <div class="status-card">
-                            <h4>Average Profit/Round</h4>
+                            <h4>Avg Profit/Round</h4>
                             <div class="status-value" id="results-avg-profit">₹0</div>
-                        </div>
-                        <div class="status-card">
-                            <h4>Avg Utilization</h4>
-                            <div class="status-value" id="results-avg-utilization">0%</div>
                         </div>
                     </div>
 
                     <!-- Round-by-Round Results -->
                     <div id="round-results-container">
                         <h3 style="margin-top: 30px;">Round-by-Round Performance</h3>
-                        <p class="muted" style="margin-bottom: 20px;">Click on any round to see detailed city-level results.</p>
+                        <p class="muted" style="margin-bottom: 20px;">All configured rounds are shown below. Completed rounds show detailed results.</p>
                         
                         <div id="round-results-list">
-                            <div class="card" style="text-align: center; padding: 30px;">
-                                <p class="muted">No rounds completed yet. Complete rounds in the Student tab to see results here.</p>
-                                <button class="btn btn-primary" onclick="switchModule('student')" style="margin-top: 15px;">Go to Student Round</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Detailed Round View -->
-                    <div id="detailed-round-view" class="hidden">
-                        <div class="round-result-header">
-                            <div>
-                                <div class="round-number" id="detailed-round-title">Round 1</div>
-                                <div class="round-date" id="detailed-round-date"></div>
-                            </div>
-                            <button class="btn" onclick="showRoundList()">← Back to All Rounds</button>
-                        </div>
-
-                        <div class="simulation-status">
-                            <div class="status-card">
-                                <h4>Round Profit</h4>
-                                <div class="status-value" id="detailed-round-profit">₹0</div>
-                            </div>
-                            <div class="status-card">
-                                <h4>Avg Utilization</h4>
-                                <div class="status-value" id="detailed-round-utilization">0%</div>
-                            </div>
-                            <div class="status-card">
-                                <h4>Season</h4>
-                                <div class="status-value" id="detailed-round-season">Normal</div>
-                            </div>
-                            <div class="status-card">
-                                <h4>Scenario</h4>
-                                <div class="status-value" id="detailed-round-scenario">Normal</div>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <h4>City-wise Performance</h4>
-                            <div class="city-results" id="detailed-city-results">
-                                <!-- City results will be populated here -->
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <h4>Pricing Decisions</h4>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>City</th>
-                                        <th>Weekday Price</th>
-                                        <th>Weekend Price</th>
-                                        <th>Competitor Weekday</th>
-                                        <th>Competitor Weekend</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="detailed-pricing-table">
-                                    <!-- Pricing data will be populated here -->
-                                </tbody>
-                            </table>
+                            <!-- Round results will be generated here -->
                         </div>
                     </div>
                 </div>
@@ -831,16 +430,20 @@
                     
                     <div class="simulation-status">
                         <div class="status-card">
-                            <h4>Rounds Completed</h4>
-                            <div class="status-value" id="progress-rounds-completed">0</div>
+                            <h4>Configured Rounds</h4>
+                            <div class="status-value" id="progress-total-rounds">0</div>
+                        </div>
+                        <div class="status-card">
+                            <h4>Completed Rounds</h4>
+                            <div class="status-value" id="progress-completed-rounds">0</div>
                         </div>
                         <div class="status-card">
                             <h4>Total Profit</h4>
                             <div class="status-value" id="progress-total-profit">₹0</div>
                         </div>
                         <div class="status-card">
-                            <h4>Average Utilization</h4>
-                            <div class="status-value" id="progress-avg-utilization">0%</div>
+                            <h4>Average Profit</h4>
+                            <div class="status-value" id="progress-avg-profit">₹0</div>
                         </div>
                     </div>
 
@@ -852,6 +455,9 @@
                         </div>
                         <div class="progress-bar">
                             <div class="progress-fill" id="progress-bar-fill" style="width: 0%;"></div>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 0.9em; color: #6b7280;">
+                            <span id="progress-text">0 of 0 rounds completed</span>
                         </div>
                     </div>
 
@@ -867,28 +473,601 @@
     </div>
 
     <script>
-        // ---------------- STATE ----------------
-        const settings = {
-            rounds: 6,
-            currentRound: 1,
-            season: "Festive",
-            complexity: "1",
-            scenario: "blockbuster",
-            competitors: {
-                Mumbai: { weekdayBand: "₹220 – ₹280", weekendBand: "₹280 – ₹360", capacityLabel: "Balanced" },
-                Delhi: { weekdayBand: "₹200 – ₹260", weekendBand: "₹260 – ₹340", capacityLabel: "Balanced" },
-                Bengaluru: { weekdayBand: "₹180 – ₹240", weekendBand: "₹240 – ₹320", capacityLabel: "Balanced" }
-            }
-        };
-
+        // ---------------- ENHANCED STATE ----------------
         const simulationState = {
+            totalRounds: 6,
+            currentRoundIndex: 1,
+            rounds: [],
             completedRounds: 0,
             totalProfit: 0,
-            performanceHistory: [],
-            roundResults: [] // Store detailed round results
+            performanceHistory: []
         };
 
-        // ---------------- MODEL PARAMETERS ----------------
+        // Initialize with default rounds
+        function initializeDefaultRounds() {
+            simulationState.rounds = [];
+            const seasons = ['Normal', 'Festive', 'Exam', 'Monsoon', 'Normal', 'Festive'];
+            const scenarios = ['none', 'blockbuster', 'demand_drop', 'none', 'economic_boom', 'blockbuster'];
+            
+            for (let i = 1; i <= simulationState.totalRounds; i++) {
+                simulationState.rounds.push({
+                    roundNumber: i,
+                    season: seasons[i-1] || 'Normal',
+                    scenario: scenarios[i-1] || 'none',
+                    status: i === 1 ? 'active' : 'planned',
+                    competitors: {
+                        Mumbai: { 
+                            weekdayBand: `₹${200 + i*10} – ₹${260 + i*10}`, 
+                            weekendBand: `₹${260 + i*10} – ₹${340 + i*10}`, 
+                            capacityLabel: i % 3 === 0 ? 'Tight' : i % 3 === 1 ? 'Balanced' : 'Slack'
+                        },
+                        Delhi: { 
+                            weekdayBand: `₹${180 + i*10} – ₹${240 + i*10}`, 
+                            weekendBand: `₹${240 + i*10} – ₹${320 + i*10}`, 
+                            capacityLabel: i % 3 === 1 ? 'Tight' : i % 3 === 2 ? 'Balanced' : 'Slack'
+                        },
+                        Bengaluru: { 
+                            weekdayBand: `₹${160 + i*10} – ₹${220 + i*10}`, 
+                            weekendBand: `₹${220 + i*10} – ₹${300 + i*10}`, 
+                            capacityLabel: i % 3 === 2 ? 'Tight' : i % 3 === 0 ? 'Balanced' : 'Slack'
+                        }
+                    },
+                    studentDecisions: null,
+                    results: null,
+                    timestamp: null
+                });
+            }
+            saveToLocalStorage();
+        }
+
+        // ---------------- INSTRUCTOR FUNCTIONS ----------------
+        function updateRoundConfig() {
+            simulationState.totalRounds = parseInt(document.getElementById('rounds').value) || 6;
+            renderRoundConfig();
+        }
+
+        function initializeRounds() {
+            if (simulationState.rounds.length > 0) {
+                if (!confirm('This will reset all round configurations. Continue?')) return;
+            }
+            
+            initializeDefaultRounds();
+            renderRoundConfig();
+            renderRoundPreview();
+            
+            // Show success message
+            showAlert('All rounds initialized successfully!', 'success');
+        }
+
+        let editingRoundIndex = null;
+
+        function editRoundConfig(roundIndex) {
+            editingRoundIndex = roundIndex;
+            const round = simulationState.rounds[roundIndex];
+            
+            document.getElementById('editing-round-number').textContent = round.roundNumber;
+            document.getElementById('edit-season').value = round.season;
+            document.getElementById('edit-scenario').value = round.scenario;
+            document.getElementById('edit-status').value = round.status;
+            
+            // Set competitor values
+            document.getElementById('edit-mumbaiWeekday').value = round.competitors.Mumbai.weekdayBand;
+            document.getElementById('edit-mumbaiWeekend').value = round.competitors.Mumbai.weekendBand;
+            document.getElementById('edit-mumbaiCapacity').value = round.competitors.Mumbai.capacityLabel;
+            
+            document.getElementById('edit-delhiWeekday').value = round.competitors.Delhi.weekdayBand;
+            document.getElementById('edit-delhiWeekend').value = round.competitors.Delhi.weekendBand;
+            document.getElementById('edit-delhiCapacity').value = round.competitors.Delhi.capacityLabel;
+            
+            document.getElementById('edit-blrWeekday').value = round.competitors.Bengaluru.weekdayBand;
+            document.getElementById('edit-blrWeekend').value = round.competitors.Bengaluru.weekendBand;
+            document.getElementById('edit-blrCapacity').value = round.competitors.Bengaluru.capacityLabel;
+            
+            document.getElementById('round-detail-editor').classList.remove('hidden');
+            
+            // Update card highlight
+            document.querySelectorAll('.round-config-card').forEach(card => card.classList.remove('active'));
+            document.getElementById(`round-card-${roundIndex}`).classList.add('active');
+        }
+
+        function updateCurrentRoundConfig() {
+            if (editingRoundIndex === null) return;
+            
+            const round = simulationState.rounds[editingRoundIndex];
+            round.season = document.getElementById('edit-season').value;
+            round.scenario = document.getElementById('edit-scenario').value;
+            round.status = document.getElementById('edit-status').value;
+            
+            round.competitors.Mumbai.weekdayBand = document.getElementById('edit-mumbaiWeekday').value;
+            round.competitors.Mumbai.weekendBand = document.getElementById('edit-mumbaiWeekend').value;
+            round.competitors.Mumbai.capacityLabel = document.getElementById('edit-mumbaiCapacity').value;
+            
+            round.competitors.Delhi.weekdayBand = document.getElementById('edit-delhiWeekday').value;
+            round.competitors.Delhi.weekendBand = document.getElementById('edit-delhiWeekend').value;
+            round.competitors.Delhi.capacityLabel = document.getElementById('edit-delhiCapacity').value;
+            
+            round.competitors.Bengaluru.weekdayBand = document.getElementById('edit-blrWeekday').value;
+            round.competitors.Bengaluru.weekendBand = document.getElementById('edit-blrWeekend').value;
+            round.competitors.Bengaluru.capacityLabel = document.getElementById('edit-blrCapacity').value;
+            
+            renderRoundConfig();
+            renderRoundPreview();
+        }
+
+        function saveRoundConfig() {
+            updateCurrentRoundConfig();
+            cancelEdit();
+            saveToLocalStorage();
+            showAlert('Round configuration saved!', 'success');
+        }
+
+        function cancelEdit() {
+            editingRoundIndex = null;
+            document.getElementById('round-detail-editor').classList.add('hidden');
+            document.querySelectorAll('.round-config-card').forEach(card => card.classList.remove('active'));
+        }
+
+        function applyToAllRounds(type) {
+            if (editingRoundIndex === null) return;
+            
+            const currentRound = simulationState.rounds[editingRoundIndex];
+            const value = type === 'season' ? currentRound.season : currentRound.scenario;
+            
+            simulationState.rounds.forEach(round => {
+                if (type === 'season') round.season = value;
+                if (type === 'scenario') round.scenario = value;
+            });
+            
+            renderRoundConfig();
+            renderRoundPreview();
+            saveToLocalStorage();
+            showAlert(`Applied ${type} to all rounds!`, 'success');
+        }
+
+        function randomizeAllRounds() {
+            const seasons = ['Normal', 'Festive', 'Exam', 'Monsoon'];
+            const scenarios = ['none', 'blockbuster', 'demand_drop', 'economic_boom', 'recession'];
+            const capacities = ['Tight', 'Balanced', 'Slack'];
+            
+            simulationState.rounds.forEach((round, index) => {
+                round.season = seasons[Math.floor(Math.random() * seasons.length)];
+                round.scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+                
+                // Randomize competitor bands slightly
+                const base = 200 + index * 5;
+                round.competitors.Mumbai.weekdayBand = `₹${base} – ₹${base + 60}`;
+                round.competitors.Mumbai.weekendBand = `₹${base + 60} – ₹${base + 140}`;
+                round.competitors.Mumbai.capacityLabel = capacities[Math.floor(Math.random() * capacities.length)];
+                
+                round.competitors.Delhi.weekdayBand = `₹${base - 20} – ₹${base + 20}`;
+                round.competitors.Delhi.weekendBand = `₹${base + 20} – ₹${base + 100}`;
+                round.competitors.Delhi.capacityLabel = capacities[Math.floor(Math.random() * capacities.length)];
+                
+                round.competitors.Bengaluru.weekdayBand = `₹${base - 40} – ₹${base}`;
+                round.competitors.Bengaluru.weekendBand = `₹${base} – ₹${base + 80}`;
+                round.competitors.Bengaluru.capacityLabel = capacities[Math.floor(Math.random() * capacities.length)];
+            });
+            
+            renderRoundConfig();
+            renderRoundPreview();
+            saveToLocalStorage();
+            showAlert('All rounds randomized!', 'success');
+        }
+
+        function saveAllRounds() {
+            saveToLocalStorage();
+            showAlert('All round configurations saved!', 'success');
+        }
+
+        function renderRoundConfig() {
+            const container = document.getElementById('round-config-container');
+            if (!container) return;
+            
+            container.innerHTML = simulationState.rounds.map((round, index) => `
+                <div class="round-config-card ${editingRoundIndex === index ? 'active' : ''}" 
+                     id="round-card-${index}" 
+                     onclick="editRoundConfig(${index})">
+                    <div class="round-config-header">
+                        <div class="round-number-badge">Round ${round.roundNumber}</div>
+                        <div>
+                            <span class="round-status-indicator status-${round.status}"></span>
+                            <span style="font-size: 0.8em; text-transform: capitalize;">${round.status}</span>
+                        </div>
+                    </div>
+                    <div class="round-summary">
+                        <p><strong>Season:</strong> ${round.season}</p>
+                        <p><strong>Scenario:</strong> ${round.scenario.replace('_', ' ')}</p>
+                        <p><strong>Mumbai Capacity:</strong> ${round.competitors.Mumbai.capacityLabel}</p>
+                        ${round.results ? `<p><strong>Profit:</strong> ₹${Math.round(round.results.totalProfit).toLocaleString('en-IN')}</p>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderRoundPreview() {
+            const container = document.getElementById('round-preview-container');
+            if (!container) return;
+            
+            container.innerHTML = simulationState.rounds.map(round => `
+                <div class="round-preview">
+                    <div class="round-preview-number">${round.roundNumber}</div>
+                    <div class="round-preview-details">
+                        <h4 style="margin: 0 0 5px 0;">Round ${round.roundNumber}: ${round.season} Season</h4>
+                        <p style="margin: 0; color: #6b7280; font-size: 0.9em;">
+                            Scenario: ${round.scenario.replace('_', ' ')} | 
+                            Status: <span style="text-transform: capitalize;">${round.status}</span>
+                        </p>
+                        ${round.results ? `
+                            <p style="margin: 5px 0 0 0; font-size: 0.9em;">
+                                <strong>Profit:</strong> ₹${Math.round(round.results.totalProfit).toLocaleString('en-IN')} | 
+                                <strong>Completed:</strong> ${new Date(round.timestamp).toLocaleDateString()}
+                            </p>
+                        ` : ''}
+                    </div>
+                    <div class="round-preview-actions">
+                        <button class="btn" onclick="editRoundConfig(${round.roundNumber - 1})" style="padding: 5px 10px; font-size: 0.9em;">Edit</button>
+                        ${round.status === 'active' ? `
+                            <button class="btn btn-primary" onclick="setActiveRound(${round.roundNumber})" style="padding: 5px 10px; font-size: 0.9em;">Set Active</button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ---------------- STUDENT FUNCTIONS ----------------
+        function loadStudentRound() {
+            const selector = document.getElementById('round-selector');
+            const display = document.getElementById('current-round-display');
+            
+            // Render round selector buttons
+            selector.innerHTML = simulationState.rounds.map(round => `
+                <button class="round-select-btn ${round.roundNumber === simulationState.currentRoundIndex ? 'active' : ''} ${round.results ? 'completed' : ''}" 
+                        onclick="selectStudentRound(${round.roundNumber})"
+                        ${round.status === 'locked' ? 'disabled' : ''}>
+                    Round ${round.roundNumber}
+                    ${round.results ? ' ✓' : ''}
+                </button>
+            `).join('');
+            
+            // Load current round content
+            const currentRound = simulationState.rounds.find(r => r.roundNumber === simulationState.currentRoundIndex);
+            if (currentRound) {
+                display.innerHTML = `
+                    <div class="card">
+                        <h3>Round ${currentRound.roundNumber}: ${currentRound.season} Season</h3>
+                        <div class="student-round-info">
+                            <p><strong>Scenario:</strong> ${currentRound.scenario.replace('_', ' ')}</p>
+                            <p><strong>Status:</strong> <span style="text-transform: capitalize;">${currentRound.status}</span></p>
+                            ${currentRound.results ? `<p><strong>Completed:</strong> ${currentRound.timestamp}</p>` : ''}
+                        </div>
+                        
+                        <h4>Market Context</h4>
+                        <div class="grid-3">
+                            ${Object.keys(currentRound.competitors).map(city => `
+                                <div class="card">
+                                    <h4>${city}</h4>
+                                    <p><strong>Competitor Weekday:</strong> ${currentRound.competitors[city].weekdayBand}</p>
+                                    <p><strong>Competitor Weekend:</strong> ${currentRound.competitors[city].weekendBand}</p>
+                                    <p><strong>Capacity:</strong> ${currentRound.competitors[city].capacityLabel}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        ${currentRound.results ? `
+                            <div class="alert alert-success" style="margin-top: 20px;">
+                                <h4>Round Completed</h4>
+                                <p>This round has been completed. Total profit: ₹${Math.round(currentRound.results.totalProfit).toLocaleString('en-IN')}</p>
+                                <button class="btn" onclick="switchModule('results')">View Detailed Results</button>
+                            </div>
+                        ` : `
+                            <div style="margin-top: 20px;">
+                                <h4>Set Your Prices</h4>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>City</th>
+                                            <th>Weekday Price (₹)</th>
+                                            <th>Weekend Price (₹)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${Object.keys(currentRound.competitors).map(city => `
+                                            <tr>
+                                                <td>${city}</td>
+                                                <td><input type="number" id="price-${city.toLowerCase()}-weekday" placeholder="₹" min="50" max="1000"></td>
+                                                <td><input type="number" id="price-${city.toLowerCase()}-weekend" placeholder="₹" min="50" max="1000"></td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                                
+                                <button class="btn btn-primary" onclick="submitRoundPrices(${currentRound.roundNumber})" style="margin-top: 15px;">
+                                    Submit Prices for Round ${currentRound.roundNumber}
+                                </button>
+                            </div>
+                        `}
+                    </div>
+                    
+                    <div class="quick-actions" style="margin-top: 20px;">
+                        <h4>Round Navigation</h4>
+                        ${simulationState.currentRoundIndex > 1 ? `
+                            <button class="btn" onclick="prevStudentRound()">← Previous Round</button>
+                        ` : ''}
+                        ${simulationState.currentRoundIndex < simulationState.totalRounds ? `
+                            <button class="btn btn-primary" onclick="nextStudentRound()" style="margin-left: 10px;">
+                                Next Round →
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+            }
+        }
+
+        function selectStudentRound(roundNumber) {
+            simulationState.currentRoundIndex = roundNumber;
+            loadStudentRound();
+        }
+
+        function nextStudentRound() {
+            if (simulationState.currentRoundIndex < simulationState.totalRounds) {
+                // Check if current round is completed
+                const currentRound = simulationState.rounds.find(r => r.roundNumber === simulationState.currentRoundIndex);
+                if (!currentRound.results && currentRound.status !== 'completed') {
+                    alert('Please complete the current round before proceeding to the next one.');
+                    return;
+                }
+                
+                simulationState.currentRoundIndex++;
+                loadStudentRound();
+            }
+        }
+
+        function prevStudentRound() {
+            if (simulationState.currentRoundIndex > 1) {
+                simulationState.currentRoundIndex--;
+                loadStudentRound();
+            }
+        }
+
+        function submitRoundPrices(roundNumber) {
+            const roundIndex = roundNumber - 1;
+            const round = simulationState.rounds[roundIndex];
+            
+            // Collect prices
+            const pricesByCity = {};
+            Object.keys(round.competitors).forEach(city => {
+                const cityLower = city.toLowerCase();
+                pricesByCity[city] = {
+                    weekday: parseInt(document.getElementById(`price-${cityLower}-weekday`).value) || 0,
+                    weekend: parseInt(document.getElementById(`price-${cityLower}-weekend`).value) || 0
+                };
+            });
+            
+            // Validate prices
+            const errors = [];
+            Object.keys(pricesByCity).forEach(city => {
+                if (pricesByCity[city].weekday < 50 || pricesByCity[city].weekday > 1000) {
+                    errors.push(`${city} weekday price must be between ₹50 and ₹1000`);
+                }
+                if (pricesByCity[city].weekend < 50 || pricesByCity[city].weekend > 1000) {
+                    errors.push(`${city} weekend price must be between ₹50 and ₹1000`);
+                }
+            });
+            
+            if (errors.length > 0) {
+                alert('Please fix the following errors:\n\n' + errors.join('\n'));
+                return;
+            }
+            
+            // Simulate round (using your existing simulateRound function)
+            const result = simulateRound(round.season, pricesByCity);
+            
+            // Update round with results
+            round.studentDecisions = pricesByCity;
+            round.results = result;
+            round.timestamp = new Date().toISOString();
+            round.status = 'completed';
+            
+            // Update simulation state
+            simulationState.completedRounds++;
+            simulationState.totalProfit += result.totalProfit;
+            simulationState.performanceHistory.push({
+                round: roundNumber,
+                profit: result.totalProfit,
+                season: round.season,
+                scenario: round.scenario
+            });
+            
+            // Activate next round if available
+            if (roundNumber < simulationState.totalRounds) {
+                const nextRound = simulationState.rounds[roundIndex + 1];
+                nextRound.status = 'active';
+            }
+            
+            // Save and reload
+            saveToLocalStorage();
+            loadStudentRound();
+            showAlert(`Round ${roundNumber} completed! Profit: ₹${Math.round(result.totalProfit).toLocaleString('en-IN')}`, 'success');
+        }
+
+        function setActiveRound(roundNumber) {
+            simulationState.rounds.forEach(round => {
+                round.status = round.roundNumber === roundNumber ? 'active' : 
+                              round.roundNumber < roundNumber ? 'completed' : 'planned';
+            });
+            
+            simulationState.currentRoundIndex = roundNumber;
+            renderRoundConfig();
+            renderRoundPreview();
+            saveToLocalStorage();
+            showAlert(`Round ${roundNumber} set as active!`, 'success');
+        }
+
+        // ---------------- RESULTS FUNCTIONS ----------------
+        function updateResultsSection() {
+            document.getElementById('results-total-rounds').textContent = simulationState.totalRounds;
+            document.getElementById('results-completed-rounds').textContent = simulationState.completedRounds;
+            document.getElementById('results-total-profit').textContent = `₹${simulationState.totalProfit.toLocaleString('en-IN')}`;
+            
+            const avgProfit = simulationState.completedRounds > 0 ? 
+                Math.round(simulationState.totalProfit / simulationState.completedRounds) : 0;
+            document.getElementById('results-avg-profit').textContent = `₹${avgProfit.toLocaleString('en-IN')}`;
+            
+            // Render round results
+            const resultsList = document.getElementById('round-results-list');
+            resultsList.innerHTML = simulationState.rounds.map(round => {
+                const isCompleted = round.results !== null;
+                return `
+                    <div class="round-result-card ${isCompleted ? 'completed' : 'pending'}" 
+                         ${isCompleted ? `onclick="showDetailedRound(${round.roundNumber})" style="cursor: pointer;"` : ''}>
+                        <div class="round-result-header">
+                            <div>
+                                <div class="round-number">Round ${round.roundNumber}</div>
+                                <div class="round-date">${round.season} Season • ${round.scenario.replace('_', ' ')}</div>
+                            </div>
+                            <div style="text-align: right;">
+                                ${isCompleted ? `
+                                    <div class="result-value ${round.results.totalProfit >= 0 ? 'profit-positive' : 'profit-negative'}" style="font-size: 1.2em;">
+                                        ₹${Math.round(round.results.totalProfit).toLocaleString('en-IN')}
+                                    </div>
+                                    <div class="result-label">Profit</div>
+                                ` : `
+                                    <div class="result-value" style="color: #6b7280; font-size: 1.1em;">
+                                        Pending
+                                    </div>
+                                    <div class="result-label">Not Started</div>
+                                `}
+                            </div>
+                        </div>
+                        ${isCompleted ? `
+                            <div class="city-results">
+                                ${Object.keys(round.results.cityResults).map(city => {
+                                    const cityResult = round.results.cityResults[city];
+                                    return `
+                                        <div class="city-result">
+                                            <div class="city-name">${city}</div>
+                                            <div class="result-row">
+                                                <span class="result-label">Profit:</span>
+                                                <span class="result-value ${cityResult.profit >= 0 ? 'profit-positive' : 'profit-negative'}">
+                                                    ₹${Math.round(cityResult.profit).toLocaleString('en-IN')}
+                                                </span>
+                                            </div>
+                                            <div class="result-row">
+                                                <span class="result-label">Utilization:</span>
+                                                <span class="result-value">${Math.round(cityResult.utilization * 100)}%</span>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        ` : `
+                            <div style="text-align: center; padding: 20px; color: #6b7280;">
+                                This round has not been completed yet.
+                            </div>
+                        `}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function showDetailedRound(roundNumber) {
+            const round = simulationState.rounds[roundNumber - 1];
+            if (!round.results) return;
+            
+            // Create modal or detailed view
+            alert(`Detailed results for Round ${roundNumber}:\n\n` +
+                  `Season: ${round.season}\n` +
+                  `Scenario: ${round.scenario}\n` +
+                  `Total Profit: ₹${Math.round(round.results.totalProfit).toLocaleString('en-IN')}\n` +
+                  `Average Utilization: ${Math.round(round.results.avgUtilization * 100)}%\n\n` +
+                  `Mumbai: ₹${Math.round(round.results.cityResults.Mumbai.profit).toLocaleString('en-IN')} profit, ${Math.round(round.results.cityResults.Mumbai.utilization * 100)}% utilization\n` +
+                  `Delhi: ₹${Math.round(round.results.cityResults.Delhi.profit).toLocaleString('en-IN')} profit, ${Math.round(round.results.cityResults.Delhi.utilization * 100)}% utilization\n` +
+                  `Bengaluru: ₹${Math.round(round.results.cityResults.Bengaluru.profit).toLocaleString('en-IN')} profit, ${Math.round(round.results.cityResults.Bengaluru.utilization * 100)}% utilization`);
+        }
+
+        // ---------------- PROGRESS FUNCTIONS ----------------
+        function updateProgressSection() {
+            document.getElementById('progress-total-rounds').textContent = simulationState.totalRounds;
+            document.getElementById('progress-completed-rounds').textContent = simulationState.completedRounds;
+            document.getElementById('progress-total-profit').textContent = `₹${simulationState.totalProfit.toLocaleString('en-IN')}`;
+            
+            const avgProfit = simulationState.completedRounds > 0 ? 
+                Math.round(simulationState.totalProfit / simulationState.completedRounds) : 0;
+            document.getElementById('progress-avg-profit').textContent = `₹${avgProfit.toLocaleString('en-IN')}`;
+            
+            // Update progress bar
+            const progressPercent = Math.round((simulationState.completedRounds / simulationState.totalRounds) * 100);
+            document.getElementById('progress-percent').textContent = `${progressPercent}%`;
+            document.getElementById('progress-bar-fill').style.width = `${progressPercent}%`;
+            document.getElementById('progress-text').textContent = `${simulationState.completedRounds} of ${simulationState.totalRounds} rounds completed`;
+            
+            // Update performance summary
+            const summaryEl = document.getElementById('performance-summary');
+            if (simulationState.completedRounds > 0) {
+                const bestRound = simulationState.performanceHistory.reduce((best, round) => round.profit > best.profit ? round : best, {profit: -Infinity});
+                const worstRound = simulationState.performanceHistory.reduce((worst, round) => round.profit < worst.profit ? round : worst, {profit: Infinity});
+                
+                summaryEl.innerHTML = `
+                    <div class="result-row">
+                        <span class="result-label">Average profit per round:</span>
+                        <span class="result-value">₹${avgProfit.toLocaleString('en-IN')}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Best round:</span>
+                        <span class="result-value">Round ${bestRound.round} (₹${bestRound.profit.toLocaleString('en-IN')})</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Worst round:</span>
+                        <span class="result-value">Round ${worstRound.round} (₹${worstRound.profit.toLocaleString('en-IN')})</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Completion rate:</span>
+                        <span class="result-value">${progressPercent}%</span>
+                    </div>
+                `;
+            } else {
+                summaryEl.innerHTML = '<p class="muted">Complete rounds to see your performance summary</p>';
+            }
+        }
+
+        // ---------------- UTILITY FUNCTIONS ----------------
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem('cineprice_simulation', JSON.stringify(simulationState));
+            } catch (e) {
+                console.warn('Could not save to localStorage:', e);
+            }
+        }
+
+        function loadFromLocalStorage() {
+            try {
+                const saved = localStorage.getItem('cineprice_simulation');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    Object.assign(simulationState, data);
+                    return true;
+                }
+            } catch (e) {
+                console.warn('Could not load from localStorage:', e);
+            }
+            return false;
+        }
+
+        function showAlert(message, type = 'success') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.innerHTML = `<strong>${type === 'success' ? '✓' : '⚠'}</strong> ${message}`;
+            alertDiv.style.position = 'fixed';
+            alertDiv.style.top = '20px';
+            alertDiv.style.right = '20px';
+            alertDiv.style.zIndex = '1000';
+            alertDiv.style.minWidth = '300px';
+            
+            document.body.appendChild(alertDiv);
+            setTimeout(() => alertDiv.remove(), 3000);
+        }
+
+        // ---------------- SIMULATION FUNCTIONS (From original code) ----------------
         const CITY_PARAMS = {
             Mumbai: {
                 baseWeekday: 2200,
@@ -929,284 +1108,6 @@
             Bengaluru: { weekday: 190, weekend: 290 }
         };
 
-        // ---------------- UI FUNCTIONS ----------------
-        function switchModule(module) {
-            document.querySelectorAll('[id$="-section"]').forEach(el => el.classList.add('hidden'));
-            document.getElementById(module + '-section').classList.remove('hidden');
-            
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            document.querySelector(`.nav-item[onclick*="${module}"]`).classList.add('active');
-            
-            if (module === 'student') {
-                renderStudentContext();
-                updateStudentStatus();
-            }
-            
-            if (module === 'progress') {
-                updateProgressSection();
-            }
-            
-            if (module === 'results') {
-                updateResultsSection();
-            }
-        }
-
-        function updateStudentStatus() {
-            document.getElementById('current-round').textContent = settings.currentRound;
-            document.getElementById('total-rounds').textContent = settings.rounds;
-            document.getElementById('current-season').textContent = settings.season;
-            document.getElementById('scenario-complexity').textContent = `Level ${settings.complexity}`;
-            document.getElementById('market-condition').textContent = 
-                settings.scenario === 'blockbuster' ? 'Blockbuster Release' : 
-                settings.scenario === 'demand_drop' ? 'Demand Drop' : 'Normal';
-            
-            document.getElementById('round-status').textContent = 
-                settings.currentRound <= simulationState.completedRounds ? 'Completed' : 'Active';
-            document.getElementById('round-status').style.color = 
-                settings.currentRound <= simulationState.completedRounds ? '#27ae60' : '#f39c12';
-        }
-
-        function updateProgressSection() {
-            const progressPercent = Math.round((simulationState.completedRounds / settings.rounds) * 100);
-            document.getElementById('progress-percent').textContent = `${progressPercent}%`;
-            document.getElementById('progress-bar-fill').style.width = `${progressPercent}%`;
-            
-            document.getElementById('progress-rounds-completed').textContent = simulationState.completedRounds;
-            document.getElementById('progress-total-profit').textContent = `₹${simulationState.totalProfit.toLocaleString('en-IN')}`;
-            
-            // Calculate average utilization
-            const avgUtil = simulationState.performanceHistory.length > 0 ? 
-                Math.round(simulationState.performanceHistory.reduce((sum, round) => sum + round.avgUtilization, 0) / simulationState.performanceHistory.length) : 0;
-            document.getElementById('progress-avg-utilization').textContent = `${avgUtil}%`;
-            
-            // Update performance summary
-            const summaryEl = document.getElementById('performance-summary');
-            if (simulationState.performanceHistory.length > 0) {
-                const avgProfit = Math.round(simulationState.totalProfit / simulationState.completedRounds);
-                const bestRound = simulationState.performanceHistory.reduce((best, round) => round.profit > best.profit ? round : best, {profit: -Infinity});
-                const worstRound = simulationState.performanceHistory.reduce((worst, round) => round.profit < worst.profit ? round : worst, {profit: Infinity});
-                
-                summaryEl.innerHTML = `
-                    <div class="result-row">
-                        <span class="result-label">Average profit per round:</span>
-                        <span class="result-value">₹${avgProfit.toLocaleString('en-IN')}</span>
-                    </div>
-                    <div class="result-row">
-                        <span class="result-label">Best round:</span>
-                        <span class="result-value">Round ${bestRound.round} (₹${bestRound.profit.toLocaleString('en-IN')})</span>
-                    </div>
-                    <div class="result-row">
-                        <span class="result-label">Worst round:</span>
-                        <span class="result-value">Round ${worstRound.round} (₹${worstRound.profit.toLocaleString('en-IN')})</span>
-                    </div>
-                    <div class="result-row">
-                        <span class="result-label">Total rounds:</span>
-                        <span class="result-value">${simulationState.completedRounds} of ${settings.rounds}</span>
-                    </div>
-                `;
-            } else {
-                summaryEl.innerHTML = '<p class="muted">Complete rounds to see your performance summary</p>';
-            }
-        }
-
-        function updateResultsSection() {
-            document.getElementById('results-rounds-completed').textContent = simulationState.completedRounds;
-            document.getElementById('results-total-profit').textContent = `₹${simulationState.totalProfit.toLocaleString('en-IN')}`;
-            
-            const avgProfit = simulationState.completedRounds > 0 ? 
-                Math.round(simulationState.totalProfit / simulationState.completedRounds) : 0;
-            document.getElementById('results-avg-profit').textContent = `₹${avgProfit.toLocaleString('en-IN')}`;
-            
-            const avgUtil = simulationState.performanceHistory.length > 0 ? 
-                Math.round(simulationState.performanceHistory.reduce((sum, round) => sum + round.avgUtilization, 0) / simulationState.performanceHistory.length) : 0;
-            document.getElementById('results-avg-utilization').textContent = `${avgUtil}%`;
-            
-            // Update round results list
-            const resultsListEl = document.getElementById('round-results-list');
-            if (simulationState.roundResults.length > 0) {
-                resultsListEl.innerHTML = simulationState.roundResults.map((result, index) => {
-                    const roundNum = index + 1;
-                    return `
-                        <div class="round-result-card" onclick="showDetailedRound(${roundNum})">
-                            <div class="round-result-header">
-                                <div>
-                                    <div class="round-number">Round ${roundNum}</div>
-                                    <div class="round-date">${result.timestamp}</div>
-                                </div>
-                                <div style="text-align: right;">
-                                    <div class="result-value ${result.totalProfit >= 0 ? 'profit-positive' : 'profit-negative'}" style="font-size: 1.2em;">
-                                        ₹${Math.round(result.totalProfit).toLocaleString('en-IN')}
-                                    </div>
-                                    <div class="result-label">Profit</div>
-                                </div>
-                            </div>
-                            <div class="city-results">
-                                ${Object.keys(result.cityResults).map(city => {
-                                    const cityResult = result.cityResults[city];
-                                    return `
-                                        <div class="city-result">
-                                            <div class="city-name">${city}</div>
-                                            <div class="result-row">
-                                                <span class="result-label">Profit:</span>
-                                                <span class="result-value ${cityResult.profit >= 0 ? 'profit-positive' : 'profit-negative'}">
-                                                    ₹${Math.round(cityResult.profit).toLocaleString('en-IN')}
-                                                </span>
-                                            </div>
-                                            <div class="result-row">
-                                                <span class="result-label">Utilization:</span>
-                                                <span class="result-value">${Math.round(cityResult.utilization * 100)}%</span>
-                                            </div>
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            } else {
-                resultsListEl.innerHTML = `
-                    <div class="card" style="text-align: center; padding: 30px;">
-                        <p class="muted">No rounds completed yet. Complete rounds in the Student tab to see results here.</p>
-                        <button class="btn btn-primary" onclick="switchModule('student')" style="margin-top: 15px;">Go to Student Round</button>
-                    </div>
-                `;
-            }
-        }
-
-        function showDetailedRound(roundNumber) {
-            if (roundNumber <= 0 || roundNumber > simulationState.roundResults.length) return;
-            
-            const result = simulationState.roundResults[roundNumber - 1];
-            
-            // Show detailed view, hide list
-            document.getElementById('round-results-container').classList.add('hidden');
-            document.getElementById('detailed-round-view').classList.remove('hidden');
-            
-            // Update detailed view
-            document.getElementById('detailed-round-title').textContent = `Round ${roundNumber}`;
-            document.getElementById('detailed-round-date').textContent = result.timestamp;
-            document.getElementById('detailed-round-profit').textContent = `₹${Math.round(result.totalProfit).toLocaleString('en-IN')}`;
-            document.getElementById('detailed-round-profit').className = `status-value ${result.totalProfit >= 0 ? 'profit-positive' : 'profit-negative'}`;
-            document.getElementById('detailed-round-utilization').textContent = `${Math.round(result.avgUtilization * 100)}%`;
-            document.getElementById('detailed-round-season').textContent = result.season;
-            document.getElementById('detailed-round-scenario').textContent = result.scenario;
-            
-            // Update city results
-            const cityResultsEl = document.getElementById('detailed-city-results');
-            cityResultsEl.innerHTML = Object.keys(result.cityResults).map(city => {
-                const cityResult = result.cityResults[city];
-                return `
-                    <div class="city-result">
-                        <div class="city-name">${city}</div>
-                        <div class="result-row">
-                            <span class="result-label">Profit:</span>
-                            <span class="result-value ${cityResult.profit >= 0 ? 'profit-positive' : 'profit-negative'}">
-                                ₹${Math.round(cityResult.profit).toLocaleString('en-IN')}
-                            </span>
-                        </div>
-                        <div class="result-row">
-                            <span class="result-label">Utilization:</span>
-                            <span class="result-value">${Math.round(cityResult.utilization * 100)}%</span>
-                        </div>
-                        <div class="result-row">
-                            <span class="result-label">Weekday Price:</span>
-                            <span class="result-value">₹${cityResult.prices.weekday}</span>
-                        </div>
-                        <div class="result-row">
-                            <span class="result-label">Weekend Price:</span>
-                            <span class="result-value">₹${cityResult.prices.weekend}</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            
-            // Update pricing table
-            const pricingTableEl = document.getElementById('detailed-pricing-table');
-            pricingTableEl.innerHTML = Object.keys(result.cityResults).map(city => {
-                const cityResult = result.cityResults[city];
-                return `
-                    <tr>
-                        <td>${city}</td>
-                        <td>₹${cityResult.prices.weekday}</td>
-                        <td>₹${cityResult.prices.weekend}</td>
-                        <td>${result.competitors[city].weekdayBand}</td>
-                        <td>${result.competitors[city].weekendBand}</td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function showRoundList() {
-            document.getElementById('round-results-container').classList.remove('hidden');
-            document.getElementById('detailed-round-view').classList.add('hidden');
-        }
-
-        function renderStudentContext() {
-            const studentBadgesEl = document.getElementById('studentBadges');
-            const studentContextCitiesEl = document.getElementById('studentContextCities');
-            
-            studentBadgesEl.innerHTML = '';
-            const badges = [
-                { label: 'Season', value: settings.season, type: 'badge-success' },
-                { label: 'Complexity', value: `Level ${settings.complexity}`, type: 'badge-warning' },
-                { label: 'Scenario', value: settings.scenario === 'blockbuster' ? 'Blockbuster' : 'Normal', type: 'badge-info' }
-            ];
-            
-            badges.forEach(badge => {
-                const badgeEl = document.createElement('span');
-                badgeEl.className = `badge ${badge.type}`;
-                badgeEl.textContent = `${badge.label}: ${badge.value}`;
-                studentBadgesEl.appendChild(badgeEl);
-            });
-            
-            studentContextCitiesEl.innerHTML = '';
-            Object.keys(settings.competitors).forEach((city) => {
-                const data = settings.competitors[city];
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.style.marginBottom = '0';
-                card.innerHTML = `
-                    <h4>${city}</h4>
-                    <p class="muted">Competitor weekday: ${data.weekdayBand}</p>
-                    <p class="muted">Competitor weekend: ${data.weekendBand}</p>
-                    <p class="muted">Capacity feels: ${data.capacityLabel}</p>
-                `;
-                studentContextCitiesEl.appendChild(card);
-            });
-        }
-
-        // Apply settings button
-        document.getElementById('applySettingsBtn').addEventListener('click', () => {
-            settings.rounds = Number(document.getElementById('rounds').value || 1);
-            settings.currentRound = Number(document.getElementById('currentRound').value || 1);
-            settings.season = document.getElementById('season').value;
-            settings.complexity = document.getElementById('complexity').value;
-            settings.scenario = document.getElementById('scenario').value;
-
-            settings.competitors.Mumbai.weekdayBand = document.getElementById('mumbaiWeekday').value;
-            settings.competitors.Mumbai.weekendBand = document.getElementById('mumbaiWeekend').value;
-            settings.competitors.Mumbai.capacityLabel = document.getElementById('mumbaiCapacity').value;
-
-            settings.competitors.Delhi.weekdayBand = document.getElementById('delhiWeekday').value;
-            settings.competitors.Delhi.weekendBand = document.getElementById('delhiWeekend').value;
-            settings.competitors.Delhi.capacityLabel = document.getElementById('delhiCapacity').value;
-
-            settings.competitors.Bengaluru.weekdayBand = document.getElementById('blrWeekday').value;
-            settings.competitors.Bengaluru.weekendBand = document.getElementById('blrWeekend').value;
-            settings.competitors.Bengaluru.capacityLabel = document.getElementById('blrCapacity').value;
-
-            updateStudentStatus();
-            renderStudentContext();
-            
-            // Show success alert
-            const alertDiv = document.createElement('div');
-            alertDiv.className = 'alert alert-success';
-            alertDiv.innerHTML = '<strong>Success!</strong> Settings have been applied to the student view.';
-            document.getElementById('instructor-section').insertBefore(alertDiv, document.querySelector('#instructor-section .card'));
-            setTimeout(() => alertDiv.remove(), 3000);
-        });
-
-        // ---------------- SIMULATION FUNCTIONS ----------------
         function competitorAdjustment(diff) {
             if (diff <= -50) return -30;
             if (diff <= -20) return -10;
@@ -1276,153 +1177,55 @@
             return { cityResults, totalProfit, avgUtilization };
         }
 
-        // ---------------- STUDENT SUBMIT ----------------
-        document.getElementById('submitPricesBtn').addEventListener('click', function() {
-            const btn = this;
-
-            const pricesByCity = {
-                Mumbai: {
-                    weekday: Number(document.getElementById('mumbaiWeekdayPrice').value || 0),
-                    weekend: Number(document.getElementById('mumbaiWeekendPrice').value || 0)
-                },
-                Delhi: {
-                    weekday: Number(document.getElementById('delhiWeekdayPrice').value || 0),
-                    weekend: Number(document.getElementById('delhiWeekendPrice').value || 0)
-                },
-                Bengaluru: {
-                    weekday: Number(document.getElementById('blrWeekdayPrice').value || 0),
-                    weekend: Number(document.getElementById('blrWeekendPrice').value || 0)
-                }
-            };
-
-            // Validate inputs
-            if (
-                !pricesByCity.Mumbai.weekday || !pricesByCity.Mumbai.weekend ||
-                !pricesByCity.Delhi.weekday || !pricesByCity.Delhi.weekend ||
-                !pricesByCity.Bengaluru.weekday || !pricesByCity.Bengaluru.weekend
-            ) {
-                alert('Please enter all weekday and weekend prices before submitting.');
-                return;
-            }
-
-            const season = settings.season;
-            const result = simulateRound(season, pricesByCity);
-
-            // Store detailed round results
-            const roundResult = {
-                round: settings.currentRound,
-                timestamp: new Date().toLocaleString('en-IN', { 
-                    day: '2-digit', 
-                    month: 'short', 
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                }),
-                season: settings.season,
-                scenario: settings.scenario,
-                cityResults: {},
-                totalProfit: result.totalProfit,
-                avgUtilization: result.avgUtilization,
-                competitors: JSON.parse(JSON.stringify(settings.competitors))
-            };
-
-            // Store city results with prices
-            Object.keys(result.cityResults).forEach(city => {
-                roundResult.cityResults[city] = {
-                    profit: result.cityResults[city].profit,
-                    utilization: result.cityResults[city].utilization,
-                    prices: {
-                        weekday: pricesByCity[city].weekday,
-                        weekend: pricesByCity[city].weekend
-                    }
-                };
-            });
-
-            simulationState.roundResults.push(roundResult);
-
-            // Update simulation state
-            simulationState.completedRounds++;
-            simulationState.totalProfit += result.totalProfit;
-            simulationState.performanceHistory.push({
-                round: settings.currentRound,
-                profit: result.totalProfit,
-                avgUtilization: Math.round(result.avgUtilization * 100)
-            });
-
-            // Update UI
-            btn.disabled = true;
-            btn.textContent = 'Prices submitted';
-            
-            // Disable inputs
-            ['mumbaiWeekdayPrice', 'mumbaiWeekendPrice', 'delhiWeekdayPrice', 'delhiWeekendPrice', 'blrWeekdayPrice', 'blrWeekendPrice'].forEach(id => {
-                document.getElementById(id).disabled = true;
-            });
-
-            // Show confirmation message (not detailed results)
-            const confirmationBox = document.getElementById('confirmationBox');
-            document.getElementById('submitted-round').textContent = settings.currentRound;
-            confirmationBox.style.display = 'block';
-
-            // Update status
-            updateStudentStatus();
-            document.getElementById('round-status').textContent = 'Completed';
-            document.getElementById('round-status').style.color = '#27ae60';
-        });
-
-        function nextRound() {
-            if (settings.currentRound > settings.rounds) {
-                alert('Congratulations! You have completed all rounds.');
-                return;
+        // ---------------- INITIALIZATION ----------------
+        function init() {
+            // Load saved data or initialize
+            if (!loadFromLocalStorage()) {
+                initializeDefaultRounds();
             }
             
-            settings.currentRound++;
+            // Initialize UI
+            renderRoundConfig();
+            renderRoundPreview();
+            loadStudentRound();
+            updateResultsSection();
+            updateProgressSection();
             
-            // Reset form for next round
-            ['mumbaiWeekdayPrice', 'mumbaiWeekendPrice', 'delhiWeekdayPrice', 'delhiWeekendPrice', 'blrWeekdayPrice', 'blrWeekendPrice'].forEach(id => {
-                document.getElementById(id).value = '';
-                document.getElementById(id).disabled = false;
-            });
-            
-            document.getElementById('submitPricesBtn').disabled = false;
-            document.getElementById('submitPricesBtn').textContent = 'Submit prices for this month';
-            document.getElementById('confirmationBox').style.display = 'none';
-            
-            updateStudentStatus();
-            renderStudentContext();
+            // Set current round from loaded state
+            const activeRound = simulationState.rounds.find(r => r.status === 'active');
+            if (activeRound) {
+                simulationState.currentRoundIndex = activeRound.roundNumber;
+            }
         }
 
-        function resetSimulation() {
-            if (confirm('Are you sure you want to reset the simulation? All progress will be lost.')) {
-                simulationState.completedRounds = 0;
-                simulationState.totalProfit = 0;
-                simulationState.performanceHistory = [];
-                simulationState.roundResults = [];
-                settings.currentRound = 1;
-                
-                // Reset form
-                ['mumbaiWeekdayPrice', 'mumbaiWeekendPrice', 'delhiWeekdayPrice', 'delhiWeekendPrice', 'blrWeekdayPrice', 'blrWeekendPrice'].forEach(id => {
-                    document.getElementById(id).value = '';
-                    document.getElementById(id).disabled = false;
-                });
-                
-                document.getElementById('submitPricesBtn').disabled = false;
-                document.getElementById('submitPricesBtn').textContent = 'Submit prices for this month';
-                document.getElementById('confirmationBox').style.display = 'none';
-                
-                updateStudentStatus();
-                updateResultsSection();
+        // Switch module function
+        function switchModule(module) {
+            document.querySelectorAll('[id$="-section"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById(module + '-section').classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelector(`.nav-item[onclick*="${module}"]`).classList.add('active');
+            
+            if (module === 'student') {
+                loadStudentRound();
+            }
+            
+            if (module === 'progress') {
                 updateProgressSection();
-                renderStudentContext();
-                
-                switchModule('intro');
+            }
+            
+            if (module === 'results') {
+                updateResultsSection();
+            }
+            
+            if (module === 'instructor') {
+                renderRoundConfig();
+                renderRoundPreview();
             }
         }
 
-        // Initialize
-        updateStudentStatus();
-        updateResultsSection();
-        updateProgressSection();
-        renderStudentContext();
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
