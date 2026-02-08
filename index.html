@@ -592,6 +592,20 @@
             gap: 10px;
         }
 
+        .delete-round-btn {
+            background: var(--color-danger);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+
+        .delete-round-btn:hover {
+            background: #c0392b;
+        }
+
         @media (max-width: 1024px) {
             .main-grid {
                 grid-template-columns: 1fr;
@@ -699,17 +713,17 @@
                 <!-- INSTRUCTOR SECTION -->
                 <div id="instructor-section" class="hidden">
                     <h2>Instructor Control Panel</h2>
-                    <p class="muted">Configure all rounds in advance with different scenarios, seasons, and market conditions.</p>
+                    <p class="muted">Create and configure simulation rounds. Students will see exactly these rounds in the Student section.</p>
 
                     <div class="card">
-                        <h4>Simulation Setup</h4>
+                        <h4>Create New Rounds</h4>
                         <div class="grid-3">
                             <div>
-                                <label for="rounds">Number of rounds</label>
-                                <input type="number" id="rounds" min="1" max="12" value="6" onchange="updateRoundCount()">
+                                <label for="rounds">Number of rounds to create</label>
+                                <input type="number" id="rounds" min="1" max="20" value="3">
                             </div>
                             <div>
-                                <label for="complexity">Complexity level</label>
+                                <label for="complexity">Default complexity level</label>
                                 <select id="complexity">
                                     <option value="1" selected>Level 1 – Elasticity & seasonality</option>
                                     <option value="2">Level 2 – Add competitor reactions</option>
@@ -717,15 +731,44 @@
                                 </select>
                             </div>
                             <div>
-                                <label for="randomizeAll">Quick Setup</label>
-                                <button class="btn btn-primary" onclick="randomizeAllRounds()" style="width: 100%;">Randomize All Rounds</button>
+                                <label>Create Rounds</label>
+                                <button class="btn btn-primary" onclick="createRounds()" style="width: 100%;">Create New Rounds</button>
+                            </div>
+                        </div>
+                        <div class="grid-3">
+                            <div>
+                                <label for="defaultSeason">Default season</label>
+                                <select id="defaultSeason">
+                                    <option value="Normal">Normal</option>
+                                    <option value="Festive" selected>Festive</option>
+                                    <option value="Exam">Exam</option>
+                                    <option value="Monsoon">Monsoon</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="defaultScenario">Default scenario</label>
+                                <select id="defaultScenario">
+                                    <option value="none">None</option>
+                                    <option value="demand_drop">Demand Drop</option>
+                                    <option value="blockbuster" selected>Blockbuster Release</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Quick Actions</label>
+                                <button class="btn btn-warning" onclick="randomizeAllRounds()" style="width: 100%;">Randomize All Rounds</button>
                             </div>
                         </div>
                     </div>
 
                     <div class="card">
-                        <h4>Round-by-Round Configuration</h4>
-                        <p class="muted">Click on any round to configure its settings. Configure all 6 rounds individually.</p>
+                        <h4>Round Configuration</h4>
+                        <p class="muted">Click on any round to configure its settings. Students will see exactly these rounds.</p>
+                        
+                        <div class="quick-actions-row">
+                            <button class="btn" onclick="addNewRound()">Add Single Round</button>
+                            <button class="btn" onclick="deleteAllRounds()">Delete All Rounds</button>
+                            <button class="btn btn-success" onclick="saveAllRounds()">Save All Configurations</button>
+                        </div>
                         
                         <div class="round-config-grid" id="round-config-container">
                             <!-- Round configuration cards will be generated here -->
@@ -811,14 +854,25 @@
                                 </div>
                             </div>
                             
-                            <button class="btn btn-primary" onclick="saveRoundConfig()" style="margin-top: 15px;">Save Round Configuration</button>
-                            <button class="btn" onclick="cancelEdit()" style="margin-left: 10px;">Cancel</button>
+                            <div class="grid-3" style="margin-top: 15px;">
+                                <div>
+                                    <button class="btn btn-primary" onclick="saveRoundConfig()">Save Round Configuration</button>
+                                    <button class="btn" onclick="cancelEdit()" style="margin-left: 10px;">Cancel</button>
+                                </div>
+                                <div>
+                                    <button class="btn btn-warning" onclick="applyToAllRounds('season')">Apply Season to All</button>
+                                    <button class="btn btn-warning" onclick="applyToAllRounds('scenario')" style="margin-left: 10px;">Apply Scenario to All</button>
+                                </div>
+                                <div>
+                                    <button class="btn delete-round-btn" onclick="deleteRound()">Delete This Round</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
                     <div class="card">
                         <h4>Round Preview</h4>
-                        <p class="muted">All configured rounds will be visible to students in this order.</p>
+                        <p class="muted">All configured rounds (Total: <span id="round-count">0</span>) will be visible to students in this order.</p>
                         <div id="round-preview-container">
                             <!-- Round preview will be generated here -->
                         </div>
@@ -848,7 +902,7 @@
                     <div class="simulation-status">
                         <div class="status-card">
                             <h4>Total Rounds</h4>
-                            <div class="status-value" id="results-total-rounds">6</div>
+                            <div class="status-value" id="results-total-rounds">0</div>
                         </div>
                         <div class="status-card">
                             <h4>Completed Rounds</h4>
@@ -882,7 +936,7 @@
                     <div class="simulation-status">
                         <div class="status-card">
                             <h4>Configured Rounds</h4>
-                            <div class="status-value" id="progress-total-rounds">6</div>
+                            <div class="status-value" id="progress-total-rounds">0</div>
                         </div>
                         <div class="status-card">
                             <h4>Completed Rounds</h4>
@@ -908,7 +962,7 @@
                             <div class="progress-fill" id="progress-bar-fill" style="width: 0%;"></div>
                         </div>
                         <div style="margin-top: 10px; font-size: 0.9em; color: #6b7280;">
-                            <span id="progress-text">0 of 6 rounds completed</span>
+                            <span id="progress-text">0 of 0 rounds completed</span>
                         </div>
                     </div>
 
@@ -926,25 +980,23 @@
     <script>
         // ---------------- ENHANCED STATE ----------------
         const simulationState = {
-            totalRounds: 6,
-            currentRoundIndex: 1,
             rounds: [],
+            currentRoundIndex: 1,
             completedRounds: 0,
             totalProfit: 0,
             performanceHistory: []
         };
 
-        // Initialize with default rounds
-        function initializeDefaultRounds() {
+        // Initialize with sample rounds
+        function initializeSampleRounds() {
             simulationState.rounds = [];
-            const seasons = ['Normal', 'Festive', 'Exam', 'Monsoon', 'Normal', 'Festive'];
-            const scenarios = ['none', 'blockbuster', 'demand_drop', 'none', 'economic_boom', 'blockbuster'];
             
-            for (let i = 1; i <= simulationState.totalRounds; i++) {
+            // Create 3 sample rounds
+            for (let i = 1; i <= 3; i++) {
                 simulationState.rounds.push({
                     roundNumber: i,
-                    season: seasons[i-1] || 'Normal',
-                    scenario: scenarios[i-1] || 'none',
+                    season: i === 1 ? 'Festive' : 'Normal',
+                    scenario: i === 2 ? 'blockbuster' : 'none',
                     status: i === 1 ? 'active' : 'planned',
                     competitors: {
                         Mumbai: { 
@@ -968,73 +1020,175 @@
                     timestamp: null
                 });
             }
+            
+            simulationState.currentRoundIndex = 1;
+            simulationState.completedRounds = 0;
+            simulationState.totalProfit = 0;
+            simulationState.performanceHistory = [];
+            
             saveToLocalStorage();
         }
 
         // ---------------- INSTRUCTOR FUNCTIONS ----------------
         let editingRoundIndex = null;
 
-        function updateRoundCount() {
-            const newRoundCount = parseInt(document.getElementById('rounds').value) || 6;
-            if (newRoundCount < 1) return;
+        function createRounds() {
+            const roundCount = parseInt(document.getElementById('rounds').value) || 3;
+            if (roundCount < 1) return;
             
-            simulationState.totalRounds = newRoundCount;
+            // Clear existing rounds
+            simulationState.rounds = [];
             
-            // Add or remove rounds as needed
-            if (simulationState.rounds.length < newRoundCount) {
-                // Add new rounds
-                const currentLength = simulationState.rounds.length;
-                for (let i = currentLength + 1; i <= newRoundCount; i++) {
-                    simulationState.rounds.push({
-                        roundNumber: i,
-                        season: 'Normal',
-                        scenario: 'none',
-                        status: i === 1 ? 'active' : 'planned',
-                        competitors: {
-                            Mumbai: { 
-                                weekdayBand: `₹${200 + i*10} – ₹${260 + i*10}`, 
-                                weekendBand: `₹${260 + i*10} – ₹${340 + i*10}`, 
-                                capacityLabel: i % 3 === 0 ? 'Tight' : i % 3 === 1 ? 'Balanced' : 'Slack'
-                            },
-                            Delhi: { 
-                                weekdayBand: `₹${180 + i*10} – ₹${240 + i*10}`, 
-                                weekendBand: `₹${240 + i*10} – ₹${320 + i*10}`, 
-                                capacityLabel: i % 3 === 1 ? 'Tight' : i % 3 === 2 ? 'Balanced' : 'Slack'
-                            },
-                            Bengaluru: { 
-                                weekdayBand: `₹${160 + i*10} – ₹${220 + i*10}`, 
-                                weekendBand: `₹${220 + i*10} – ₹${300 + i*10}`, 
-                                capacityLabel: i % 3 === 2 ? 'Tight' : i % 3 === 0 ? 'Balanced' : 'Slack'
-                            }
+            const defaultSeason = document.getElementById('defaultSeason').value;
+            const defaultScenario = document.getElementById('defaultScenario').value;
+            
+            for (let i = 1; i <= roundCount; i++) {
+                simulationState.rounds.push({
+                    roundNumber: i,
+                    season: defaultSeason,
+                    scenario: defaultScenario,
+                    status: i === 1 ? 'active' : 'planned',
+                    competitors: {
+                        Mumbai: { 
+                            weekdayBand: `₹${200 + i*10} – ₹${260 + i*10}`, 
+                            weekendBand: `₹${260 + i*10} – ₹${340 + i*10}`, 
+                            capacityLabel: i % 3 === 0 ? 'Tight' : i % 3 === 1 ? 'Balanced' : 'Slack'
                         },
-                        studentDecisions: null,
-                        results: null,
-                        timestamp: null
-                    });
-                }
-            } else if (simulationState.rounds.length > newRoundCount) {
-                // Remove extra rounds
-                simulationState.rounds = simulationState.rounds.slice(0, newRoundCount);
-                
-                // Update completed rounds count
-                simulationState.completedRounds = simulationState.rounds.filter(r => r.results).length;
-                
-                // Recalculate total profit
-                simulationState.totalProfit = simulationState.rounds.reduce((total, round) => {
-                    return total + (round.results ? round.results.totalProfit : 0);
-                }, 0);
+                        Delhi: { 
+                            weekdayBand: `₹${180 + i*10} – ₹${240 + i*10}`, 
+                            weekendBand: `₹${240 + i*10} – ₹${320 + i*10}`, 
+                            capacityLabel: i % 3 === 1 ? 'Tight' : i % 3 === 2 ? 'Balanced' : 'Slack'
+                        },
+                        Bengaluru: { 
+                            weekdayBand: `₹${160 + i*10} – ₹${220 + i*10}`, 
+                            weekendBand: `₹${220 + i*10} – ₹${300 + i*10}`, 
+                            capacityLabel: i % 3 === 2 ? 'Tight' : i % 3 === 0 ? 'Balanced' : 'Slack'
+                        }
+                    },
+                    studentDecisions: null,
+                    results: null,
+                    timestamp: null
+                });
             }
             
-            // Update current round index if needed
-            if (simulationState.currentRoundIndex > simulationState.totalRounds) {
-                simulationState.currentRoundIndex = simulationState.totalRounds;
-            }
+            simulationState.currentRoundIndex = 1;
+            simulationState.completedRounds = 0;
+            simulationState.totalProfit = 0;
+            simulationState.performanceHistory = [];
             
             renderRoundConfig();
             renderRoundPreview();
             saveToLocalStorage();
             
-            showAlert(`Updated to ${newRoundCount} rounds`, 'success');
+            showAlert(`Created ${roundCount} new rounds`, 'success');
+        }
+
+        function addNewRound() {
+            const newRoundNumber = simulationState.rounds.length + 1;
+            const defaultSeason = document.getElementById('defaultSeason').value;
+            const defaultScenario = document.getElementById('defaultScenario').value;
+            
+            simulationState.rounds.push({
+                roundNumber: newRoundNumber,
+                season: defaultSeason,
+                scenario: defaultScenario,
+                status: 'planned',
+                competitors: {
+                    Mumbai: { 
+                        weekdayBand: `₹${200 + newRoundNumber*10} – ₹${260 + newRoundNumber*10}`, 
+                        weekendBand: `₹${260 + newRoundNumber*10} – ₹${340 + newRoundNumber*10}`, 
+                        capacityLabel: newRoundNumber % 3 === 0 ? 'Tight' : newRoundNumber % 3 === 1 ? 'Balanced' : 'Slack'
+                    },
+                    Delhi: { 
+                        weekdayBand: `₹${180 + newRoundNumber*10} – ₹${240 + newRoundNumber*10}`, 
+                        weekendBand: `₹${240 + newRoundNumber*10} – ₹${320 + newRoundNumber*10}`, 
+                        capacityLabel: newRoundNumber % 3 === 1 ? 'Tight' : newRoundNumber % 3 === 2 ? 'Balanced' : 'Slack'
+                    },
+                    Bengaluru: { 
+                        weekdayBand: `₹${160 + newRoundNumber*10} – ₹${220 + newRoundNumber*10}`, 
+                        weekendBand: `₹${220 + newRoundNumber*10} – ₹${300 + newRoundNumber*10}`, 
+                        capacityLabel: newRoundNumber % 3 === 2 ? 'Tight' : newRoundNumber % 3 === 0 ? 'Balanced' : 'Slack'
+                    }
+                },
+                studentDecisions: null,
+                results: null,
+                timestamp: null
+            });
+            
+            renderRoundConfig();
+            renderRoundPreview();
+            saveToLocalStorage();
+            
+            showAlert(`Added Round ${newRoundNumber}`, 'success');
+        }
+
+        function deleteRound() {
+            if (editingRoundIndex === null) return;
+            
+            if (confirm(`Are you sure you want to delete Round ${simulationState.rounds[editingRoundIndex].roundNumber}?`)) {
+                // Remove the round
+                simulationState.rounds.splice(editingRoundIndex, 1);
+                
+                // Re-number remaining rounds
+                simulationState.rounds.forEach((round, index) => {
+                    round.roundNumber = index + 1;
+                });
+                
+                // Reset simulation state if needed
+                if (simulationState.currentRoundIndex > simulationState.rounds.length) {
+                    simulationState.currentRoundIndex = Math.max(1, simulationState.rounds.length);
+                }
+                
+                // Recalculate completed rounds and profit
+                simulationState.completedRounds = simulationState.rounds.filter(r => r.results).length;
+                simulationState.totalProfit = simulationState.rounds.reduce((total, round) => {
+                    return total + (round.results ? round.results.totalProfit : 0);
+                }, 0);
+                
+                // Recalculate performance history
+                simulationState.performanceHistory = simulationState.rounds
+                    .filter(r => r.results)
+                    .map(round => ({
+                        round: round.roundNumber,
+                        profit: round.results.totalProfit,
+                        season: round.season,
+                        scenario: round.scenario,
+                        avgUtilization: Math.round(round.results.avgUtilization * 100)
+                    }));
+                
+                editingRoundIndex = null;
+                cancelEdit();
+                renderRoundConfig();
+                renderRoundPreview();
+                saveToLocalStorage();
+                
+                showAlert('Round deleted successfully', 'success');
+            }
+        }
+
+        function deleteAllRounds() {
+            if (simulationState.rounds.length === 0) return;
+            
+            if (confirm('Are you sure you want to delete ALL rounds? This cannot be undone.')) {
+                simulationState.rounds = [];
+                simulationState.currentRoundIndex = 1;
+                simulationState.completedRounds = 0;
+                simulationState.totalProfit = 0;
+                simulationState.performanceHistory = [];
+                
+                editingRoundIndex = null;
+                cancelEdit();
+                renderRoundConfig();
+                renderRoundPreview();
+                saveToLocalStorage();
+                
+                showAlert('All rounds deleted', 'success');
+            }
+        }
+
+        function saveAllRounds() {
+            saveToLocalStorage();
+            showAlert('All round configurations saved', 'success');
         }
 
         function editRoundConfig(roundIndex) {
@@ -1106,7 +1260,29 @@
             document.querySelectorAll('.round-config-card').forEach(card => card.classList.remove('active'));
         }
 
+        function applyToAllRounds(type) {
+            if (editingRoundIndex === null) return;
+            
+            const currentRound = simulationState.rounds[editingRoundIndex];
+            const value = type === 'season' ? currentRound.season : currentRound.scenario;
+            
+            simulationState.rounds.forEach(round => {
+                if (type === 'season') round.season = value;
+                if (type === 'scenario') round.scenario = value;
+            });
+            
+            renderRoundConfig();
+            renderRoundPreview();
+            saveToLocalStorage();
+            showAlert(`Applied ${type} to all rounds`, 'success');
+        }
+
         function randomizeAllRounds() {
+            if (simulationState.rounds.length === 0) {
+                showAlert('Please create some rounds first', 'warning');
+                return;
+            }
+            
             const seasons = ['Normal', 'Festive', 'Exam', 'Monsoon'];
             const scenarios = ['none', 'blockbuster', 'demand_drop', 'economic_boom', 'recession'];
             const capacities = ['Tight', 'Balanced', 'Slack'];
@@ -1171,11 +1347,19 @@
                     </div>
                 </div>
             `).join('');
+            
+            // Update round count
+            document.getElementById('round-count').textContent = simulationState.rounds.length;
         }
 
         function renderRoundPreview() {
             const container = document.getElementById('round-preview-container');
             if (!container) return;
+            
+            if (simulationState.rounds.length === 0) {
+                container.innerHTML = '<p class="muted" style="text-align: center; padding: 20px;">No rounds created yet. Use the form above to create rounds.</p>';
+                return;
+            }
             
             container.innerHTML = simulationState.rounds.map(round => `
                 <div class="round-preview">
@@ -1193,14 +1377,53 @@
                             </p>
                         ` : ''}
                     </div>
+                    <div class="round-preview-actions">
+                        <button class="btn" onclick="editRoundConfig(${round.roundNumber - 1})" style="padding: 5px 10px; font-size: 0.9em;">Edit</button>
+                        <button class="delete-round-btn" onclick="deleteSingleRound(${round.roundNumber - 1})">Delete</button>
+                    </div>
                 </div>
             `).join('');
+        }
+
+        function deleteSingleRound(roundIndex) {
+            if (confirm(`Are you sure you want to delete Round ${simulationState.rounds[roundIndex].roundNumber}?`)) {
+                // Remove the round
+                simulationState.rounds.splice(roundIndex, 1);
+                
+                // Re-number remaining rounds
+                simulationState.rounds.forEach((round, index) => {
+                    round.roundNumber = index + 1;
+                });
+                
+                // Reset simulation state if needed
+                if (simulationState.currentRoundIndex > simulationState.rounds.length) {
+                    simulationState.currentRoundIndex = Math.max(1, simulationState.rounds.length);
+                }
+                
+                // Recalculate completed rounds and profit
+                simulationState.completedRounds = simulationState.rounds.filter(r => r.results).length;
+                simulationState.totalProfit = simulationState.rounds.reduce((total, round) => {
+                    return total + (round.results ? round.results.totalProfit : 0);
+                }, 0);
+                
+                renderRoundConfig();
+                renderRoundPreview();
+                saveToLocalStorage();
+                
+                showAlert('Round deleted', 'success');
+            }
         }
 
         // ---------------- STUDENT FUNCTIONS ----------------
         function loadStudentRound() {
             const selector = document.getElementById('round-selector');
             const display = document.getElementById('current-round-display');
+            
+            if (simulationState.rounds.length === 0) {
+                selector.innerHTML = '<p class="muted">No rounds configured yet. Please ask the instructor to create rounds.</p>';
+                display.innerHTML = '<div class="card"><h3>No Rounds Available</h3><p class="muted">The instructor has not created any rounds yet. Please check back later.</p></div>';
+                return;
+            }
             
             // Render round selector buttons
             selector.innerHTML = simulationState.rounds.map(round => `
@@ -1277,11 +1500,12 @@
                         ${simulationState.currentRoundIndex > 1 ? `
                             <button class="btn" onclick="prevStudentRound()">Previous Round</button>
                         ` : ''}
-                        ${simulationState.currentRoundIndex < simulationState.totalRounds ? `
+                        ${simulationState.currentRoundIndex < simulationState.rounds.length ? `
                             <button class="btn btn-primary" onclick="nextStudentRound()" style="margin-left: 10px;">
                                 Next Round
                             </button>
                         ` : ''}
+                        <button class="btn btn-warning" onclick="resetStudentProgress()" style="margin-left: 10px;">Reset My Progress</button>
                     </div>
                 `;
             }
@@ -1301,7 +1525,7 @@
         }
 
         function nextStudentRound() {
-            if (simulationState.currentRoundIndex < simulationState.totalRounds) {
+            if (simulationState.currentRoundIndex < simulationState.rounds.length) {
                 // Check if current round is completed
                 const currentRound = simulationState.rounds.find(r => r.roundNumber === simulationState.currentRoundIndex);
                 if (!currentRound.results && currentRound.status !== 'completed') {
@@ -1318,6 +1542,29 @@
             if (simulationState.currentRoundIndex > 1) {
                 simulationState.currentRoundIndex--;
                 loadStudentRound();
+            }
+        }
+
+        function resetStudentProgress() {
+            if (confirm('Are you sure you want to reset your progress? This will clear all your submitted prices and results.')) {
+                simulationState.rounds.forEach(round => {
+                    round.studentDecisions = null;
+                    round.results = null;
+                    round.timestamp = null;
+                    round.status = round.roundNumber === 1 ? 'active' : 'planned';
+                });
+                
+                simulationState.currentRoundIndex = 1;
+                simulationState.completedRounds = 0;
+                simulationState.totalProfit = 0;
+                simulationState.performanceHistory = [];
+                
+                saveToLocalStorage();
+                loadStudentRound();
+                updateResultsSection();
+                updateProgressSection();
+                
+                showAlert('Your progress has been reset', 'success');
             }
         }
 
@@ -1375,7 +1622,7 @@
             });
             
             // Activate next round if available
-            if (roundNumber < simulationState.totalRounds) {
+            if (roundNumber < simulationState.rounds.length) {
                 const nextRound = simulationState.rounds[roundIndex + 1];
                 nextRound.status = 'active';
             }
@@ -1391,7 +1638,7 @@
 
         // ---------------- RESULTS FUNCTIONS ----------------
         function updateResultsSection() {
-            document.getElementById('results-total-rounds').textContent = simulationState.totalRounds;
+            document.getElementById('results-total-rounds').textContent = simulationState.rounds.length;
             document.getElementById('results-completed-rounds').textContent = simulationState.completedRounds;
             document.getElementById('results-total-profit').textContent = `₹${simulationState.totalProfit.toLocaleString('en-IN')}`;
             
@@ -1401,6 +1648,16 @@
             
             // Render round results
             const resultsList = document.getElementById('round-results-list');
+            
+            if (simulationState.rounds.length === 0) {
+                resultsList.innerHTML = `
+                    <div class="card" style="text-align: center; padding: 30px;">
+                        <p class="muted">No rounds configured yet. The instructor needs to create rounds first.</p>
+                    </div>
+                `;
+                return;
+            }
+            
             resultsList.innerHTML = simulationState.rounds.map(round => {
                 const isCompleted = round.results !== null;
                 return `
@@ -1468,7 +1725,7 @@
             
             alert(`Detailed results for Round ${roundNumber}:\n\n` +
                   `Season: ${round.season}\n` +
-                  `Scenario: ${round.scenario}\n` +
+                  `Scenario: ${round.scenario.replace('_', ' ')}\n` +
                   `Total Profit: ₹${Math.round(round.results.totalProfit).toLocaleString('en-IN')}\n` +
                   `Average Utilization: ${Math.round(round.results.avgUtilization * 100)}%\n\n` +
                   `${cityDetails}`);
@@ -1476,7 +1733,7 @@
 
         // ---------------- PROGRESS FUNCTIONS ----------------
         function updateProgressSection() {
-            document.getElementById('progress-total-rounds').textContent = simulationState.totalRounds;
+            document.getElementById('progress-total-rounds').textContent = simulationState.rounds.length;
             document.getElementById('progress-completed-rounds').textContent = simulationState.completedRounds;
             document.getElementById('progress-total-profit').textContent = `₹${simulationState.totalProfit.toLocaleString('en-IN')}`;
             
@@ -1485,10 +1742,11 @@
             document.getElementById('progress-avg-profit').textContent = `₹${avgProfit.toLocaleString('en-IN')}`;
             
             // Update progress bar
-            const progressPercent = Math.round((simulationState.completedRounds / simulationState.totalRounds) * 100);
+            const progressPercent = simulationState.rounds.length > 0 ? 
+                Math.round((simulationState.completedRounds / simulationState.rounds.length) * 100) : 0;
             document.getElementById('progress-percent').textContent = `${progressPercent}%`;
             document.getElementById('progress-bar-fill').style.width = `${progressPercent}%`;
-            document.getElementById('progress-text').textContent = `${simulationState.completedRounds} of ${simulationState.totalRounds} rounds completed`;
+            document.getElementById('progress-text').textContent = `${simulationState.completedRounds} of ${simulationState.rounds.length} rounds completed`;
             
             // Update performance summary
             const summaryEl = document.getElementById('performance-summary');
@@ -1667,36 +1925,11 @@
             setTimeout(() => alertDiv.remove(), 3000);
         }
 
-        function resetSimulation() {
-            if (confirm('Are you sure you want to reset the simulation? All progress will be lost.')) {
-                simulationState.completedRounds = 0;
-                simulationState.totalProfit = 0;
-                simulationState.performanceHistory = [];
-                simulationState.currentRoundIndex = 1;
-                
-                // Reset all rounds
-                simulationState.rounds.forEach(round => {
-                    round.studentDecisions = null;
-                    round.results = null;
-                    round.timestamp = null;
-                    round.status = round.roundNumber === 1 ? 'active' : 'planned';
-                });
-                
-                saveToLocalStorage();
-                loadStudentRound();
-                updateResultsSection();
-                updateProgressSection();
-                
-                showAlert('Simulation reset successfully', 'success');
-                switchModule('intro');
-            }
-        }
-
         // ---------------- INITIALIZATION ----------------
         function init() {
             // Load saved data or initialize
             if (!loadFromLocalStorage()) {
-                initializeDefaultRounds();
+                initializeSampleRounds();
             }
             
             // Initialize UI
@@ -1705,15 +1938,6 @@
             loadStudentRound();
             updateResultsSection();
             updateProgressSection();
-            
-            // Update round count input
-            document.getElementById('rounds').value = simulationState.totalRounds;
-            
-            // Set current round from loaded state
-            const activeRound = simulationState.rounds.find(r => r.status === 'active');
-            if (activeRound) {
-                simulationState.currentRoundIndex = activeRound.roundNumber;
-            }
         }
 
         // Switch module function
