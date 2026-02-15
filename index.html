@@ -59,7 +59,7 @@
 
         .header-banner {
             background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
-            color: var(--color-white);
+            color: #000000;
             padding: 25px 30px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -121,12 +121,12 @@
 
         .nav-item:hover {
             background: var(--color-primary);
-            color: var(--color-white);
+            color: #000000;
         }
 
         .nav-item.active {
             background: var(--color-primary);
-            color: var(--color-white);
+            color: #000000;
             border-color: var(--color-primary-light);
         }
 
@@ -234,29 +234,32 @@
 
         .btn-primary {
             background: var(--color-primary);
-            color: var(--color-white);
+            color: #000000;
         }
 
         .btn-primary:hover {
             background: var(--color-primary-light);
+            color: #000000;
         }
 
         .btn-warning {
             background: var(--color-warning);
-            color: var(--color-white);
+            color: #000000;
         }
 
         .btn-warning:hover {
             background: #e67e22;
+            color: #000000;
         }
 
         .btn-success {
             background: var(--color-success);
-            color: var(--color-white);
+            color: #000000;
         }
 
         .btn-success:hover {
             background: #229954;
+            color: #000000;
         }
 
         .btn:disabled {
@@ -269,7 +272,7 @@
             display: inline-block;
             padding: 5px 12px;
             background: var(--color-primary);
-            color: var(--color-white);
+            color: #000000;
             border-radius: 20px;
             font-size: 0.85em;
             margin: 3px;
@@ -491,7 +494,7 @@
 
         .round-number-badge {
             background: var(--color-primary);
-            color: white;
+            color: #000000;
             padding: 5px 10px;
             border-radius: 4px;
             font-weight: bold;
@@ -553,7 +556,7 @@
 
         .round-select-btn.active {
             background: var(--color-primary);
-            color: white;
+            color: #000000;
             border-color: var(--color-primary);
         }
 
@@ -1011,7 +1014,7 @@
             return 25;
         }
 
-        // ---------------- 🎯 ENHANCED SIMULATE CITY – FULL P&L WITH ALL EXECUTIVE METRICS ----------------
+        // ----------------   ENHANCED SIMULATE CITY – FULL P&L WITH ALL EXECUTIVE METRICS ----------------
         function simulateCity(city, season, weekdayPrice, weekendPrice) {
             const p = CITY_PARAMS[city];
             const seasonMult = SEASON_MULTIPLIER[season] || 1;
@@ -1218,7 +1221,7 @@
         function resetStudentProgress() { if(confirm('Reset your progress?')){ simulationState.rounds.forEach(r=>{r.studentDecisions=null; r.results=null; r.timestamp=null; r.status=r.roundNumber===1?'active':'planned';}); simulationState.currentRoundIndex=1; simulationState.completedRounds=0; simulationState.totalProfit=0; simulationState.performanceHistory=[]; saveToLocalStorage(); loadStudentRound(); updateResultsSection(); updateProgressSection(); showAlert('Progress reset','success'); } }
         function submitRoundPrices(rn) { const idx=rn-1; const round=simulationState.rounds[idx]; const prices={}; Object.keys(round.competitors).forEach(city=>{ const low=city.toLowerCase(); const wd=parseInt(document.getElementById(`price-${low}-weekday`).value)||0; const we=parseInt(document.getElementById(`price-${low}-weekend`).value)||0; prices[city]={weekday:wd, weekend:we}; }); const errors=[]; Object.keys(prices).forEach(c=>{if(prices[c].weekday<50||prices[c].weekday>1000) errors.push(`${c} weekday price must be ₹50-1000`); if(prices[c].weekend<50||prices[c].weekend>1000) errors.push(`${c} weekend price must be ₹50-1000`);}); if(errors.length>0){ showAlert(errors.join('\n'),'warning'); return; } const result=simulateRound(round.season, prices); round.studentDecisions=prices; round.results=result; round.timestamp=new Date().toISOString(); round.status='completed'; simulationState.completedRounds++; simulationState.totalProfit+=result.totalProfit; simulationState.performanceHistory.push({round:rn, profit:result.totalProfit, season:round.season, scenario:round.scenario, avgUtilization:Math.round(result.avgUtilization*100)}); if(rn<simulationState.rounds.length) simulationState.rounds[idx+1].status='active'; saveToLocalStorage(); loadStudentRound(); updateResultsSection(); updateProgressSection(); showAlert(`Round ${rn} completed! Profit: ₹${Math.round(result.totalProfit).toLocaleString('en-IN')}`,'success'); }
 
-        // ---------------- 🚀 ENHANCED RESULTS SECTION – FULL DASHBOARD WITH PRICING, DEMAND, CONTRIBUTION, MARGIN ----------------
+        // ----------------   ENHANCED RESULTS SECTION – FULL DASHBOARD WITH PRICING, DEMAND, CONTRIBUTION, MARGIN ----------------
         function updateResultsSection() {
             document.getElementById('results-total-rounds').textContent = simulationState.rounds.length;
             document.getElementById('results-completed-rounds').textContent = simulationState.completedRounds;
