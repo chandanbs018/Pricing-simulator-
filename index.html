@@ -15,14 +15,6 @@
             --color-text: #2c3e50;
             --color-white: #ffffff;
             --color-border: #e2e8f0;
-            
-            /* New colors for metric categories */
-            --color-pricing: #8e44ad;
-            --color-demand: #2980b9;
-            --color-sales: #16a085;
-            --color-revenue: #f39c12;
-            --color-cost: #c0392b;
-            --color-profit: #27ae60;
         }
 
         * {
@@ -387,229 +379,338 @@
             margin-bottom: 10px;
         }
 
-        /* Redesigned Results Section Styles */
         .round-result-card {
             background: var(--color-white);
-            margin: 25px 0;
-            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
             border: 1px solid var(--color-border);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .round-result-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-bottom: 2px solid var(--color-primary);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--color-border);
         }
 
         .round-number {
-            font-size: 1.4em;
+            font-size: 1.2em;
             font-weight: bold;
             color: #000000;
         }
 
         .round-date {
             color: #6b7280;
-            font-size: 0.95em;
-            margin-top: 4px;
-        }
-
-        .round-profit-badge {
-            padding: 10px 20px;
-            background: var(--color-white);
-            border-radius: 8px;
-            text-align: right;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .round-profit-label {
-            font-size: 0.85em;
-            color: #6b7280;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .round-profit-value {
-            font-size: 1.6em;
-            font-weight: bold;
-        }
-
-        .city-results-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .city-result-card {
-            background: #ffffff;
-            border-radius: 10px;
-            border: 1px solid var(--color-border);
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .city-result-card:hover {
-            box-shadow: 0 8px 12px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
-        }
-
-        .city-header {
-            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-            color: white;
-            padding: 15px;
-            font-size: 1.2em;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .metrics-container {
-            padding: 15px;
-        }
-
-        .metric-group {
-            margin-bottom: 20px;
-            padding: 12px;
-            border-radius: 8px;
-        }
-
-        .metric-group-title {
             font-size: 0.9em;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            padding-bottom: 5px;
-            border-bottom: 2px solid;
         }
 
-        .metric-row {
+        .city-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .city-result {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 3px solid var(--color-primary);
+        }
+
+        .city-name {
+            font-weight: bold;
+            color: #000000;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            border-bottom: 1px dashed #d0d7dd;
+            padding-bottom: 5px;
+        }
+
+        .result-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 6px 0;
-            font-size: 0.95em;
+            margin: 5px 0;
+            font-size: 0.9em;
         }
 
-        .metric-label {
+        .result-label {
             color: #6b7280;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
 
-        .metric-label i {
-            font-style: normal;
-            font-size: 1.1em;
-        }
-
-        .metric-value {
+        .result-value {
             font-weight: 600;
-            font-family: 'Courier New', monospace;
-        }
-
-        /* Pricing Group */
-        .group-pricing {
-            background: #f3e8ff;
-            border-left: 4px solid var(--color-pricing);
-        }
-        .group-pricing .metric-group-title {
-            color: var(--color-pricing);
-            border-bottom-color: var(--color-pricing);
-        }
-
-        /* Demand Group */
-        .group-demand {
-            background: #e1f0fa;
-            border-left: 4px solid var(--color-demand);
-        }
-        .group-demand .metric-group-title {
-            color: var(--color-demand);
-            border-bottom-color: var(--color-demand);
-        }
-
-        /* Sales Group */
-        .group-sales {
-            background: #d1f0ea;
-            border-left: 4px solid var(--color-sales);
-        }
-        .group-sales .metric-group-title {
-            color: var(--color-sales);
-            border-bottom-color: var(--color-sales);
-        }
-
-        /* Revenue Group */
-        .group-revenue {
-            background: #fff3d6;
-            border-left: 4px solid var(--color-revenue);
-        }
-        .group-revenue .metric-group-title {
-            color: #b36b00;
-            border-bottom-color: var(--color-revenue);
-        }
-
-        /* Cost Group */
-        .group-cost {
-            background: #fee9e7;
-            border-left: 4px solid var(--color-cost);
-        }
-        .group-cost .metric-group-title {
-            color: var(--color-cost);
-            border-bottom-color: var(--color-cost);
-        }
-
-        /* Profit Group */
-        .group-profit {
-            background: #e3f5e9;
-            border-left: 4px solid var(--color-profit);
-        }
-        .group-profit .metric-group-title {
-            color: var(--color-profit);
-            border-bottom-color: var(--color-profit);
         }
 
         .profit-positive {
-            color: var(--color-profit);
-            font-weight: 700;
+            color: var(--color-success);
         }
 
         .profit-negative {
             color: var(--color-danger);
-            font-weight: 700;
         }
 
-        .metric-highlight {
-            font-size: 1.1em;
-            padding: 8px 0;
-            border-top: 1px dashed var(--color-border);
-            margin-top: 4px;
+        .round-config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
         }
 
-        .utilization-bar {
+        .round-config-card {
+            background: var(--color-white);
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid var(--color-border);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .round-config-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .round-config-card.active {
+            border-color: var(--color-primary);
+            background: #f0f9f4;
+        }
+
+        .round-config-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .round-number-badge {
+            background: var(--color-primary);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .round-status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .status-planned {
+            background: #6b7280;
+        }
+
+        .status-active {
+            background: var(--color-success);
+        }
+
+        .status-completed {
+            background: var(--color-primary);
+        }
+
+        .round-summary {
+            font-size: 0.9em;
+            color: #6b7280;
+        }
+
+        .quick-actions-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .student-round-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .round-select-btn {
+            padding: 10px 20px;
+            border: 2px solid var(--color-border);
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .round-select-btn:hover {
+            background: var(--color-bg);
+        }
+
+        .round-select-btn.active {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+
+        .round-select-btn.completed {
+            border-color: var(--color-success);
+        }
+
+        .round-select-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f3f4f6;
+        }
+
+        .round-preview {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid var(--color-border);
+        }
+
+        .round-preview-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #000000;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .round-preview-details {
+            flex: 1;
+        }
+
+        .round-preview-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .delete-round-btn {
+            background: var(--color-danger);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+
+        .delete-round-btn:hover {
+            background: #c0392b;
+        }
+
+        /* New Tab Styles for Results Section */
+        .metrics-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 20px 0;
+            border-bottom: 2px solid var(--color-border);
+            padding-bottom: 10px;
+        }
+
+        .metric-tab {
+            padding: 10px 20px;
+            background: var(--color-white);
+            border: 1px solid var(--color-border);
+            border-radius: 6px 6px 0 0;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            margin-bottom: -2px;
+            border-bottom: 2px solid transparent;
+        }
+
+        .metric-tab:hover {
+            background: var(--color-bg);
+        }
+
+        .metric-tab.active {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+            border-bottom: 2px solid var(--color-primary);
+        }
+
+        .metrics-table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid var(--color-border);
+            padding: 1px;
+        }
+
+        .metrics-table {
             width: 100%;
-            height: 6px;
-            background: var(--color-border);
-            border-radius: 3px;
-            margin-top: 4px;
-            overflow: hidden;
+            border-collapse: collapse;
+            min-width: 800px;
         }
 
-        .utilization-fill {
-            height: 100%;
-            background: var(--color-sales);
-            border-radius: 3px;
+        .metrics-table th {
+            background: #f8fafc;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #1e293b;
+            border-bottom: 2px solid var(--color-border);
+            position: sticky;
+            top: 0;
+            background: #f8fafc;
         }
 
-        .pending-round-message {
+        .metrics-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .metrics-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .city-group-header {
+            background: #f1f5f9;
+            font-weight: 600;
+        }
+
+        .city-group-header td {
+            padding: 8px 15px;
+            color: var(--color-primary);
+        }
+
+        .metric-value-positive {
+            color: var(--color-success);
+            font-weight: 600;
+        }
+
+        .metric-value-negative {
+            color: var(--color-danger);
+            font-weight: 600;
+        }
+
+        .metric-unit {
+            font-size: 0.8em;
+            color: #64748b;
+            margin-left: 4px;
+        }
+
+        .no-data-message {
             text-align: center;
             padding: 40px;
             color: #6b7280;
-            font-style: italic;
             background: #f9fafb;
+            border-radius: 8px;
+            margin-top: 20px;
         }
 
         @media (max-width: 1024px) {
@@ -648,9 +749,6 @@
             .status-card {
                 min-width: 100%;
             }
-            .city-results-grid {
-                grid-template-columns: 1fr;
-            }
             .round-config-grid {
                 grid-template-columns: 1fr;
             }
@@ -661,6 +759,13 @@
             .round-preview-actions {
                 width: 100%;
                 justify-content: center;
+            }
+            .metrics-tabs {
+                flex-direction: column;
+            }
+            .metric-tab {
+                width: 100%;
+                text-align: center;
             }
         }
     </style>
@@ -876,10 +981,10 @@
                     <div id="current-round-display"></div>
                 </div>
 
-                <!-- RESULTS SECTION – REDESIGNED WITH CATEGORIZED METRICS -->
+                <!-- RESULTS SECTION WITH TABS -->
                 <div id="results-section" class="hidden">
                     <h2>Simulation Results – Executive P&L Dashboard</h2>
-                    <p class="muted">Complete profit & loss breakdown with color-coded metric categories</p>
+                    <p class="muted">Click on tabs below to view different metrics across all completed rounds</p>
 
                     <!-- Overall Statistics -->
                     <div class="simulation-status">
@@ -901,11 +1006,19 @@
                         </div>
                     </div>
 
-                    <!-- Round-by-Round Results with redesigned city P&L -->
-                    <div id="round-results-container">
-                        <h3 style="margin-top: 30px;">Round-by-Round Performance</h3>
-                        <p class="muted" style="margin-bottom: 20px;">Color-coded metrics: Pricing (Purple) | Demand (Blue) | Sales (Teal) | Revenue (Gold) | Costs (Red) | Profit (Green)</p>
-                        <div id="round-results-list"></div>
+                    <!-- Metric Tabs -->
+                    <div class="metrics-tabs" id="metrics-tabs">
+                        <div class="metric-tab active" onclick="switchMetricTab('pricing')">💰 Pricing</div>
+                        <div class="metric-tab" onclick="switchMetricTab('demand')">📊 Demand</div>
+                        <div class="metric-tab" onclick="switchMetricTab('sales')">🎟️ Sales & Utilization</div>
+                        <div class="metric-tab" onclick="switchMetricTab('revenue')">💵 Revenue</div>
+                        <div class="metric-tab" onclick="switchMetricTab('costs')">💰 Costs</div>
+                        <div class="metric-tab" onclick="switchMetricTab('profit')">📈 Profit & Margins</div>
+                    </div>
+
+                    <!-- Metrics Table Container -->
+                    <div id="metrics-table-container" class="metrics-table-container">
+                        <!-- Table will be populated by JavaScript -->
                     </div>
                 </div>
 
@@ -961,7 +1074,8 @@
             currentRoundIndex: 1,
             completedRounds: 0,
             totalProfit: 0,
-            performanceHistory: []
+            performanceHistory: [],
+            currentMetricTab: 'pricing'
         };
 
         // ---------------- CITY & SIMULATION PARAMETERS ----------------
@@ -1014,7 +1128,7 @@
             return 25;
         }
 
-        // ----------------   ENHANCED SIMULATE CITY – FULL P&L WITH ALL EXECUTIVE METRICS ----------------
+        // ---------------- SIMULATE CITY – FULL P&L ----------------
         function simulateCity(city, season, weekdayPrice, weekendPrice) {
             const p = CITY_PARAMS[city];
             const seasonMult = SEASON_MULTIPLIER[season] || 1;
@@ -1054,39 +1168,32 @@
             const utilization = avgDailyAttendance / p.capacity;
             const avgTicketPrice = ticketsTotal > 0 ? revenueTotal / ticketsTotal : 0;
             
-            // Lost demand: demand above capacity (both days)
             const lostDemand = Math.max(0, adjWeekdayDemand - p.capacity) * weekdayDays + 
                                Math.max(0, adjWeekendDemand - p.capacity) * weekendDays;
 
-            // --- NEW EXECUTIVE METRICS ---
             const contribution = revenueTotal - varCostTotal;
             const contributionMargin = revenueTotal > 0 ? (contribution / revenueTotal) * 100 : 0;
             const netMargin = revenueTotal > 0 ? (profit / revenueTotal) * 100 : 0;
 
             return {
-                // submitted prices
                 weekdayPrice,
                 weekendPrice,
-                // demand before capacity
+                avgTicketPrice,
                 adjWeekdayDemand,
                 adjWeekendDemand,
-                // capacity & sales
                 weekdayAttendance,
                 weekendAttendance,
                 ticketsTotal,
                 utilization,
                 lostDemand,
-                // revenue & cost
                 revenueTotal,
                 varCostTotal,
                 fixedCostTotal,
                 costTotal,
-                // profit & margin
                 profit,
                 contribution,
                 contributionMargin,
-                netMargin,
-                avgTicketPrice
+                netMargin
             };
         }
 
@@ -1148,7 +1255,7 @@
             saveToLocalStorage();
         }
 
-        // ---------------- INSTRUCTOR FUNCTIONS (condensed, unchanged) ----------------
+        // ---------------- INSTRUCTOR FUNCTIONS (condensed) ----------------
         let editingRoundIndex = null;
         function createRounds() {
             const roundCount = parseInt(document.getElementById('rounds').value) || 3;
@@ -1213,7 +1320,7 @@
         function renderRoundPreview() { const p=document.getElementById('round-preview-container'); if(!p)return; if(simulationState.rounds.length===0) {p.innerHTML='<p class="muted" style="text-align:center;padding:20px;">No rounds created yet.</p>'; return;} p.innerHTML=simulationState.rounds.map(r=>`<div class="round-preview"><div class="round-preview-number">${r.roundNumber}</div><div class="round-preview-details"><h4 style="margin:0 0 5px 0;">Round ${r.roundNumber}: ${r.season} Season</h4><p style="margin:0;color:#6b7280;font-size:0.9em;">Scenario: ${r.scenario.replace('_',' ')} | Status: <span style="text-transform:capitalize;">${r.status}</span></p>${r.results?`<p style="margin:5px 0 0 0;font-size:0.9em;"><strong>Profit:</strong> ₹${Math.round(r.results.totalProfit).toLocaleString('en-IN')} | <strong>Completed:</strong> ${r.timestamp?new Date(r.timestamp).toLocaleDateString():'N/A'}</p>`:''}</div><div class="round-preview-actions"><button class="btn" onclick="editRoundConfig(${r.roundNumber-1})" style="padding:5px 10px;font-size:0.9em;">Edit</button><button class="delete-round-btn" onclick="deleteSingleRound(${r.roundNumber-1})">Delete</button></div></div>`).join(''); }
         function deleteSingleRound(i) { if(confirm(`Delete Round ${simulationState.rounds[i].roundNumber}?`)){ simulationState.rounds.splice(i,1); simulationState.rounds.forEach((r,idx)=>r.roundNumber=idx+1); if(simulationState.currentRoundIndex>simulationState.rounds.length) simulationState.currentRoundIndex=Math.max(1,simulationState.rounds.length); simulationState.completedRounds=simulationState.rounds.filter(r=>r.results).length; simulationState.totalProfit=simulationState.rounds.reduce((t,r)=>t+(r.results?r.results.totalProfit:0),0); renderRoundConfig(); renderRoundPreview(); saveToLocalStorage(); showAlert('Round deleted','success'); } }
 
-        // ---------------- STUDENT FUNCTIONS (condensed, unchanged) ----------------
+        // ---------------- STUDENT FUNCTIONS ----------------
         function loadStudentRound() { const sel=document.getElementById('round-selector'), disp=document.getElementById('current-round-display'); if(simulationState.rounds.length===0) {sel.innerHTML='<p class="muted">No rounds configured.</p>'; disp.innerHTML='<div class="card"><h3>No Rounds Available</h3><p class="muted">Please ask instructor to create rounds.</p></div>'; return;} sel.innerHTML=simulationState.rounds.map(r=>`<button class="round-select-btn ${r.roundNumber===simulationState.currentRoundIndex?'active':''} ${r.results?'completed':''} ${r.status==='planned'&&r.roundNumber>1&&!simulationState.rounds[r.roundNumber-2].results?'disabled':''}" onclick="selectStudentRound(${r.roundNumber})" ${r.status==='planned'&&r.roundNumber>1&&!simulationState.rounds[r.roundNumber-2].results?'disabled':''}>Round ${r.roundNumber}${r.results?' ✓':''}</button>`).join(''); const cur=simulationState.rounds.find(r=>r.roundNumber===simulationState.currentRoundIndex); if(cur) { const isCompleted=cur.results!==null; disp.innerHTML=`<div class="card"><h3>Round ${cur.roundNumber}: ${cur.season} Season</h3><div class="student-round-info"><p><strong>Scenario:</strong> ${cur.scenario.replace('_',' ')}</p><p><strong>Status:</strong> <span style="text-transform:capitalize;">${cur.status}</span></p>${isCompleted?`<p><strong>Completed:</strong> ${cur.timestamp?new Date(cur.timestamp).toLocaleString():'N/A'}</p>`:''}</div><h4>Market Context</h4><div class="grid-3">${Object.keys(cur.competitors).map(c=>`<div class="card"><h4>${c}</h4><p><strong>Competitor Weekday:</strong> ${cur.competitors[c].weekdayBand}</p><p><strong>Competitor Weekend:</strong> ${cur.competitors[c].weekendBand}</p><p><strong>Capacity:</strong> ${cur.competitors[c].capacityLabel}</p></div>`).join('')}</div>${isCompleted?`<div class="alert alert-success" style="margin-top:20px;"><h4>Round Completed</h4><p>Total profit: ₹${Math.round(cur.results.totalProfit).toLocaleString('en-IN')}</p><button class="btn" onclick="switchModule('results')">View Detailed Results</button></div>`:`<div style="margin-top:20px;"><h4>Set Your Prices</h4><table><thead><tr><th>City</th><th>Weekday Price (₹)</th><th>Weekend Price (₹)</th></tr></thead><tbody>${Object.keys(cur.competitors).map(c=>`<tr><td>${c}</td><td><input type="number" id="price-${c.toLowerCase()}-weekday" placeholder="₹" min="50" max="1000" value="${cur.studentDecisions?cur.studentDecisions[c].weekday:''}"></td><td><input type="number" id="price-${c.toLowerCase()}-weekend" placeholder="₹" min="50" max="1000" value="${cur.studentDecisions?cur.studentDecisions[c].weekend:''}"></td></tr>`).join('')}</tbody></table><button class="btn btn-primary" onclick="submitRoundPrices(${cur.roundNumber})" style="margin-top:15px;">Submit Prices for Round ${cur.roundNumber}</button></div>`}</div><div class="quick-actions" style="margin-top:20px;"><h4>Round Navigation</h4>${simulationState.currentRoundIndex>1?`<button class="btn" onclick="prevStudentRound()">Previous Round</button>`:''}${simulationState.currentRoundIndex<simulationState.rounds.length?`<button class="btn btn-primary" onclick="nextStudentRound()" style="margin-left:10px;">Next Round</button>`:''}<button class="btn btn-warning" onclick="resetStudentProgress()" style="margin-left:10px;">Reset My Progress</button></div>`; } }
         function selectStudentRound(rn) { const prev=simulationState.rounds.find(r=>r.roundNumber===rn-1); if(rn>1&&prev&&!prev.results) { showAlert('Please complete previous round first','warning'); return; } simulationState.currentRoundIndex=rn; loadStudentRound(); }
         function nextStudentRound() { if(simulationState.currentRoundIndex<simulationState.rounds.length){ const cur=simulationState.rounds.find(r=>r.roundNumber===simulationState.currentRoundIndex); if(!cur.results&&cur.status!=='completed'){ showAlert('Complete current round first','warning'); return; } simulationState.currentRoundIndex++; loadStudentRound(); } }
@@ -1221,7 +1328,20 @@
         function resetStudentProgress() { if(confirm('Reset your progress?')){ simulationState.rounds.forEach(r=>{r.studentDecisions=null; r.results=null; r.timestamp=null; r.status=r.roundNumber===1?'active':'planned';}); simulationState.currentRoundIndex=1; simulationState.completedRounds=0; simulationState.totalProfit=0; simulationState.performanceHistory=[]; saveToLocalStorage(); loadStudentRound(); updateResultsSection(); updateProgressSection(); showAlert('Progress reset','success'); } }
         function submitRoundPrices(rn) { const idx=rn-1; const round=simulationState.rounds[idx]; const prices={}; Object.keys(round.competitors).forEach(city=>{ const low=city.toLowerCase(); const wd=parseInt(document.getElementById(`price-${low}-weekday`).value)||0; const we=parseInt(document.getElementById(`price-${low}-weekend`).value)||0; prices[city]={weekday:wd, weekend:we}; }); const errors=[]; Object.keys(prices).forEach(c=>{if(prices[c].weekday<50||prices[c].weekday>1000) errors.push(`${c} weekday price must be ₹50-1000`); if(prices[c].weekend<50||prices[c].weekend>1000) errors.push(`${c} weekend price must be ₹50-1000`);}); if(errors.length>0){ showAlert(errors.join('\n'),'warning'); return; } const result=simulateRound(round.season, prices); round.studentDecisions=prices; round.results=result; round.timestamp=new Date().toISOString(); round.status='completed'; simulationState.completedRounds++; simulationState.totalProfit+=result.totalProfit; simulationState.performanceHistory.push({round:rn, profit:result.totalProfit, season:round.season, scenario:round.scenario, avgUtilization:Math.round(result.avgUtilization*100)}); if(rn<simulationState.rounds.length) simulationState.rounds[idx+1].status='active'; saveToLocalStorage(); loadStudentRound(); updateResultsSection(); updateProgressSection(); showAlert(`Round ${rn} completed! Profit: ₹${Math.round(result.totalProfit).toLocaleString('en-IN')}`,'success'); }
 
-        // ---------------- REDESIGNED RESULTS SECTION – COLOR-CODED METRIC GROUPS ----------------
+        // ---------------- TABBED RESULTS SECTION ----------------
+        function switchMetricTab(tabId) {
+            simulationState.currentMetricTab = tabId;
+            
+            // Update tab active states
+            document.querySelectorAll('.metric-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Refresh the table
+            updateResultsSection();
+        }
+
         function updateResultsSection() {
             document.getElementById('results-total-rounds').textContent = simulationState.rounds.length;
             document.getElementById('results-completed-rounds').textContent = simulationState.completedRounds;
@@ -1229,166 +1349,112 @@
             const avgProfit = simulationState.completedRounds > 0 ? Math.round(simulationState.totalProfit / simulationState.completedRounds) : 0;
             document.getElementById('results-avg-profit').textContent = `₹${avgProfit.toLocaleString('en-IN')}`;
 
-            const resultsList = document.getElementById('round-results-list');
-            if (simulationState.rounds.length === 0) {
-                resultsList.innerHTML = '<div class="card" style="text-align:center;padding:30px;"><p class="muted">No rounds configured yet.</p></div>';
+            const container = document.getElementById('metrics-table-container');
+            const completedRounds = simulationState.rounds.filter(r => r.results !== null);
+            
+            if (completedRounds.length === 0) {
+                container.innerHTML = '<div class="no-data-message">No completed rounds yet. Complete rounds in the Student section to view results.</div>';
                 return;
             }
 
-            resultsList.innerHTML = simulationState.rounds.map(round => {
-                const isCompleted = round.results !== null;
-                const profitClass = round.results && round.results.totalProfit >= 0 ? 'profit-positive' : 'profit-negative';
-                
-                return `
-                    <div class="round-result-card">
-                        <div class="round-result-header">
-                            <div>
-                                <div class="round-number">Round ${round.roundNumber}: ${round.season} Season</div>
-                                <div class="round-date">${round.scenario.replace('_',' ')} • ${round.results ? 'Completed' : 'Pending'}</div>
-                            </div>
-                            ${isCompleted ? `
-                                <div class="round-profit-badge">
-                                    <div class="round-profit-label">Total Profit</div>
-                                    <div class="round-profit-value ${profitClass}">₹${Math.round(round.results.totalProfit).toLocaleString('en-IN')}</div>
-                                    <div style="font-size:0.85em; color:#6b7280;">Avg Util: ${Math.round(round.results.avgUtilization * 100)}%</div>
-                                </div>
-                            ` : ''}
-                        </div>
-                        
-                        ${isCompleted ? `
-                            <div class="city-results-grid">
-                                ${Object.keys(round.results.cityResults).map(city => {
-                                    const cr = round.results.cityResults[city];
-                                    const utilizationPercent = Math.round(cr.utilization * 100);
-                                    const profitColorClass = cr.profit >= 0 ? 'profit-positive' : 'profit-negative';
-                                    const marginColorClass = cr.netMargin > 20 ? 'profit-positive' : (cr.netMargin < 5 ? 'profit-negative' : '');
-                                    
-                                    return `
-                                        <div class="city-result-card">
-                                            <div class="city-header">${city}</div>
-                                            <div class="metrics-container">
-                                                <!-- PRICING GROUP - Purple -->
-                                                <div class="metric-group group-pricing">
-                                                    <div class="metric-group-title">💰 PRICING</div>
-                                                    <div class="metric-row">
-                                                        <span class="metric-label">Weekday price</span>
-                                                        <span class="metric-value">₹${cr.weekdayPrice}</span>
-                                                    </div>
-                                                    <div class="metric-row">
-                                                        <span class="metric-label">Weekend price</span>
-                                                        <span class="metric-value">₹${cr.weekendPrice}</span>
-                                                    </div>
-                                                    <div class="metric-row">
-                                                        <span class="metric-label">Avg ticket price</span>
-                                                        <span class="metric-value">₹${Math.round(cr.avgTicketPrice).toLocaleString('en-IN')}</span>
-                                                    </div>
-                                                </div>
-                                                
-                                                <!-- DEMAND GROUP - Blue -->
-                                                <div class="metric-group group-demand">
-                                                    <div class="metric-group-title">📊 DEMAND</div>
-                                                    <div class="metric-row">
-                                                        <span class="metric-label">Weekday demand</span>
-                                                        <span class="metric-value">${Math.round(cr.adjWeekdayDemand).toLocaleString('en-IN')}</span>
-                                                    </div>
-                                                    <div class="metric-row">
-                                                        <span class="metric-label">Weekend demand</span>
-                                                        <span class="metric-value">${Math.round(cr.adjWeekendDemand).toLocaleString('en-IN')}</span>
-                                                    </div>
-                                                    <div class="metric-row">
-                                                        <span class="metric-label">Lost demand</span>
-                                                        <span class="metric-value">${Math.round(cr.lostDemand).toLocaleString('en-IN')}</span>
-                                                    </div>
-                                                </div>
-                                                
-                                                <!-- SALES GROUP - Teal -->
-                                                <div class="metric-group group-sales">
-                                                    <div class="metric-group-title">🎟️ SALES</div>
-                                                    <div class="metric-row">
-                                                        <span class="metric-label">Tickets sold</span>
-                                                        <span class="metric-value">${Math.round(cr.ticketsTotal).toLocaleString('en-IN')}</span>
-                                                    </div>
-                                                    <div class="metric-row">
-                                                        <span class="metric-label">Utilization</span>
-                                                        <span class="metric-value">${utilizationPercent}%</span>
-                                                    </div>
-                                                    <div class="utilization-bar">
-                                                        <div class="utilization-fill" style="width: ${utilizationPercent}%;"></div>
-                                                    </div>
-                                                </div>
-                                                
-                                                <!-- REVENUE GROUP - Gold -->
-                                                <div class="metric-group group-revenue">
-                                                    <div class="metric-group-title">💵 REVENUE</div>
-                                                    <div class="metric-row">
-                                                        <span class="metric-label">Total revenue</span>
-                                                        <span class="metric-value">₹${Math.round(cr.revenueTotal).toLocaleString('en-IN')}</span>
-                                                    </div>
-                                                    <div class="metric-row">
-                                                        <span class="metric-label">Contribution</span>
-                                                        <span class="metric-value">₹${Math.round(cr.contribution).toLocaleString('en-IN')}</span>
-                                                    </div>
-                                                    <div class="metric-row">
-                                                        <span class="metric-label">Contribution margin</span>
-                                                        <span class="metric-value">${cr.contributionMargin.toFixed(1)}%</span>
-                                                    </div>
-                                                </div>
-                                                
-                                                <!-- COST GROUP - Red -->
-                                                <div class="metric-group group-cost">
-                                                    <div class="metric-group-title">💰 COSTS</div>
-                                                    <div class="metric-row">
-                                                        <span class="metric-label">Variable cost</span>
-                                                        <span class="metric-value">₹${Math.round(cr.varCostTotal).toLocaleString('en-IN')}</span>
-                                                    </div>
-                                                    <div class="metric-row">
-                                                        <span class="metric-label">Fixed cost</span>
-                                                        <span class="metric-value">₹${Math.round(cr.fixedCostTotal).toLocaleString('en-IN')}</span>
-                                                    </div>
-                                                    <div class="metric-row">
-                                                        <span class="metric-label">Total cost</span>
-                                                        <span class="metric-value">₹${Math.round(cr.costTotal).toLocaleString('en-IN')}</span>
-                                                    </div>
-                                                </div>
-                                                
-                                                <!-- PROFIT GROUP - Green -->
-                                                <div class="metric-group group-profit">
-                                                    <div class="metric-group-title">📈 PROFIT</div>
-                                                    <div class="metric-row metric-highlight">
-                                                        <span class="metric-label">Net profit</span>
-                                                        <span class="metric-value ${profitColorClass}">₹${Math.round(cr.profit).toLocaleString('en-IN')}</span>
-                                                    </div>
-                                                    <div class="metric-row metric-highlight">
-                                                        <span class="metric-label">Net margin</span>
-                                                        <span class="metric-value ${marginColorClass}">${cr.netMargin.toFixed(1)}%</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        ` : `
-                            <div class="pending-round-message">
-                                ⏳ Round not completed yet. Complete this round to view detailed P&L.
-                            </div>
-                        `}
-                    </div>
-                `;
-            }).join('');
+            let tableHtml = '<table class="metrics-table">';
+            
+            // Add table header based on selected tab
+            tableHtml += '<thead><tr>';
+            tableHtml += '<th>Round</th>';
+            tableHtml += '<th>City</th>';
+            
+            switch(simulationState.currentMetricTab) {
+                case 'pricing':
+                    tableHtml += '<th>Weekday Price (₹)</th>';
+                    tableHtml += '<th>Weekend Price (₹)</th>';
+                    tableHtml += '<th>Avg Ticket Price (₹)</th>';
+                    break;
+                case 'demand':
+                    tableHtml += '<th>Weekday Demand</th>';
+                    tableHtml += '<th>Weekend Demand</th>';
+                    tableHtml += '<th>Lost Demand</th>';
+                    break;
+                case 'sales':
+                    tableHtml += '<th>Tickets Sold</th>';
+                    tableHtml += '<th>Utilization %</th>';
+                    tableHtml += '<th>Avg Daily Attendance</th>';
+                    break;
+                case 'revenue':
+                    tableHtml += '<th>Total Revenue (₹)</th>';
+                    tableHtml += '<th>Contribution (₹)</th>';
+                    tableHtml += '<th>Contribution Margin %</th>';
+                    break;
+                case 'costs':
+                    tableHtml += '<th>Variable Cost (₹)</th>';
+                    tableHtml += '<th>Fixed Cost (₹)</th>';
+                    tableHtml += '<th>Total Cost (₹)</th>';
+                    break;
+                case 'profit':
+                    tableHtml += '<th>Profit (₹)</th>';
+                    tableHtml += '<th>Net Margin %</th>';
+                    tableHtml += '<th>Round Total (₹)</th>';
+                    break;
+            }
+            tableHtml += '</tr></thead><tbody>';
+
+            // Add data rows
+            completedRounds.forEach(round => {
+                const cities = Object.keys(round.results.cityResults);
+                cities.forEach((city, index) => {
+                    const cr = round.results.cityResults[city];
+                    tableHtml += '<tr>';
+                    if (index === 0) {
+                        tableHtml += `<td rowspan="${cities.length}" style="background: #f8fafc; font-weight: 600;">Round ${round.roundNumber}<br><span style="font-size:0.85em; color:#64748b;">${round.season}</span></td>`;
+                    }
+                    tableHtml += `<td><strong>${city}</strong></td>`;
+                    
+                    switch(simulationState.currentMetricTab) {
+                        case 'pricing':
+                            tableHtml += `<td>₹${cr.weekdayPrice}</td>`;
+                            tableHtml += `<td>₹${cr.weekendPrice}</td>`;
+                            tableHtml += `<td>₹${Math.round(cr.avgTicketPrice).toLocaleString('en-IN')}</td>`;
+                            break;
+                        case 'demand':
+                            tableHtml += `<td>${Math.round(cr.adjWeekdayDemand).toLocaleString('en-IN')}</td>`;
+                            tableHtml += `<td>${Math.round(cr.adjWeekendDemand).toLocaleString('en-IN')}</td>`;
+                            tableHtml += `<td>${Math.round(cr.lostDemand).toLocaleString('en-IN')}</td>`;
+                            break;
+                        case 'sales':
+                            const dailyAttendance = Math.round(cr.ticketsTotal / 30);
+                            tableHtml += `<td>${Math.round(cr.ticketsTotal).toLocaleString('en-IN')}</td>`;
+                            tableHtml += `<td>${Math.round(cr.utilization * 100)}%</td>`;
+                            tableHtml += `<td>${dailyAttendance.toLocaleString('en-IN')}</td>`;
+                            break;
+                        case 'revenue':
+                            tableHtml += `<td>₹${Math.round(cr.revenueTotal).toLocaleString('en-IN')}</td>`;
+                            tableHtml += `<td>₹${Math.round(cr.contribution).toLocaleString('en-IN')}</td>`;
+                            tableHtml += `<td>${cr.contributionMargin.toFixed(1)}%</td>`;
+                            break;
+                        case 'costs':
+                            tableHtml += `<td>₹${Math.round(cr.varCostTotal).toLocaleString('en-IN')}</td>`;
+                            tableHtml += `<td>₹${Math.round(cr.fixedCostTotal).toLocaleString('en-IN')}</td>`;
+                            tableHtml += `<td>₹${Math.round(cr.costTotal).toLocaleString('en-IN')}</td>`;
+                            break;
+                        case 'profit':
+                            const profitClass = cr.profit >= 0 ? 'metric-value-positive' : 'metric-value-negative';
+                            const marginClass = cr.netMargin > 20 ? 'metric-value-positive' : (cr.netMargin < 5 ? 'metric-value-negative' : '');
+                            tableHtml += `<td class="${profitClass}">₹${Math.round(cr.profit).toLocaleString('en-IN')}</td>`;
+                            tableHtml += `<td class="${marginClass}">${cr.netMargin.toFixed(1)}%</td>`;
+                            if (index === 0) {
+                                tableHtml += `<td rowspan="${cities.length}" style="background: #f8fafc; font-weight: 600; ${round.results.totalProfit >= 0 ? 'color: #27ae60;' : 'color: #e74c3c;'}">₹${Math.round(round.results.totalProfit).toLocaleString('en-IN')}</td>`;
+                            }
+                            break;
+                    }
+                    tableHtml += '</tr>';
+                });
+            });
+            
+            tableHtml += '</tbody></table>';
+            container.innerHTML = tableHtml;
         }
 
-        function showDetailedRound(roundNumber) { 
-            const round = simulationState.rounds[roundNumber-1]; 
-            if (!round.results) return; 
-            const cityDetails = Object.keys(round.results.cityResults).map(city => { 
-                const cr = round.results.cityResults[city]; 
-                return `${city}: ₹${Math.round(cr.profit).toLocaleString('en-IN')} profit | Net margin ${cr.netMargin.toFixed(1)}%`; 
-            }).join('\n'); 
-            alert(`Detailed results for Round ${roundNumber}:\n\nSeason: ${round.season}\nScenario: ${round.scenario.replace('_',' ')}\nTotal Profit: ₹${Math.round(round.results.totalProfit).toLocaleString('en-IN')}\nAvg Utilization: ${Math.round(round.results.avgUtilization*100)}%\n\n${cityDetails}`); 
-        }
-
-        // ---------------- PROGRESS FUNCTIONS (unchanged) ----------------
+        // ---------------- PROGRESS FUNCTIONS ----------------
         function updateProgressSection() { 
             document.getElementById('progress-total-rounds').textContent = simulationState.rounds.length;
             document.getElementById('progress-completed-rounds').textContent = simulationState.completedRounds;
