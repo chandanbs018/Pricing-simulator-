@@ -609,7 +609,6 @@
             background: #c0392b;
         }
 
-        /* Tab Styles for Results Section */
         .metrics-tabs {
             display: flex;
             flex-wrap: wrap;
@@ -678,16 +677,6 @@
             background: #f8fafc;
         }
 
-        .city-group-header {
-            background: #f1f5f9;
-            font-weight: 600;
-        }
-
-        .city-group-header td {
-            padding: 8px 15px;
-            color: var(--color-primary);
-        }
-
         .metric-value-positive {
             color: var(--color-success);
             font-weight: 600;
@@ -696,12 +685,6 @@
         .metric-value-negative {
             color: var(--color-danger);
             font-weight: 600;
-        }
-
-        .metric-unit {
-            font-size: 0.8em;
-            color: #64748b;
-            margin-left: 4px;
         }
 
         .no-data-message {
@@ -772,7 +755,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- Header with Logo and Banner aligned with grid -->
         <div class="header-wrapper">
             <div class="logo-container">
                 <img src="logo.png" alt="Cineprice Simulation Logo" class="logo">
@@ -794,7 +776,6 @@
             </div>
 
             <div class="content">
-                <!-- INTRO SECTION -->
                 <div id="intro-section">
                     <h2>Simulation Overview</h2>
                     <p class="muted">You play the role of regional pricing manager for a multiplex chain in Mumbai, Delhi, and Bengaluru. Each round is one month of operations.</p>
@@ -819,7 +800,6 @@
                     </div>
                 </div>
 
-                <!-- INSTRUCTOR SECTION -->
                 <div id="instructor-section" class="hidden">
                     <h2>Instructor Control Panel</h2>
                     <p class="muted">Create and configure simulation rounds. Students will see exactly these rounds in the Student section.</p>
@@ -973,7 +953,6 @@
                     </div>
                 </div>
 
-                <!-- STUDENT SECTION -->
                 <div id="student-section" class="hidden">
                     <h2>Student Rounds</h2>
                     <p class="muted">Navigate through configured rounds and submit pricing decisions for each month.</p>
@@ -981,12 +960,10 @@
                     <div id="current-round-display"></div>
                 </div>
 
-                <!-- RESULTS SECTION WITH TABS -->
                 <div id="results-section" class="hidden">
                     <h2>Simulation Results – Executive P&L Dashboard</h2>
                     <p class="muted">Click on tabs below to view different metrics across all completed rounds</p>
 
-                    <!-- Overall Statistics -->
                     <div class="simulation-status">
                         <div class="status-card">
                             <h4>Total Rounds</h4>
@@ -1006,23 +983,18 @@
                         </div>
                     </div>
 
-                    <!-- Metric Tabs -->
                     <div class="metrics-tabs" id="metrics-tabs">
-                        <div class="metric-tab active" onclick="switchMetricTab('pricing')">💰 Pricing</div>
-                        <div class="metric-tab" onclick="switchMetricTab('demand')">📊 Demand</div>
-                        <div class="metric-tab" onclick="switchMetricTab('sales')">🎟️ Sales & Utilization</div>
-                        <div class="metric-tab" onclick="switchMetricTab('revenue')">💵 Revenue</div>
-                        <div class="metric-tab" onclick="switchMetricTab('costs')">💰 Costs</div>
-                        <div class="metric-tab" onclick="switchMetricTab('profit')">📈 Profit & Margins</div>
+                        <div class="metric-tab active" onclick="switchMetricTab('pricing')">Pricing</div>
+                        <div class="metric-tab" onclick="switchMetricTab('demand')">Demand</div>
+                        <div class="metric-tab" onclick="switchMetricTab('sales')">Sales & Utilization</div>
+                        <div class="metric-tab" onclick="switchMetricTab('revenue')">Revenue</div>
+                        <div class="metric-tab" onclick="switchMetricTab('costs')">Costs</div>
+                        <div class="metric-tab" onclick="switchMetricTab('profit')">Profit & Margins</div>
                     </div>
 
-                    <!-- Metrics Table Container -->
-                    <div id="metrics-table-container" class="metrics-table-container">
-                        <!-- Table will be populated by JavaScript -->
-                    </div>
+                    <div id="metrics-table-container" class="metrics-table-container"></div>
                 </div>
 
-                <!-- PROGRESS SECTION -->
                 <div id="progress-section" class="hidden">
                     <h2>Your Progress & Performance</h2>
                     <div class="simulation-status">
@@ -1068,7 +1040,6 @@
     </div>
 
     <script>
-        // ---------------- ENHANCED STATE ----------------
         const simulationState = {
             rounds: [],
             currentRoundIndex: 1,
@@ -1078,23 +1049,22 @@
             currentMetricTab: 'pricing'
         };
 
-        // ---------------- CITY & SIMULATION PARAMETERS (from Excel Market_Assumptions sheet) ----------------
         const CITY_PARAMS = {
             Mumbai: {
-                baseWeekday: 2200,      // Market_Assumptions!B2
-                baseWeekend: 4200,      // Market_Assumptions!C2
-                elasticityWeekday: -1.4, // Market_Assumptions!D2
-                elasticityWeekend: -1.4, // Market_Assumptions!E2
-                capacity: 11000,         // Theatre_Capacity!E2 (10 screens * 220 seats * 5 shows)
-                variableCost: 35,        // Financials!F2
-                fixedDailyCost: 250000   // Financials!G2
+                baseWeekday: 2200,
+                baseWeekend: 4200,
+                elasticityWeekday: -1.4,
+                elasticityWeekend: -1.4,
+                capacity: 11000,
+                variableCost: 35,
+                fixedDailyCost: 250000
             },
             Delhi: {
                 baseWeekday: 2000,
                 baseWeekend: 3900,
                 elasticityWeekday: -1.3,
                 elasticityWeekend: -1.3,
-                capacity: 8000,           // 8 screens * 200 seats * 5 shows
+                capacity: 8000,
                 variableCost: 30,
                 fixedDailyCost: 200000
             },
@@ -1103,7 +1073,7 @@
                 baseWeekend: 3600,
                 elasticityWeekday: -1.5,
                 elasticityWeekend: -1.5,
-                capacity: 6300,           // 7 screens * 180 seats * 5 shows
+                capacity: 6300,
                 variableCost: 28,
                 fixedDailyCost: 180000
             }
@@ -1116,66 +1086,43 @@
             Monsoon: 0.9
         };
 
-        // ---------------- MOVIE SEGMENT ADJUSTMENT FACTOR (from Movie_Segments sheet) ----------------
         function getSegmentAdjustmentFactor(scenario = 'none') {
-            // Movie_Segments sheet data
             const segments = {
                 blockbuster: { demandShare: 0.45, priceMultiplier: 1.15 },
                 mainstream: { demandShare: 0.35, priceMultiplier: 1.0 },
                 niche: { demandShare: 0.20, priceMultiplier: 0.85 }
             };
             
-            // Calculate SUMPRODUCT = sum(Demand_Share * Price_Multiplier)
-            // Excel: =SUMPRODUCT(Movie_Segments!B2:B4, Movie_Segments!C2:C4)
             let baseSegmentFactor = 0;
             Object.values(segments).forEach(segment => {
                 baseSegmentFactor += segment.demandShare * segment.priceMultiplier;
             });
             
-            // Apply scenario adjustments (similar to Excel's scenario multipliers)
             switch(scenario) {
                 case 'blockbuster':
-                    return baseSegmentFactor * 1.2; // Blockbuster release boosts demand
+                    return baseSegmentFactor * 1.2;
                 case 'demand_drop':
-                    return baseSegmentFactor * 0.8; // Demand drop reduces demand
+                    return baseSegmentFactor * 0.8;
                 case 'economic_boom':
-                    return baseSegmentFactor * 1.15; // Economic boom increases spending
+                    return baseSegmentFactor * 1.15;
                 case 'recession':
-                    return baseSegmentFactor * 0.7; // Recession reduces spending
+                    return baseSegmentFactor * 0.7;
                 default:
-                    return baseSegmentFactor; // Normal: ~1.0375
+                    return baseSegmentFactor;
             }
         }
 
-        // ---------------- SIMULATE CITY – EXACT EXCEL FORMULAS ----------------
         function simulateCity(city, season, weekdayPrice, weekendPrice, competitorWeekday, competitorWeekend, scenario = 'none') {
             const p = CITY_PARAMS[city];
             const seasonMult = SEASON_MULTIPLIER[season] || 1;
-            
-            // Get segment adjustment factor (F2 in Excel formula)
             const segmentFactor = getSegmentAdjustmentFactor(scenario);
 
-            // EXCEL WEEKDAY DEMAND FORMULA:
-            // =Market_Assumptions!B2 * F2 * (Pricing_Decisions!D2/Pricing_Decisions!B2)^ABS(Market_Assumptions!D2) * VLOOKUP(Pricing_Decisions!F2,Market_Assumptions!A6:B10,2,FALSE)
-            let adjWeekdayDemand = p.baseWeekday *                              // Base demand
-                                  segmentFactor *                               // Segment adjustment (F2)
-                                  Math.pow(competitorWeekday / weekdayPrice,    // (Competitor_Price / Your_Price)
-                                  Math.abs(p.elasticityWeekday)) *              // ^ |elasticity|
-                                  seasonMult;                                   // Season multiplier (VLOOKUP)
+            let adjWeekdayDemand = p.baseWeekday * segmentFactor * Math.pow(competitorWeekday / weekdayPrice, Math.abs(p.elasticityWeekday)) * seasonMult;
+            let adjWeekendDemand = p.baseWeekend * segmentFactor * Math.pow(competitorWeekend / weekendPrice, Math.abs(p.elasticityWeekend)) * seasonMult;
 
-            // EXCEL WEEKEND DEMAND FORMULA:
-            // =Market_Assumptions!C2 * F2 * (Pricing_Decisions!E2/Pricing_Decisions!C2)^ABS(Market_Assumptions!E2) * VLOOKUP(Pricing_Decisions!F2,Market_Assumptions!A6:B10,2,FALSE)
-            let adjWeekendDemand = p.baseWeekend *                              // Base demand
-                                  segmentFactor *                               // Segment adjustment (F2)
-                                  Math.pow(competitorWeekend / weekendPrice,    // (Competitor_Price / Your_Price)
-                                  Math.abs(p.elasticityWeekend)) *              // ^ |elasticity|
-                                  seasonMult;                                   // Season multiplier (VLOOKUP)
-
-            // Apply capacity constraint: MIN(demand, capacity) - matches Excel Demand_Model sheet
             const weekdayAttendance = Math.min(adjWeekdayDemand, p.capacity);
             const weekendAttendance = Math.min(adjWeekendDemand, p.capacity);
 
-            // Calculate monthly totals (22 weekdays, 8 weekend days = 30 days)
             const weekdayDays = 22;
             const weekendDays = 8;
 
@@ -1183,32 +1130,24 @@
             const ticketsE = weekendAttendance * weekendDays;
             const ticketsTotal = ticketsW + ticketsE;
 
-            // Revenue calculation - matches Excel Financials sheet
             const revenueW = ticketsW * weekdayPrice;
             const revenueE = ticketsE * weekendPrice;
             const revenueTotal = revenueW + revenueE;
 
-            // Cost calculation - matches Excel Financials sheet
             const varCostTotal = ticketsTotal * p.variableCost;
             const fixedCostTotal = p.fixedDailyCost * (weekdayDays + weekendDays);
             const costTotal = varCostTotal + fixedCostTotal;
 
-            // Profit calculation - matches Excel Financials sheet
             const profit = revenueTotal - costTotal;
             
-            // Utilization calculation - matches Excel Financials sheet formula:
-            // =(Demand_Model!D2+Demand_Model!E2)/(2*Theatre_Capacity!E2)
             const totalAttendance = weekdayAttendance + weekendAttendance;
             const utilization = totalAttendance / (2 * p.capacity);
             
-            // Lost demand (demand above capacity)
             const lostDemand = Math.max(0, adjWeekdayDemand - p.capacity) * weekdayDays + 
                                Math.max(0, adjWeekendDemand - p.capacity) * weekendDays;
 
-            // Average ticket price
             const avgTicketPrice = ticketsTotal > 0 ? revenueTotal / ticketsTotal : 0;
             
-            // Contribution and margins
             const contribution = revenueTotal - varCostTotal;
             const contributionMargin = revenueTotal > 0 ? (contribution / revenueTotal) * 100 : 0;
             const netMargin = revenueTotal > 0 ? (profit / revenueTotal) * 100 : 0;
@@ -1238,7 +1177,6 @@
             };
         }
 
-        // ---------------- ROUND SIMULATION ----------------
         function simulateRound(season, pricesByCity, competitorPricesByCity, scenario = 'none') {
             const cityResults = {};
             let totalProfit = 0;
@@ -1263,29 +1201,43 @@
             return { cityResults, totalProfit, avgUtilization };
         }
 
-        // ---------------- INITIAL ROUNDS SAMPLE ----------------
         function initializeSampleRounds() {
             simulationState.rounds = [];
             for (let i = 1; i <= 3; i++) {
+                const mumbaiWeekdayLow = 200 + i*10;
+                const mumbaiWeekdayHigh = 260 + i*10;
+                const mumbaiWeekendLow = 260 + i*10;
+                const mumbaiWeekendHigh = 340 + i*10;
+                
+                const delhiWeekdayLow = 180 + i*10;
+                const delhiWeekdayHigh = 240 + i*10;
+                const delhiWeekendLow = 240 + i*10;
+                const delhiWeekendHigh = 320 + i*10;
+                
+                const blrWeekdayLow = 160 + i*10;
+                const blrWeekdayHigh = 220 + i*10;
+                const blrWeekendLow = 220 + i*10;
+                const blrWeekendHigh = 300 + i*10;
+                
                 simulationState.rounds.push({
                     roundNumber: i,
-                    season: i === 1 ? 'Festive' : 'Normal',
+                    season: i === 1 ? 'Festive' : (i === 2 ? 'Normal' : 'Festive'),
                     scenario: i === 2 ? 'blockbuster' : 'none',
                     status: i === 1 ? 'active' : 'planned',
                     competitors: {
                         Mumbai: { 
-                            weekdayBand: `₹${220 + i*10} – ₹${280 + i*10}`, 
-                            weekendBand: `₹${280 + i*10} – ₹${360 + i*10}`, 
+                            weekdayBand: `₹${mumbaiWeekdayLow} – ₹${mumbaiWeekdayHigh}`, 
+                            weekendBand: `₹${mumbaiWeekendLow} – ₹${mumbaiWeekendHigh}`, 
                             capacityLabel: i % 3 === 0 ? 'Tight' : i % 3 === 1 ? 'Balanced' : 'Slack'
                         },
                         Delhi: { 
-                            weekdayBand: `₹${200 + i*10} – ₹${260 + i*10}`, 
-                            weekendBand: `₹${260 + i*10} – ₹${340 + i*10}`, 
+                            weekdayBand: `₹${delhiWeekdayLow} – ₹${delhiWeekdayHigh}`, 
+                            weekendBand: `₹${delhiWeekendLow} – ₹${delhiWeekendHigh}`, 
                             capacityLabel: i % 3 === 1 ? 'Tight' : i % 3 === 2 ? 'Balanced' : 'Slack'
                         },
                         Bengaluru: { 
-                            weekdayBand: `₹${180 + i*10} – ₹${240 + i*10}`, 
-                            weekendBand: `₹${240 + i*10} – ₹${320 + i*10}`, 
+                            weekdayBand: `₹${blrWeekdayLow} – ₹${blrWeekdayHigh}`, 
+                            weekendBand: `₹${blrWeekendLow} – ₹${blrWeekendHigh}`, 
                             capacityLabel: i % 3 === 2 ? 'Tight' : i % 3 === 0 ? 'Balanced' : 'Slack'
                         }
                     },
@@ -1301,24 +1253,52 @@
             saveToLocalStorage();
         }
 
-        // ---------------- INSTRUCTOR FUNCTIONS ----------------
         let editingRoundIndex = null;
+
         function createRounds() {
             const roundCount = parseInt(document.getElementById('rounds').value) || 3;
             if (roundCount < 1) return;
             simulationState.rounds = [];
             const defaultSeason = document.getElementById('defaultSeason').value;
             const defaultScenario = document.getElementById('defaultScenario').value;
+            
             for (let i = 1; i <= roundCount; i++) {
+                const mumbaiWeekdayLow = 200 + i*10;
+                const mumbaiWeekdayHigh = 260 + i*10;
+                const mumbaiWeekendLow = 260 + i*10;
+                const mumbaiWeekendHigh = 340 + i*10;
+                
+                const delhiWeekdayLow = 180 + i*10;
+                const delhiWeekdayHigh = 240 + i*10;
+                const delhiWeekendLow = 240 + i*10;
+                const delhiWeekendHigh = 320 + i*10;
+                
+                const blrWeekdayLow = 160 + i*10;
+                const blrWeekdayHigh = 220 + i*10;
+                const blrWeekendLow = 220 + i*10;
+                const blrWeekendHigh = 300 + i*10;
+                
                 simulationState.rounds.push({
                     roundNumber: i,
                     season: defaultSeason,
                     scenario: defaultScenario,
                     status: i === 1 ? 'active' : 'planned',
                     competitors: {
-                        Mumbai: { weekdayBand: `₹${220 + i*10} – ₹${280 + i*10}`, weekendBand: `₹${280 + i*10} – ₹${360 + i*10}`, capacityLabel: i % 3 === 0 ? 'Tight' : i % 3 === 1 ? 'Balanced' : 'Slack' },
-                        Delhi: { weekdayBand: `₹${200 + i*10} – ₹${260 + i*10}`, weekendBand: `₹${260 + i*10} – ₹${340 + i*10}`, capacityLabel: i % 3 === 1 ? 'Tight' : i % 3 === 2 ? 'Balanced' : 'Slack' },
-                        Bengaluru: { weekdayBand: `₹${180 + i*10} – ₹${240 + i*10}`, weekendBand: `₹${240 + i*10} – ₹${320 + i*10}`, capacityLabel: i % 3 === 2 ? 'Tight' : i % 3 === 0 ? 'Balanced' : 'Slack' }
+                        Mumbai: { 
+                            weekdayBand: `₹${mumbaiWeekdayLow} – ₹${mumbaiWeekdayHigh}`, 
+                            weekendBand: `₹${mumbaiWeekendLow} – ₹${mumbaiWeekendHigh}`, 
+                            capacityLabel: i % 3 === 0 ? 'Tight' : i % 3 === 1 ? 'Balanced' : 'Slack' 
+                        },
+                        Delhi: { 
+                            weekdayBand: `₹${delhiWeekdayLow} – ₹${delhiWeekdayHigh}`, 
+                            weekendBand: `₹${delhiWeekendLow} – ₹${delhiWeekendHigh}`, 
+                            capacityLabel: i % 3 === 1 ? 'Tight' : i % 3 === 2 ? 'Balanced' : 'Slack' 
+                        },
+                        Bengaluru: { 
+                            weekdayBand: `₹${blrWeekdayLow} – ₹${blrWeekdayHigh}`, 
+                            weekendBand: `₹${blrWeekendLow} – ₹${blrWeekendHigh}`, 
+                            capacityLabel: i % 3 === 2 ? 'Tight' : i % 3 === 0 ? 'Balanced' : 'Slack' 
+                        }
                     },
                     studentDecisions: null,
                     results: null,
@@ -1329,44 +1309,233 @@
             simulationState.completedRounds = 0;
             simulationState.totalProfit = 0;
             simulationState.performanceHistory = [];
-            renderRoundConfig(); renderRoundPreview(); saveToLocalStorage();
+            renderRoundConfig(); 
+            renderRoundPreview(); 
+            saveToLocalStorage();
             showAlert(`Created ${roundCount} new rounds`, 'success');
         }
+
         function addNewRound() {
             const newRoundNumber = simulationState.rounds.length + 1;
             const defaultSeason = document.getElementById('defaultSeason').value;
             const defaultScenario = document.getElementById('defaultScenario').value;
+            
+            const mumbaiWeekdayLow = 200 + newRoundNumber*10;
+            const mumbaiWeekdayHigh = 260 + newRoundNumber*10;
+            const mumbaiWeekendLow = 260 + newRoundNumber*10;
+            const mumbaiWeekendHigh = 340 + newRoundNumber*10;
+            
+            const delhiWeekdayLow = 180 + newRoundNumber*10;
+            const delhiWeekdayHigh = 240 + newRoundNumber*10;
+            const delhiWeekendLow = 240 + newRoundNumber*10;
+            const delhiWeekendHigh = 320 + newRoundNumber*10;
+            
+            const blrWeekdayLow = 160 + newRoundNumber*10;
+            const blrWeekdayHigh = 220 + newRoundNumber*10;
+            const blrWeekendLow = 220 + newRoundNumber*10;
+            const blrWeekendHigh = 300 + newRoundNumber*10;
+            
             simulationState.rounds.push({
                 roundNumber: newRoundNumber,
                 season: defaultSeason,
                 scenario: defaultScenario,
                 status: 'planned',
                 competitors: {
-                    Mumbai: { weekdayBand: `₹${220 + newRoundNumber*10} – ₹${280 + newRoundNumber*10}`, weekendBand: `₹${280 + newRoundNumber*10} – ₹${360 + newRoundNumber*10}`, capacityLabel: newRoundNumber % 3 === 0 ? 'Tight' : newRoundNumber % 3 === 1 ? 'Balanced' : 'Slack' },
-                    Delhi: { weekdayBand: `₹${200 + newRoundNumber*10} – ₹${260 + newRoundNumber*10}`, weekendBand: `₹${260 + newRoundNumber*10} – ₹${340 + newRoundNumber*10}`, capacityLabel: newRoundNumber % 3 === 1 ? 'Tight' : newRoundNumber % 3 === 2 ? 'Balanced' : 'Slack' },
-                    Bengaluru: { weekdayBand: `₹${180 + newRoundNumber*10} – ₹${240 + newRoundNumber*10}`, weekendBand: `₹${240 + newRoundNumber*10} – ₹${320 + newRoundNumber*10}`, capacityLabel: newRoundNumber % 3 === 2 ? 'Tight' : newRoundNumber % 3 === 0 ? 'Balanced' : 'Slack' }
+                    Mumbai: { 
+                        weekdayBand: `₹${mumbaiWeekdayLow} – ₹${mumbaiWeekdayHigh}`, 
+                        weekendBand: `₹${mumbaiWeekendLow} – ₹${mumbaiWeekendHigh}`, 
+                        capacityLabel: newRoundNumber % 3 === 0 ? 'Tight' : newRoundNumber % 3 === 1 ? 'Balanced' : 'Slack' 
+                    },
+                    Delhi: { 
+                        weekdayBand: `₹${delhiWeekdayLow} – ₹${delhiWeekdayHigh}`, 
+                        weekendBand: `₹${delhiWeekendLow} – ₹${delhiWeekendHigh}`, 
+                        capacityLabel: newRoundNumber % 3 === 1 ? 'Tight' : newRoundNumber % 3 === 2 ? 'Balanced' : 'Slack' 
+                    },
+                    Bengaluru: { 
+                        weekdayBand: `₹${blrWeekdayLow} – ₹${blrWeekdayHigh}`, 
+                        weekendBand: `₹${blrWeekendLow} – ₹${blrWeekendHigh}`, 
+                        capacityLabel: newRoundNumber % 3 === 2 ? 'Tight' : newRoundNumber % 3 === 0 ? 'Balanced' : 'Slack' 
+                    }
                 },
                 studentDecisions: null,
                 results: null,
                 timestamp: null
             });
-            renderRoundConfig(); renderRoundPreview(); saveToLocalStorage();
+            renderRoundConfig(); 
+            renderRoundPreview(); 
+            saveToLocalStorage();
             showAlert(`Added Round ${newRoundNumber}`, 'success');
         }
-        function deleteRound() { if (editingRoundIndex === null) return; if (confirm(`Delete Round ${simulationState.rounds[editingRoundIndex].roundNumber}?`)) { simulationState.rounds.splice(editingRoundIndex,1); simulationState.rounds.forEach((r,i)=>r.roundNumber=i+1); if (simulationState.currentRoundIndex > simulationState.rounds.length) simulationState.currentRoundIndex = Math.max(1, simulationState.rounds.length); simulationState.completedRounds = simulationState.rounds.filter(r=>r.results).length; simulationState.totalProfit = simulationState.rounds.reduce((t,r)=>t + (r.results?r.results.totalProfit:0),0); simulationState.performanceHistory = simulationState.rounds.filter(r=>r.results).map(r=>({round:r.roundNumber,profit:r.results.totalProfit,season:r.season,scenario:r.scenario,avgUtilization:Math.round(r.results.avgUtilization*100)})); editingRoundIndex=null; cancelEdit(); renderRoundConfig(); renderRoundPreview(); saveToLocalStorage(); showAlert('Round deleted','success'); } }
-        function deleteAllRounds() { if (simulationState.rounds.length===0) return; if (confirm('Delete ALL rounds?')) { simulationState.rounds=[]; simulationState.currentRoundIndex=1; simulationState.completedRounds=0; simulationState.totalProfit=0; simulationState.performanceHistory=[]; editingRoundIndex=null; cancelEdit(); renderRoundConfig(); renderRoundPreview(); saveToLocalStorage(); showAlert('All rounds deleted','success'); } }
-        function saveAllRounds() { saveToLocalStorage(); showAlert('All configurations saved','success'); }
-        function editRoundConfig(roundIndex) { editingRoundIndex=roundIndex; const round=simulationState.rounds[roundIndex]; document.getElementById('editing-round-number').textContent=round.roundNumber; document.getElementById('edit-season').value=round.season; document.getElementById('edit-scenario').value=round.scenario; document.getElementById('edit-status').value=round.status; document.getElementById('edit-mumbaiWeekday').value=round.competitors.Mumbai.weekdayBand; document.getElementById('edit-mumbaiWeekend').value=round.competitors.Mumbai.weekendBand; document.getElementById('edit-mumbaiCapacity').value=round.competitors.Mumbai.capacityLabel; document.getElementById('edit-delhiWeekday').value=round.competitors.Delhi.weekdayBand; document.getElementById('edit-delhiWeekend').value=round.competitors.Delhi.weekendBand; document.getElementById('edit-delhiCapacity').value=round.competitors.Delhi.capacityLabel; document.getElementById('edit-blrWeekday').value=round.competitors.Bengaluru.weekdayBand; document.getElementById('edit-blrWeekend').value=round.competitors.Bengaluru.weekendBand; document.getElementById('edit-blrCapacity').value=round.competitors.Bengaluru.capacityLabel; document.getElementById('round-detail-editor').classList.remove('hidden'); document.querySelectorAll('.round-config-card').forEach(c=>c.classList.remove('active')); document.getElementById(`round-card-${roundIndex}`).classList.add('active'); document.getElementById('round-detail-editor').scrollIntoView({behavior:'smooth'}); }
-        function updateCurrentRoundConfig() { if (editingRoundIndex===null) return; const r=simulationState.rounds[editingRoundIndex]; r.season=document.getElementById('edit-season').value; r.scenario=document.getElementById('edit-scenario').value; r.status=document.getElementById('edit-status').value; r.competitors.Mumbai.weekdayBand=document.getElementById('edit-mumbaiWeekday').value; r.competitors.Mumbai.weekendBand=document.getElementById('edit-mumbaiWeekend').value; r.competitors.Mumbai.capacityLabel=document.getElementById('edit-mumbaiCapacity').value; r.competitors.Delhi.weekdayBand=document.getElementById('edit-delhiWeekday').value; r.competitors.Delhi.weekendBand=document.getElementById('edit-delhiWeekend').value; r.competitors.Delhi.capacityLabel=document.getElementById('edit-delhiCapacity').value; r.competitors.Bengaluru.weekdayBand=document.getElementById('edit-blrWeekday').value; r.competitors.Bengaluru.weekendBand=document.getElementById('edit-blrWeekend').value; r.competitors.Bengaluru.capacityLabel=document.getElementById('edit-blrCapacity').value; renderRoundConfig(); renderRoundPreview(); }
-        function saveRoundConfig() { updateCurrentRoundConfig(); cancelEdit(); saveToLocalStorage(); showAlert('Round configuration saved','success'); }
-        function cancelEdit() { editingRoundIndex=null; document.getElementById('round-detail-editor').classList.add('hidden'); document.querySelectorAll('.round-config-card').forEach(c=>c.classList.remove('active')); }
-        function applyToAllRounds(type) { if (editingRoundIndex===null) return; const val = type==='season'?simulationState.rounds[editingRoundIndex].season:simulationState.rounds[editingRoundIndex].scenario; simulationState.rounds.forEach(r=>{if(type==='season') r.season=val; else r.scenario=val;}); renderRoundConfig(); renderRoundPreview(); saveToLocalStorage(); showAlert(`Applied ${type} to all rounds`,'success'); }
-        function randomizeAllRounds() { if (simulationState.rounds.length===0) return; const seasons=['Normal','Festive','Exam','Monsoon']; const scenarios=['none','blockbuster','demand_drop','economic_boom','recession']; const capacities=['Tight','Balanced','Slack']; simulationState.rounds.forEach((r,i)=>{ r.season=seasons[Math.floor(Math.random()*seasons.length)]; r.scenario=scenarios[Math.floor(Math.random()*scenarios.length)]; r.status=i===0?'active':'planned'; r.competitors.Mumbai.capacityLabel=capacities[Math.floor(Math.random()*capacities.length)]; r.competitors.Delhi.capacityLabel=capacities[Math.floor(Math.random()*capacities.length)]; r.competitors.Bengaluru.capacityLabel=capacities[Math.floor(Math.random()*capacities.length)]; r.studentDecisions=null; r.results=null; r.timestamp=null; }); simulationState.completedRounds=0; simulationState.totalProfit=0; simulationState.performanceHistory=[]; simulationState.currentRoundIndex=1; renderRoundConfig(); renderRoundPreview(); saveToLocalStorage(); showAlert('All rounds randomized and reset','success'); }
-        function renderRoundConfig() { const c=document.getElementById('round-config-container'); if(!c)return; c.innerHTML=simulationState.rounds.map((r,i)=>`<div class="round-config-card ${editingRoundIndex===i?'active':''}" id="round-card-${i}" onclick="editRoundConfig(${i})"><div class="round-config-header"><div class="round-number-badge">Round ${r.roundNumber}</div><div><span class="round-status-indicator status-${r.status}"></span><span style="font-size:0.8em;text-transform:capitalize;">${r.status}</span></div></div><div class="round-summary"><p><strong>Season:</strong> ${r.season}</p><p><strong>Scenario:</strong> ${r.scenario.replace('_',' ')}</p><p><strong>Mumbai Capacity:</strong> ${r.competitors.Mumbai.capacityLabel}</p>${r.results?`<p><strong>Profit:</strong> ₹${Math.round(r.results.totalProfit).toLocaleString('en-IN')}</p>`:''}</div></div>`).join(''); document.getElementById('round-count').textContent=simulationState.rounds.length; }
-        function renderRoundPreview() { const p=document.getElementById('round-preview-container'); if(!p)return; if(simulationState.rounds.length===0) {p.innerHTML='<p class="muted" style="text-align:center;padding:20px;">No rounds created yet.</p>'; return;} p.innerHTML=simulationState.rounds.map(r=>`<div class="round-preview"><div class="round-preview-number">${r.roundNumber}</div><div class="round-preview-details"><h4 style="margin:0 0 5px 0;">Round ${r.roundNumber}: ${r.season} Season</h4><p style="margin:0;color:#6b7280;font-size:0.9em;">Scenario: ${r.scenario.replace('_',' ')} | Status: <span style="text-transform:capitalize;">${r.status}</span></p>${r.results?`<p style="margin:5px 0 0 0;font-size:0.9em;"><strong>Profit:</strong> ₹${Math.round(r.results.totalProfit).toLocaleString('en-IN')} | <strong>Completed:</strong> ${r.timestamp?new Date(r.timestamp).toLocaleDateString():'N/A'}</p>`:''}</div><div class="round-preview-actions"><button class="btn" onclick="editRoundConfig(${r.roundNumber-1})" style="padding:5px 10px;font-size:0.9em;">Edit</button><button class="delete-round-btn" onclick="deleteSingleRound(${r.roundNumber-1})">Delete</button></div></div>`).join(''); }
-        function deleteSingleRound(i) { if(confirm(`Delete Round ${simulationState.rounds[i].roundNumber}?`)){ simulationState.rounds.splice(i,1); simulationState.rounds.forEach((r,idx)=>r.roundNumber=idx+1); if(simulationState.currentRoundIndex>simulationState.rounds.length) simulationState.currentRoundIndex=Math.max(1,simulationState.rounds.length); simulationState.completedRounds=simulationState.rounds.filter(r=>r.results).length; simulationState.totalProfit=simulationState.rounds.reduce((t,r)=>t+(r.results?r.results.totalProfit:0),0); renderRoundConfig(); renderRoundPreview(); saveToLocalStorage(); showAlert('Round deleted','success'); } }
 
-        // ---------------- STUDENT FUNCTIONS ----------------
+        function deleteRound() { 
+            if (editingRoundIndex === null) return; 
+            if (confirm(`Delete Round ${simulationState.rounds[editingRoundIndex].roundNumber}?`)) { 
+                simulationState.rounds.splice(editingRoundIndex,1); 
+                simulationState.rounds.forEach((r,i)=>r.roundNumber=i+1); 
+                if (simulationState.currentRoundIndex > simulationState.rounds.length) 
+                    simulationState.currentRoundIndex = Math.max(1, simulationState.rounds.length); 
+                simulationState.completedRounds = simulationState.rounds.filter(r=>r.results).length; 
+                simulationState.totalProfit = simulationState.rounds.reduce((t,r)=>t + (r.results?r.results.totalProfit:0),0); 
+                simulationState.performanceHistory = simulationState.rounds.filter(r=>r.results).map(r=>({
+                    round:r.roundNumber,
+                    profit:r.results.totalProfit,
+                    season:r.season,
+                    scenario:r.scenario,
+                    avgUtilization:Math.round(r.results.avgUtilization*100)
+                })); 
+                editingRoundIndex=null; 
+                cancelEdit(); 
+                renderRoundConfig(); 
+                renderRoundPreview(); 
+                saveToLocalStorage(); 
+                showAlert('Round deleted','success'); 
+            } 
+        }
+
+        function deleteAllRounds() { 
+            if (simulationState.rounds.length===0) return; 
+            if (confirm('Delete ALL rounds?')) { 
+                simulationState.rounds=[]; 
+                simulationState.currentRoundIndex=1; 
+                simulationState.completedRounds=0; 
+                simulationState.totalProfit=0; 
+                simulationState.performanceHistory=[]; 
+                editingRoundIndex=null; 
+                cancelEdit(); 
+                renderRoundConfig(); 
+                renderRoundPreview(); 
+                saveToLocalStorage(); 
+                showAlert('All rounds deleted','success'); 
+            } 
+        }
+
+        function saveAllRounds() { 
+            saveToLocalStorage(); 
+            showAlert('All configurations saved','success'); 
+        }
+
+        function editRoundConfig(roundIndex) { 
+            editingRoundIndex=roundIndex; 
+            const round=simulationState.rounds[roundIndex]; 
+            document.getElementById('editing-round-number').textContent=round.roundNumber; 
+            document.getElementById('edit-season').value=round.season; 
+            document.getElementById('edit-scenario').value=round.scenario; 
+            document.getElementById('edit-status').value=round.status; 
+            document.getElementById('edit-mumbaiWeekday').value=round.competitors.Mumbai.weekdayBand; 
+            document.getElementById('edit-mumbaiWeekend').value=round.competitors.Mumbai.weekendBand; 
+            document.getElementById('edit-mumbaiCapacity').value=round.competitors.Mumbai.capacityLabel; 
+            document.getElementById('edit-delhiWeekday').value=round.competitors.Delhi.weekdayBand; 
+            document.getElementById('edit-delhiWeekend').value=round.competitors.Delhi.weekendBand; 
+            document.getElementById('edit-delhiCapacity').value=round.competitors.Delhi.capacityLabel; 
+            document.getElementById('edit-blrWeekday').value=round.competitors.Bengaluru.weekdayBand; 
+            document.getElementById('edit-blrWeekend').value=round.competitors.Bengaluru.weekendBand; 
+            document.getElementById('edit-blrCapacity').value=round.competitors.Bengaluru.capacityLabel; 
+            document.getElementById('round-detail-editor').classList.remove('hidden'); 
+            document.querySelectorAll('.round-config-card').forEach(c=>c.classList.remove('active')); 
+            document.getElementById(`round-card-${roundIndex}`).classList.add('active'); 
+            document.getElementById('round-detail-editor').scrollIntoView({behavior:'smooth'}); 
+        }
+
+        function updateCurrentRoundConfig() { 
+            if (editingRoundIndex===null) return; 
+            const r=simulationState.rounds[editingRoundIndex]; 
+            r.season=document.getElementById('edit-season').value; 
+            r.scenario=document.getElementById('edit-scenario').value; 
+            r.status=document.getElementById('edit-status').value; 
+            r.competitors.Mumbai.weekdayBand=document.getElementById('edit-mumbaiWeekday').value; 
+            r.competitors.Mumbai.weekendBand=document.getElementById('edit-mumbaiWeekend').value; 
+            r.competitors.Mumbai.capacityLabel=document.getElementById('edit-mumbaiCapacity').value; 
+            r.competitors.Delhi.weekdayBand=document.getElementById('edit-delhiWeekday').value; 
+            r.competitors.Delhi.weekendBand=document.getElementById('edit-delhiWeekend').value; 
+            r.competitors.Delhi.capacityLabel=document.getElementById('edit-delhiCapacity').value; 
+            r.competitors.Bengaluru.weekdayBand=document.getElementById('edit-blrWeekday').value; 
+            r.competitors.Bengaluru.weekendBand=document.getElementById('edit-blrWeekend').value; 
+            r.competitors.Bengaluru.capacityLabel=document.getElementById('edit-blrCapacity').value; 
+            renderRoundConfig(); 
+            renderRoundPreview(); 
+        }
+
+        function saveRoundConfig() { 
+            updateCurrentRoundConfig(); 
+            cancelEdit(); 
+            saveToLocalStorage(); 
+            showAlert('Round configuration saved','success'); 
+        }
+
+        function cancelEdit() { 
+            editingRoundIndex=null; 
+            document.getElementById('round-detail-editor').classList.add('hidden'); 
+            document.querySelectorAll('.round-config-card').forEach(c=>c.classList.remove('active')); 
+        }
+
+        function applyToAllRounds(type) { 
+            if (editingRoundIndex===null) return; 
+            const val = type==='season'?simulationState.rounds[editingRoundIndex].season:simulationState.rounds[editingRoundIndex].scenario; 
+            simulationState.rounds.forEach(r=>{if(type==='season') r.season=val; else r.scenario=val;}); 
+            renderRoundConfig(); 
+            renderRoundPreview(); 
+            saveToLocalStorage(); 
+            showAlert(`Applied ${type} to all rounds`,'success'); 
+        }
+
+        function randomizeAllRounds() { 
+            if (simulationState.rounds.length===0) return; 
+            const seasons=['Normal','Festive','Exam','Monsoon']; 
+            const scenarios=['none','blockbuster','demand_drop','economic_boom','recession']; 
+            const capacities=['Tight','Balanced','Slack']; 
+            simulationState.rounds.forEach((r,i)=>{ 
+                r.season=seasons[Math.floor(Math.random()*seasons.length)]; 
+                r.scenario=scenarios[Math.floor(Math.random()*scenarios.length)]; 
+                r.status=i===0?'active':'planned'; 
+                r.competitors.Mumbai.capacityLabel=capacities[Math.floor(Math.random()*capacities.length)]; 
+                r.competitors.Delhi.capacityLabel=capacities[Math.floor(Math.random()*capacities.length)]; 
+                r.competitors.Bengaluru.capacityLabel=capacities[Math.floor(Math.random()*capacities.length)]; 
+                r.studentDecisions=null; 
+                r.results=null; 
+                r.timestamp=null; 
+            }); 
+            simulationState.completedRounds=0; 
+            simulationState.totalProfit=0; 
+            simulationState.performanceHistory=[]; 
+            simulationState.currentRoundIndex=1; 
+            renderRoundConfig(); 
+            renderRoundPreview(); 
+            saveToLocalStorage(); 
+            showAlert('All rounds randomized and reset','success'); 
+        }
+
+        function renderRoundConfig() { 
+            const c=document.getElementById('round-config-container'); 
+            if(!c)return; 
+            c.innerHTML=simulationState.rounds.map((r,i)=>`<div class="round-config-card ${editingRoundIndex===i?'active':''}" id="round-card-${i}" onclick="editRoundConfig(${i})"><div class="round-config-header"><div class="round-number-badge">Round ${r.roundNumber}</div><div><span class="round-status-indicator status-${r.status}"></span><span style="font-size:0.8em;text-transform:capitalize;">${r.status}</span></div></div><div class="round-summary"><p><strong>Season:</strong> ${r.season}</p><p><strong>Scenario:</strong> ${r.scenario.replace('_',' ')}</p><p><strong>Mumbai Capacity:</strong> ${r.competitors.Mumbai.capacityLabel}</p>${r.results?`<p><strong>Profit:</strong> ₹${Math.round(r.results.totalProfit).toLocaleString('en-IN')}</p>`:''}</div></div>`).join(''); 
+            document.getElementById('round-count').textContent=simulationState.rounds.length; 
+        }
+
+        function renderRoundPreview() { 
+            const p=document.getElementById('round-preview-container'); 
+            if(!p)return; 
+            if(simulationState.rounds.length===0) {
+                p.innerHTML='<p class="muted" style="text-align:center;padding:20px;">No rounds created yet.</p>'; 
+                return;
+            } 
+            p.innerHTML=simulationState.rounds.map(r=>`<div class="round-preview"><div class="round-preview-number">${r.roundNumber}</div><div class="round-preview-details"><h4 style="margin:0 0 5px 0;">Round ${r.roundNumber}: ${r.season} Season</h4><p style="margin:0;color:#6b7280;font-size:0.9em;">Scenario: ${r.scenario.replace('_',' ')} | Status: <span style="text-transform:capitalize;">${r.status}</span></p>${r.results?`<p style="margin:5px 0 0 0;font-size:0.9em;"><strong>Profit:</strong> ₹${Math.round(r.results.totalProfit).toLocaleString('en-IN')} | <strong>Completed:</strong> ${r.timestamp?new Date(r.timestamp).toLocaleDateString():'N/A'}</p>`:''}</div><div class="round-preview-actions"><button class="btn" onclick="editRoundConfig(${r.roundNumber-1})" style="padding:5px 10px;font-size:0.9em;">Edit</button><button class="delete-round-btn" onclick="deleteSingleRound(${r.roundNumber-1})">Delete</button></div></div>`).join(''); 
+        }
+
+        function deleteSingleRound(i) { 
+            if(confirm(`Delete Round ${simulationState.rounds[i].roundNumber}?`)){ 
+                simulationState.rounds.splice(i,1); 
+                simulationState.rounds.forEach((r,idx)=>r.roundNumber=idx+1); 
+                if(simulationState.currentRoundIndex>simulationState.rounds.length) 
+                    simulationState.currentRoundIndex=Math.max(1,simulationState.rounds.length); 
+                simulationState.completedRounds=simulationState.rounds.filter(r=>r.results).length; 
+                simulationState.totalProfit=simulationState.rounds.reduce((t,r)=>t+(r.results?r.results.totalProfit:0),0); 
+                renderRoundConfig(); 
+                renderRoundPreview(); 
+                saveToLocalStorage(); 
+                showAlert('Round deleted','success'); 
+            } 
+        }
+
         function loadStudentRound() { 
             const sel = document.getElementById('round-selector'); 
             const disp = document.getElementById('current-round-display'); 
@@ -1441,7 +1610,7 @@
                 </div>`; 
             } 
         }
-        
+
         function selectStudentRound(rn) { 
             const prev = simulationState.rounds.find(r => r.roundNumber === rn-1); 
             if (rn > 1 && prev && !prev.results) { 
@@ -1451,7 +1620,7 @@
             simulationState.currentRoundIndex = rn; 
             loadStudentRound(); 
         }
-        
+
         function nextStudentRound() { 
             if (simulationState.currentRoundIndex < simulationState.rounds.length) { 
                 const cur = simulationState.rounds.find(r => r.roundNumber === simulationState.currentRoundIndex); 
@@ -1463,14 +1632,14 @@
                 loadStudentRound(); 
             } 
         }
-        
+
         function prevStudentRound() { 
             if (simulationState.currentRoundIndex > 1) { 
                 simulationState.currentRoundIndex--; 
                 loadStudentRound(); 
             } 
         }
-        
+
         function resetStudentProgress() { 
             if (confirm('Reset your progress?')) { 
                 simulationState.rounds.forEach(r => {
@@ -1490,15 +1659,13 @@
                 showAlert('Progress reset', 'success'); 
             } 
         }
-        
-        // ---------------- UPDATED SUBMIT ROUND PRICES - with static competitor prices ----------------
+
         function submitRoundPrices(rn) {
             const idx = rn - 1;
             const round = simulationState.rounds[idx];
             const prices = {};
             const competitorPrices = {};
             
-            // Get student's price inputs
             Object.keys(round.competitors).forEach(city => {
                 const low = city.toLowerCase();
                 const wd = parseInt(document.getElementById(`price-${low}-weekday`).value) || 0;
@@ -1506,33 +1673,39 @@
                 prices[city] = { weekday: wd, weekend: we };
             });
             
-            // Parse competitor prices from the round configuration (static, like Excel)
             Object.keys(round.competitors).forEach(city => {
-                // Extract competitor prices from the band strings (e.g., "₹220 – ₹280")
-                const weekdayBand = round.competitors[city].weekdayBand;
-                const weekendBand = round.competitors[city].weekendBand;
+                const compData = round.competitors[city];
                 
-                // Parse the band to get low and high values
-                const weekdayMatches = weekdayBand.match(/₹(\d+)/g);
-                const weekendMatches = weekendBand.match(/₹(\d+)/g);
-                
-                if (weekdayMatches && weekdayMatches.length >= 2) {
-                    const low = parseInt(weekdayMatches[0].replace('₹', ''));
-                    const high = parseInt(weekdayMatches[1].replace('₹', ''));
-                    competitorPrices[city] = {
-                        weekday: Math.round((low + high) / 2), // Use midpoint as static competitor price
-                        weekend: 0
-                    };
+                if (compData.weekdayBand) {
+                    const weekdayMatch = compData.weekdayBand.match(/₹(\d+)/g);
+                    if (weekdayMatch && weekdayMatch.length >= 2) {
+                        const low = parseInt(weekdayMatch[0].replace('₹', ''));
+                        const high = parseInt(weekdayMatch[1].replace('₹', ''));
+                        competitorPrices[city] = { 
+                            weekday: Math.round((low + high) / 2),
+                            weekend: 0
+                        };
+                    } else {
+                        competitorPrices[city] = { weekday: 240, weekend: 0 };
+                    }
+                } else {
+                    competitorPrices[city] = { weekday: 240, weekend: 0 };
                 }
                 
-                if (weekendMatches && weekendMatches.length >= 2) {
-                    const low = parseInt(weekendMatches[0].replace('₹', ''));
-                    const high = parseInt(weekendMatches[1].replace('₹', ''));
-                    competitorPrices[city].weekend = Math.round((low + high) / 2);
+                if (compData.weekendBand) {
+                    const weekendMatch = compData.weekendBand.match(/₹(\d+)/g);
+                    if (weekendMatch && weekendMatch.length >= 2) {
+                        const low = parseInt(weekendMatch[0].replace('₹', ''));
+                        const high = parseInt(weekendMatch[1].replace('₹', ''));
+                        competitorPrices[city].weekend = Math.round((low + high) / 2);
+                    } else {
+                        competitorPrices[city].weekend = 340;
+                    }
+                } else {
+                    competitorPrices[city].weekend = 340;
                 }
             });
             
-            // Validate prices
             const errors = [];
             Object.keys(prices).forEach(c => {
                 if (prices[c].weekday < 50 || prices[c].weekday > 1000) 
@@ -1546,16 +1719,13 @@
                 return;
             }
             
-            // Run simulation with static competitor prices (matching Excel behavior)
             const result = simulateRound(round.season, prices, competitorPrices, round.scenario);
             
-            // Save results
             round.studentDecisions = prices;
             round.results = result;
             round.timestamp = new Date().toISOString();
             round.status = 'completed';
             
-            // Update state
             simulationState.completedRounds++;
             simulationState.totalProfit += result.totalProfit;
             simulationState.performanceHistory.push({
@@ -1566,12 +1736,10 @@
                 avgUtilization: Math.round(result.avgUtilization * 100)
             });
             
-            // Activate next round if available
             if (rn < simulationState.rounds.length) {
                 simulationState.rounds[idx + 1].status = 'active';
             }
             
-            // Save and update UI
             saveToLocalStorage();
             loadStudentRound();
             updateResultsSection();
@@ -1579,17 +1747,14 @@
             showAlert(`Round ${rn} completed! Profit: ₹${Math.round(result.totalProfit).toLocaleString('en-IN')}`, 'success');
         }
 
-        // ---------------- TABBED RESULTS SECTION ----------------
         function switchMetricTab(tabId) {
             simulationState.currentMetricTab = tabId;
             
-            // Update tab active states
             document.querySelectorAll('.metric-tab').forEach(tab => {
                 tab.classList.remove('active');
             });
             event.target.classList.add('active');
             
-            // Refresh the table
             updateResultsSection();
         }
 
@@ -1610,7 +1775,6 @@
 
             let tableHtml = '<table class="metrics-table">';
             
-            // Add table header based on selected tab
             tableHtml += '<thead><tr>';
             tableHtml += '<th>Round</th>';
             tableHtml += '<th>City</th>';
@@ -1652,7 +1816,6 @@
             }
             tableHtml += '</tr></thead><tbody>';
 
-            // Add data rows
             completedRounds.forEach(round => {
                 const cities = Object.keys(round.results.cityResults);
                 cities.forEach((city, index) => {
@@ -1698,7 +1861,8 @@
                             tableHtml += `<td class="${profitClass}">₹${Math.round(cr.profit).toLocaleString('en-IN')}</td>`;
                             tableHtml += `<td class="${marginClass}">${cr.netMargin.toFixed(1)}%</td>`;
                             if (index === 0) {
-                                tableHtml += `<td rowspan="${cities.length}" style="background: #f8fafc; font-weight: 600; ${round.results.totalProfit >= 0 ? 'color: #27ae60;' : 'color: #e74c3c;'}">₹${Math.round(round.results.totalProfit).toLocaleString('en-IN')}</td>`;
+                                const roundProfitClass = round.results.totalProfit >= 0 ? 'metric-value-positive' : 'metric-value-negative';
+                                tableHtml += `<td rowspan="${cities.length}" style="background: #f8fafc; font-weight: 600;" class="${roundProfitClass}">₹${Math.round(round.results.totalProfit).toLocaleString('en-IN')}</td>`;
                             }
                             break;
                     }
@@ -1710,7 +1874,6 @@
             container.innerHTML = tableHtml;
         }
 
-        // ---------------- PROGRESS FUNCTIONS ----------------
         function updateProgressSection() { 
             document.getElementById('progress-total-rounds').textContent = simulationState.rounds.length;
             document.getElementById('progress-completed-rounds').textContent = simulationState.completedRounds;
@@ -1729,12 +1892,41 @@
             } else { sumEl.innerHTML = '<p class="muted">Complete rounds to see your performance summary</p>'; }
         }
 
-        // ---------------- UTILITY FUNCTIONS ----------------
-        function saveToLocalStorage() { try { localStorage.setItem('cineprice_simulation', JSON.stringify(simulationState)); } catch(e) { console.warn('localStorage save failed', e); } }
-        function loadFromLocalStorage() { try { const saved = localStorage.getItem('cineprice_simulation'); if (saved) { Object.assign(simulationState, JSON.parse(saved)); return true; } } catch(e) { console.warn('localStorage load failed', e); } return false; }
-        function showAlert(message, type = 'success') { const alertDiv = document.createElement('div'); alertDiv.className = `alert alert-${type}`; alertDiv.innerHTML = `<strong>${type==='success'?'Success':'Warning'}</strong> ${message}`; alertDiv.style.position='fixed'; alertDiv.style.top='20px'; alertDiv.style.right='20px'; alertDiv.style.zIndex='1000'; alertDiv.style.minWidth='300px'; alertDiv.style.maxWidth='400px'; document.body.appendChild(alertDiv); setTimeout(()=>alertDiv.remove(), 3000); }
+        function saveToLocalStorage() { 
+            try { 
+                localStorage.setItem('cineprice_simulation', JSON.stringify(simulationState)); 
+            } catch(e) { 
+                console.warn('localStorage save failed', e); 
+            } 
+        }
 
-        // ---------------- MODULE SWITCH ----------------
+        function loadFromLocalStorage() { 
+            try { 
+                const saved = localStorage.getItem('cineprice_simulation'); 
+                if (saved) { 
+                    Object.assign(simulationState, JSON.parse(saved)); 
+                    return true; 
+                } 
+            } catch(e) { 
+                console.warn('localStorage load failed', e); 
+            } 
+            return false; 
+        }
+
+        function showAlert(message, type = 'success') { 
+            const alertDiv = document.createElement('div'); 
+            alertDiv.className = `alert alert-${type}`; 
+            alertDiv.innerHTML = `<strong>${type==='success'?'Success':'Warning'}</strong> ${message}`; 
+            alertDiv.style.position='fixed'; 
+            alertDiv.style.top='20px'; 
+            alertDiv.style.right='20px'; 
+            alertDiv.style.zIndex='1000'; 
+            alertDiv.style.minWidth='300px'; 
+            alertDiv.style.maxWidth='400px'; 
+            document.body.appendChild(alertDiv); 
+            setTimeout(()=>alertDiv.remove(), 3000); 
+        }
+
         function switchModule(module) {
             document.querySelectorAll('[id$="-section"]').forEach(el => el.classList.add('hidden'));
             document.getElementById(module + '-section').classList.remove('hidden');
@@ -1747,7 +1939,6 @@
             if (module === 'instructor') { renderRoundConfig(); renderRoundPreview(); }
         }
 
-        // ---------------- INITIALIZATION ----------------
         function init() {
             if (!loadFromLocalStorage()) {
                 initializeSampleRounds();
