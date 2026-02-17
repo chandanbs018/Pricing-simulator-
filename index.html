@@ -1135,7 +1135,7 @@
             return isNaN(lower) ? 1 : lower;
         }
 
-        // Updated simulateCity with competitor-based pricing
+        // Updated simulateCity with Excel-aligned demand formula
         function simulateCity(city, season, weekdayPrice, weekendPrice, scenario = 'none', competitorData) {
             
             const p = CITY_PARAMS[city];
@@ -1147,13 +1147,14 @@
             const seasonMult = SEASON_MULTIPLIER[season] || 1;
             const segmentFactor = getSegmentAdjustmentFactor(scenario);
 
-            // Updated demand formula using competitor prices as base
+            // Excel-aligned demand formula:
+            // BaseDemand × SegmentFactor × (CompetitorBase / YourPrice) ^ |Elasticity| × SeasonMultiplier
             let adjWeekdayDemand =
                 p.baseWeekday *
                 segmentFactor *
                 Math.pow(
-                    weekdayPrice / competitorWeekdayBase,
-                    p.elasticityWeekday
+                    competitorWeekdayBase / weekdayPrice,
+                    Math.abs(p.elasticityWeekday)
                 ) *
                 seasonMult;
 
@@ -1161,8 +1162,8 @@
                 p.baseWeekend *
                 segmentFactor *
                 Math.pow(
-                    weekendPrice / competitorWeekendBase,
-                    p.elasticityWeekend
+                    competitorWeekendBase / weekendPrice,
+                    Math.abs(p.elasticityWeekend)
                 ) *
                 seasonMult;
 
