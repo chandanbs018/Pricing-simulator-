@@ -956,6 +956,26 @@
                 <div id="student-section" class="hidden">
                     <h2>Student Rounds</h2>
                     <p class="muted">Navigate through configured rounds and submit pricing decisions for each month.</p>
+                    
+                    <div class="simulation-status">
+                        <div class="status-card">
+                            <h4>Total Rounds</h4>
+                            <div class="status-value" id="student-total-rounds">0</div>
+                        </div>
+                        <div class="status-card">
+                            <h4>Completed Rounds</h4>
+                            <div class="status-value" id="student-completed-rounds">0</div>
+                        </div>
+                        <div class="status-card">
+                            <h4>Cumulative Profit</h4>
+                            <div class="status-value" id="student-total-profit">₹0</div>
+                        </div>
+                        <div class="status-card">
+                            <h4>Avg Profit/Round</h4>
+                            <div class="status-value" id="student-avg-profit">₹0</div>
+                        </div>
+                    </div>
+                    
                     <div class="student-round-selector" id="round-selector"></div>
                     <div id="current-round-display"></div>
                 </div>
@@ -963,25 +983,6 @@
                 <div id="results-section" class="hidden">
                     <h2>Simulation Results – Executive P&L Dashboard</h2>
                     <p class="muted">Click on tabs below to view different metrics across all completed rounds</p>
-
-                    <div class="simulation-status">
-                        <div class="status-card">
-                            <h4>Total Rounds</h4>
-                            <div class="status-value" id="results-total-rounds">0</div>
-                        </div>
-                        <div class="status-card">
-                            <h4>Completed Rounds</h4>
-                            <div class="status-value" id="results-completed-rounds">0</div>
-                        </div>
-                        <div class="status-card">
-                            <h4>Cumulative Profit</h4>
-                            <div class="status-value" id="results-total-profit">₹0</div>
-                        </div>
-                        <div class="status-card">
-                            <h4>Avg Profit/Round</h4>
-                            <div class="status-value" id="results-avg-profit">₹0</div>
-                        </div>
-                    </div>
 
                     <div class="metrics-tabs" id="metrics-tabs">
                         <div class="metric-tab active" onclick="switchMetricTab(event, 'pricing')">Pricing</div>
@@ -1118,18 +1119,40 @@
             }
         }
 
-        function simulateCity(city, season, weekdayPrice, weekendPrice, scenario = 'none') {
+        // Helper function to extract lower bound from price band string
+        function extractLowerBound(priceBand) {
+            if (!priceBand) return 1;
+
+            // Remove currency symbol and spaces
+            const cleaned = priceBand.replace(/₹/g, '').trim();
+
+            // Split on dash (using en dash or hyphen)
+            const parts = cleaned.split(/[–-]/);
+
+            // Extract first number
+            const lower = parseFloat(parts[0].trim());
+
+            return isNaN(lower) ? 1 : lower;
+        }
+
+        // Updated simulateCity with competitor-based pricing
+        function simulateCity(city, season, weekdayPrice, weekendPrice, scenario = 'none', competitorData) {
             
             const p = CITY_PARAMS[city];
+
+            // Extract competitor base prices from the range
+            const competitorWeekdayBase = extractLowerBound(competitorData.weekdayBand);
+            const competitorWeekendBase = extractLowerBound(competitorData.weekendBand);
 
             const seasonMult = SEASON_MULTIPLIER[season] || 1;
             const segmentFactor = getSegmentAdjustmentFactor(scenario);
 
+            // Updated demand formula using competitor prices as base
             let adjWeekdayDemand =
                 p.baseWeekday *
                 segmentFactor *
                 Math.pow(
-                    weekdayPrice / p.baseWeekdayPrice,
+                    weekdayPrice / competitorWeekdayBase,
                     p.elasticityWeekday
                 ) *
                 seasonMult;
@@ -1138,7 +1161,7 @@
                 p.baseWeekend *
                 segmentFactor *
                 Math.pow(
-                    weekendPrice / p.baseWeekendPrice,
+                    weekendPrice / competitorWeekendBase,
                     p.elasticityWeekend
                 ) *
                 seasonMult;
@@ -1184,6 +1207,8 @@
             return {
                 weekdayPrice,
                 weekendPrice,
+                competitorWeekdayBase,
+                competitorWeekendBase,
                 adjWeekdayDemand,
                 adjWeekendDemand,
                 weekdayAttendance,
@@ -1204,7 +1229,8 @@
             };
         }
 
-        function simulateRound(season, pricesByCity, scenario = 'none') {
+        // Updated simulateRound to pass competitor data
+        function simulateRound(roundIndex, season, pricesByCity, scenario = 'none') {
             const cityResults = {};
             let totalProfit = 0;
             let totalUtilization = 0;
@@ -1215,7 +1241,8 @@
                     season,
                     pricesByCity[city].weekday,
                     pricesByCity[city].weekend,
-                    scenario
+                    scenario,
+                    simulationState.rounds[roundIndex].competitors[city]
                 );
                 cityResults[city] = r;
                 totalProfit += r.profit;
@@ -1537,9 +1564,19 @@
             } 
         }
 
+        function updateStudentStatus() {
+            document.getElementById('student-total-rounds').textContent = simulationState.rounds.length;
+            document.getElementById('student-completed-rounds').textContent = simulationState.completedRounds;
+            document.getElementById('student-total-profit').textContent = `₹${simulationState.totalProfit.toLocaleString('en-IN')}`;
+            const avgProfit = simulationState.completedRounds > 0 ? Math.round(simulationState.totalProfit / simulationState.completedRounds) : 0;
+            document.getElementById('student-avg-profit').textContent = `₹${avgProfit.toLocaleString('en-IN')}`;
+        }
+
         function loadStudentRound() { 
             const sel = document.getElementById('round-selector'); 
             const disp = document.getElementById('current-round-display'); 
+            
+            updateStudentStatus();
             
             if (simulationState.rounds.length === 0) {
                 sel.innerHTML = '<p class="muted">No rounds configured.</p>'; 
@@ -1661,6 +1698,7 @@
             } 
         }
 
+        // Updated submitRoundPrices to pass round index
         function submitRoundPrices(rn) {
             const idx = rn - 1;
             const round = simulationState.rounds[idx];
@@ -1686,7 +1724,8 @@
                 return;
             }
             
-            const result = simulateRound(round.season, prices, round.scenario);
+            // Pass the round index to simulateRound
+            const result = simulateRound(idx, round.season, prices, round.scenario);
             
             round.studentDecisions = prices;
             round.results = result;
@@ -1727,12 +1766,6 @@
         }
 
         function updateResultsSection() {
-            document.getElementById('results-total-rounds').textContent = simulationState.rounds.length;
-            document.getElementById('results-completed-rounds').textContent = simulationState.completedRounds;
-            document.getElementById('results-total-profit').textContent = `₹${simulationState.totalProfit.toLocaleString('en-IN')}`;
-            const avgProfit = simulationState.completedRounds > 0 ? Math.round(simulationState.totalProfit / simulationState.completedRounds) : 0;
-            document.getElementById('results-avg-profit').textContent = `₹${avgProfit.toLocaleString('en-IN')}`;
-
             const container = document.getElementById('metrics-table-container');
             const completedRounds = simulationState.rounds.filter(r => r.results !== null);
             
@@ -1751,6 +1784,8 @@
                 case 'pricing':
                     tableHtml += '<th>Your Weekday (₹)</th>';
                     tableHtml += '<th>Your Weekend (₹)</th>';
+                    tableHtml += '<th>Competitor Weekday Base (₹)</th>';
+                    tableHtml += '<th>Competitor Weekend Base (₹)</th>';
                     tableHtml += '<th>Avg Ticket (₹)</th>';
                     break;
                 case 'demand':
@@ -1796,6 +1831,8 @@
                         case 'pricing':
                             tableHtml += `<td>₹${cr.weekdayPrice}</td>`;
                             tableHtml += `<td>₹${cr.weekendPrice}</td>`;
+                            tableHtml += `<td>₹${cr.competitorWeekdayBase}</td>`;
+                            tableHtml += `<td>₹${cr.competitorWeekendBase}</td>`;
                             tableHtml += `<td>₹${Math.round(cr.avgTicketPrice).toLocaleString('en-IN')}</td>`;
                             break;
                         case 'demand':
