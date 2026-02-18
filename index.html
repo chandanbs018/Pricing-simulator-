@@ -813,7 +813,7 @@
     <div class="container">
         <div class="header-wrapper">
             <div class="logo-container">
-                <img src="logo.png" alt="Cineprice Simulation Logo" class="logo">
+                <img src="logo.png" alt="Cineprice Simulation Logo" class="logo" onerror="this.style.display='none'">
             </div>
             
             <div class="header-banner">
@@ -883,34 +883,34 @@
                                 <tbody>
                                     <tr>
                                         <td>Mumbai</td>
-                                        <td><input type="number" id="param-mumbai-wd" value="2200" step="100" onchange="updateConfigFromUI()"></td>
-                                        <td><input type="number" id="param-mumbai-we" value="4200" step="100" onchange="updateConfigFromUI()"></td>
-                                        <td><input type="number" id="param-mumbai-ela" value="-1.4" step="0.1" onchange="updateConfigFromUI()"></td>
+                                        <td><input type="number" id="param-mumbai-wd" value="2200" step="100" onchange="updateConfig()"></td>
+                                        <td><input type="number" id="param-mumbai-we" value="4200" step="100" onchange="updateConfig()"></td>
+                                        <td><input type="number" id="param-mumbai-ela" value="-1.4" step="0.1" onchange="updateConfig()"></td>
                                     </tr>
                                     <tr>
                                         <td>Delhi</td>
-                                        <td><input type="number" id="param-delhi-wd" value="2000" step="100" onchange="updateConfigFromUI()"></td>
-                                        <td><input type="number" id="param-delhi-we" value="3900" step="100" onchange="updateConfigFromUI()"></td>
-                                        <td><input type="number" id="param-delhi-ela" value="-1.3" step="0.1" onchange="updateConfigFromUI()"></td>
+                                        <td><input type="number" id="param-delhi-wd" value="2000" step="100" onchange="updateConfig()"></td>
+                                        <td><input type="number" id="param-delhi-we" value="3900" step="100" onchange="updateConfig()"></td>
+                                        <td><input type="number" id="param-delhi-ela" value="-1.3" step="0.1" onchange="updateConfig()"></td>
                                     </tr>
                                     <tr>
                                         <td>Bengaluru</td>
-                                        <td><input type="number" id="param-blr-wd" value="1800" step="100" onchange="updateConfigFromUI()"></td>
-                                        <td><input type="number" id="param-blr-we" value="3600" step="100" onchange="updateConfigFromUI()"></td>
-                                        <td><input type="number" id="param-blr-ela" value="-1.5" step="0.1" onchange="updateConfigFromUI()"></td>
+                                        <td><input type="number" id="param-blr-wd" value="1800" step="100" onchange="updateConfig()"></td>
+                                        <td><input type="number" id="param-blr-we" value="3600" step="100" onchange="updateConfig()"></td>
+                                        <td><input type="number" id="param-blr-ela" value="-1.5" step="0.1" onchange="updateConfig()"></td>
                                     </tr>
                                 </tbody>
                             </table>
-                            <p class="muted">Note: City-specific season multipliers (1.1, 1.05, 1.0) are NOT used in the Excel formula</p>
+                            <p class="muted">Note: City-specific season multipliers are NOT used in the Excel formula</p>
                         </div>
                         
                         <div class="card">
                             <h4>Season Multiplier Lookup Table (VLOOKUP)</h4>
                             <div class="grid-3">
-                                <div><label>Normal</label><input type="number" id="season-normal" value="1.0" step="0.05" onchange="updateConfigFromUI()"></div>
-                                <div><label>Festive</label><input type="number" id="season-festive" value="1.25" step="0.05" onchange="updateConfigFromUI()"></div>
-                                <div><label>Exam</label><input type="number" id="season-exam" value="0.85" step="0.05" onchange="updateConfigFromUI()"></div>
-                                <div><label>Monsoon</label><input type="number" id="season-monsoon" value="0.9" step="0.05" onchange="updateConfigFromUI()"></div>
+                                <div><label>Normal</label><input type="number" id="season-normal" value="1.0" step="0.05" onchange="updateConfig()"></div>
+                                <div><label>Festive</label><input type="number" id="season-festive" value="1.25" step="0.05" onchange="updateConfig()"></div>
+                                <div><label>Exam</label><input type="number" id="season-exam" value="0.85" step="0.05" onchange="updateConfig()"></div>
+                                <div><label>Monsoon</label><input type="number" id="season-monsoon" value="0.9" step="0.05" onchange="updateConfig()"></div>
                             </div>
                         </div>
                         
@@ -927,18 +927,18 @@
                                 <tbody>
                                     <tr>
                                         <td>Blockbuster</td>
-                                        <td><input type="number" id="segment-block-share" value="0.45" step="0.05" min="0" max="1" onchange="updateConfigFromUI()"></td>
-                                        <td><input type="number" id="segment-block-mult" value="1.15" step="0.05" onchange="updateConfigFromUI()"></td>
+                                        <td><input type="number" id="segment-block-share" value="0.45" step="0.05" min="0" max="1" onchange="updateConfig()"></td>
+                                        <td><input type="number" id="segment-block-mult" value="1.15" step="0.05" onchange="updateConfig()"></td>
                                     </tr>
                                     <tr>
                                         <td>Mainstream</td>
-                                        <td><input type="number" id="segment-main-share" value="0.35" step="0.05" min="0" max="1" onchange="updateConfigFromUI()"></td>
-                                        <td><input type="number" id="segment-main-mult" value="1.0" step="0.05" onchange="updateConfigFromUI()"></td>
+                                        <td><input type="number" id="segment-main-share" value="0.35" step="0.05" min="0" max="1" onchange="updateConfig()"></td>
+                                        <td><input type="number" id="segment-main-mult" value="1.0" step="0.05" onchange="updateConfig()"></td>
                                     </tr>
                                     <tr>
                                         <td>Niche</td>
-                                        <td><input type="number" id="segment-niche-share" value="0.20" step="0.05" min="0" max="1" onchange="updateConfigFromUI()"></td>
-                                        <td><input type="number" id="segment-niche-mult" value="0.85" step="0.05" onchange="updateConfigFromUI()"></td>
+                                        <td><input type="number" id="segment-niche-share" value="0.20" step="0.05" min="0" max="1" onchange="updateConfig()"></td>
+                                        <td><input type="number" id="segment-niche-mult" value="0.85" step="0.05" onchange="updateConfig()"></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -986,11 +986,11 @@
                         <div class="card">
                             <h4>Scenario Multipliers (Additional)</h4>
                             <div class="grid-3">
-                                <div><label>None</label><input type="number" id="scen-none" value="1.0" step="0.05" onchange="updateConfigFromUI()"></div>
-                                <div><label>Blockbuster</label><input type="number" id="scen-blockbuster" value="1.2" step="0.05" onchange="updateConfigFromUI()"></div>
-                                <div><label>Demand Drop</label><input type="number" id="scen-demand-drop" value="0.8" step="0.05" onchange="updateConfigFromUI()"></div>
-                                <div><label>Economic Boom</label><input type="number" id="scen-boom" value="1.15" step="0.05" onchange="updateConfigFromUI()"></div>
-                                <div><label>Recession</label><input type="number" id="scen-recession" value="0.7" step="0.05" onchange="updateConfigFromUI()"></div>
+                                <div><label>None</label><input type="number" id="scen-none" value="1.0" step="0.05" onchange="updateConfig()"></div>
+                                <div><label>Blockbuster</label><input type="number" id="scen-blockbuster" value="1.2" step="0.05" onchange="updateConfig()"></div>
+                                <div><label>Demand Drop</label><input type="number" id="scen-demand-drop" value="0.8" step="0.05" onchange="updateConfig()"></div>
+                                <div><label>Economic Boom</label><input type="number" id="scen-boom" value="1.15" step="0.05" onchange="updateConfig()"></div>
+                                <div><label>Recession</label><input type="number" id="scen-recession" value="0.7" step="0.05" onchange="updateConfig()"></div>
                             </div>
                         </div>
                         
@@ -1007,18 +1007,18 @@
                                 <tbody>
                                     <tr>
                                         <td>Mumbai</td>
-                                        <td><input type="number" id="cost-mumbai-var" value="35" step="5" onchange="updateConfigFromUI()"></td>
-                                        <td><input type="number" id="cost-mumbai-fixed" value="250000" step="10000" onchange="updateConfigFromUI()"></td>
+                                        <td><input type="number" id="cost-mumbai-var" value="35" step="5" onchange="updateConfig()"></td>
+                                        <td><input type="number" id="cost-mumbai-fixed" value="250000" step="10000" onchange="updateConfig()"></td>
                                     </tr>
                                     <tr>
                                         <td>Delhi</td>
-                                        <td><input type="number" id="cost-delhi-var" value="30" step="5" onchange="updateConfigFromUI()"></td>
-                                        <td><input type="number" id="cost-delhi-fixed" value="200000" step="10000" onchange="updateConfigFromUI()"></td>
+                                        <td><input type="number" id="cost-delhi-var" value="30" step="5" onchange="updateConfig()"></td>
+                                        <td><input type="number" id="cost-delhi-fixed" value="200000" step="10000" onchange="updateConfig()"></td>
                                     </tr>
                                     <tr>
                                         <td>Bengaluru</td>
-                                        <td><input type="number" id="cost-blr-var" value="28" step="5" onchange="updateConfigFromUI()"></td>
-                                        <td><input type="number" id="cost-blr-fixed" value="180000" step="10000" onchange="updateConfigFromUI()"></td>
+                                        <td><input type="number" id="cost-blr-var" value="28" step="5" onchange="updateConfig()"></td>
+                                        <td><input type="number" id="cost-blr-fixed" value="180000" step="10000" onchange="updateConfig()"></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1027,8 +1027,8 @@
                         <div class="card">
                             <h4>Operational Calendar</h4>
                             <div class="grid-3">
-                                <div><label>Weekday Days per Month</label><input type="number" id="weekday-days" value="22" min="1" max="31" onchange="updateConfigFromUI()"></div>
-                                <div><label>Weekend Days per Month</label><input type="number" id="weekend-days" value="8" min="1" max="31" onchange="updateConfigFromUI()"></div>
+                                <div><label>Weekday Days per Month</label><input type="number" id="weekday-days" value="22" min="1" max="31" onchange="updateConfig()"></div>
+                                <div><label>Weekend Days per Month</label><input type="number" id="weekend-days" value="8" min="1" max="31" onchange="updateConfig()"></div>
                             </div>
                         </div>
                         
@@ -1315,6 +1315,8 @@
             currentMetricTab: 'pricing'
         };
 
+        let editingRoundIndex = null;
+
         // Calculate daily capacity = Screens × Seats_per_Screen × Shows_per_Day
         function calculateDailyCapacity(city) {
             const cap = simulationState.config.theatreCapacity[city];
@@ -1363,7 +1365,7 @@
             // Calculate Segment Adjustment Factor (F2 in Excel)
             const segmentFactor = calculateSegmentAdjustmentFactor();
             
-            // Get scenario multiplier (this would be in a scenario lookup in more complex Excel)
+            // Get scenario multiplier
             const scenarioMult = getScenarioMultiplier(scenario);
             
             // EXACT Excel formula for Weekday Demand:
@@ -1379,7 +1381,7 @@
                 Math.pow(competitorData.weekendPrice / weekendPrice, Math.abs(market.elasticity)) * 
                 seasonMult;
             
-            // Apply scenario multiplier (this would be part of segment factor in more complex Excel)
+            // Apply scenario multiplier
             const adjWeekdayDemandWithScenario = adjWeekdayDemand * scenarioMult;
             const adjWeekendDemandWithScenario = adjWeekendDemand * scenarioMult;
             
@@ -1489,7 +1491,7 @@
         }
 
         // Update config from UI
-        function updateConfigFromUI() {
+        window.updateConfig = function() {
             // Market Assumptions
             simulationState.config.marketAssumptions.Mumbai = {
                 baseWeekday: parseFloat(document.getElementById('param-mumbai-wd').value) || 2200,
@@ -1541,7 +1543,7 @@
             simulationState.config.operational.weekendDays = parseInt(document.getElementById('weekend-days').value) || 8;
             
             saveToLocalStorage();
-        }
+        };
 
         // Format currency
         function formatCurrency(value) {
@@ -1602,10 +1604,8 @@
         }
 
         // Round management functions
-        let editingRoundIndex = null;
-
-        function createRounds() {
-            updateConfigFromUI();
+        window.createRounds = function() {
+            updateConfig();
             const roundCount = parseInt(document.getElementById('rounds').value) || 3;
             const defaultSeason = document.getElementById('defaultSeason').value;
             const defaultScenario = document.getElementById('defaultScenario').value;
@@ -1635,10 +1635,10 @@
             renderRoundPreview();
             saveToLocalStorage();
             showAlert('Created ' + roundCount + ' new rounds', 'success');
-        }
+        };
 
-        function addNewRound() {
-            updateConfigFromUI();
+        window.addNewRound = function() {
+            updateConfig();
             const newRoundNumber = simulationState.rounds.length + 1;
             const defaultSeason = document.getElementById('defaultSeason').value;
             const defaultScenario = document.getElementById('defaultScenario').value;
@@ -1661,9 +1661,9 @@
             renderRoundPreview();
             saveToLocalStorage();
             showAlert('Added Round ' + newRoundNumber, 'success');
-        }
+        };
 
-        function editRoundConfig(roundIndex) {
+        window.editRoundConfig = function(roundIndex) {
             editingRoundIndex = roundIndex;
             const round = simulationState.rounds[roundIndex];
             document.getElementById('editing-round-number').textContent = round.roundNumber;
@@ -1680,9 +1680,9 @@
             document.querySelectorAll('.round-config-card').forEach(c => c.classList.remove('active'));
             document.getElementById(`round-card-${roundIndex}`).classList.add('active');
             document.getElementById('round-detail-editor').scrollIntoView({ behavior: 'smooth' });
-        }
+        };
 
-        function updateCurrentRoundConfig() {
+        window.updateCurrentRoundConfig = function() {
             if (editingRoundIndex === null) return;
             const r = simulationState.rounds[editingRoundIndex];
             r.season = document.getElementById('edit-season').value;
@@ -1696,28 +1696,28 @@
             r.competitors.Bengaluru.weekendPrice = parseFloat(document.getElementById('edit-blrWeekend').value) || 290;
             renderRoundConfig();
             renderRoundPreview();
-        }
+        };
 
-        function saveRoundConfig() {
+        window.saveRoundConfig = function() {
             updateCurrentRoundConfig();
             cancelEdit();
             saveToLocalStorage();
             showAlert('Round configuration saved', 'success');
-        }
+        };
 
-        function cancelEdit() {
+        window.cancelEdit = function() {
             editingRoundIndex = null;
             document.getElementById('round-detail-editor').classList.add('hidden');
             document.querySelectorAll('.round-config-card').forEach(c => c.classList.remove('active'));
-        }
+        };
 
-        function deleteRound() {
+        window.deleteRound = function() {
             if (editingRoundIndex === null) return;
             deleteSingleRound(editingRoundIndex);
             cancelEdit();
-        }
+        };
 
-        function deleteSingleRound(i) {
+        window.deleteSingleRound = function(i) {
             if (confirm('Delete Round ' + simulationState.rounds[i].roundNumber + '?')) {
                 simulationState.rounds.splice(i, 1);
                 simulationState.rounds.forEach((r, idx) => r.roundNumber = idx + 1);
@@ -1734,9 +1734,9 @@
                 saveToLocalStorage();
                 showAlert('Round deleted', 'success');
             }
-        }
+        };
 
-        function deleteAllRounds() {
+        window.deleteAllRounds = function() {
             if (simulationState.rounds.length === 0) return;
             if (confirm('Delete ALL rounds?')) {
                 simulationState.rounds = [];
@@ -1751,9 +1751,9 @@
                 saveToLocalStorage();
                 showAlert('All rounds deleted', 'success');
             }
-        }
+        };
 
-        function applySeasonToAll() {
+        window.applySeasonToAll = function() {
             if (editingRoundIndex === null) return;
             const season = simulationState.rounds[editingRoundIndex].season;
             simulationState.rounds.forEach(r => { r.season = season; });
@@ -1761,9 +1761,9 @@
             renderRoundPreview();
             saveToLocalStorage();
             showAlert('Applied ' + season + ' season to all rounds', 'success');
-        }
+        };
 
-        function randomizeAllRounds() {
+        window.randomizeAllRounds = function() {
             if (simulationState.rounds.length === 0) return;
             const seasons = ['Normal', 'Festive', 'Exam', 'Monsoon'];
             const scenarios = ['none', 'blockbuster', 'demand_drop', 'economic_boom', 'recession'];
@@ -1783,13 +1783,13 @@
             renderRoundPreview();
             saveToLocalStorage();
             showAlert('All rounds randomized and reset', 'success');
-        }
+        };
 
-        function saveAllRounds() {
-            updateConfigFromUI();
+        window.saveAllRounds = function() {
+            updateConfig();
             saveToLocalStorage();
             showAlert('All configurations saved', 'success');
-        }
+        };
 
         // Student functions
         function updateStudentStatus() {
@@ -1878,7 +1878,7 @@
             }
         }
 
-        function selectStudentRound(rn) {
+        window.selectStudentRound = function(rn) {
             const prev = simulationState.rounds.find(r => r.roundNumber === rn - 1);
             if (rn > 1 && prev && !prev.results) {
                 showAlert('Please complete previous round first', 'warning');
@@ -1886,9 +1886,9 @@
             }
             simulationState.currentRoundIndex = rn;
             loadStudentRound();
-        }
+        };
 
-        function nextStudentRound() {
+        window.nextStudentRound = function() {
             if (simulationState.currentRoundIndex < simulationState.rounds.length) {
                 const cur = simulationState.rounds.find(r => r.roundNumber === simulationState.currentRoundIndex);
                 if (!cur.results && cur.status !== 'completed') {
@@ -1898,16 +1898,16 @@
                 simulationState.currentRoundIndex++;
                 loadStudentRound();
             }
-        }
+        };
 
-        function prevStudentRound() {
+        window.prevStudentRound = function() {
             if (simulationState.currentRoundIndex > 1) {
                 simulationState.currentRoundIndex--;
                 loadStudentRound();
             }
-        }
+        };
 
-        function resetStudentProgress() {
+        window.resetStudentProgress = function() {
             if (confirm('Reset your progress?')) {
                 simulationState.rounds.forEach((r, i) => {
                     r.studentDecisions = null;
@@ -1925,9 +1925,9 @@
                 updateProgressSection();
                 showAlert('Progress reset', 'success');
             }
-        }
+        };
 
-        function submitRoundPrices(rn) {
+        window.submitRoundPrices = function(rn) {
             const idx = rn - 1;
             const round = simulationState.rounds[idx];
             const prices = {};
@@ -1978,9 +1978,9 @@
             updateResultsSection();
             updateProgressSection();
             showAlert('Round ' + rn + ' completed! Profit: ' + formatCurrency(result.totalProfit), 'success');
-        }
+        };
 
-        function switchLevelTab(event, level) {
+        window.switchLevelTab = function(event, level) {
             document.querySelectorAll('.level-tab').forEach(t => t.classList.remove('active'));
             event.target.classList.add('active');
             
@@ -1989,14 +1989,14 @@
             document.getElementById('level3-settings').classList.add('hidden');
             
             document.getElementById('level' + level + '-settings').classList.remove('hidden');
-        }
+        };
 
-        function switchMetricTab(event, tabId) {
+        window.switchMetricTab = function(event, tabId) {
             simulationState.currentMetricTab = tabId;
             document.querySelectorAll('.metric-tab').forEach(tab => tab.classList.remove('active'));
             event.target.classList.add('active');
             updateResultsSection();
-        }
+        };
 
         function updateResultsSection() {
             const container = document.getElementById('metrics-table-container');
@@ -2128,7 +2128,7 @@
 
         function saveToLocalStorage() {
             try {
-                localStorage.setItem('cineprice_simulation_excel', JSON.stringify(simulationState));
+                localStorage.setItem('cineprice_simulation', JSON.stringify(simulationState));
             } catch (e) {
                 console.warn('localStorage save failed', e);
             }
@@ -2136,7 +2136,7 @@
 
         function loadFromLocalStorage() {
             try {
-                const saved = localStorage.getItem('cineprice_simulation_excel');
+                const saved = localStorage.getItem('cineprice_simulation');
                 if (saved) {
                     Object.assign(simulationState, JSON.parse(saved));
                     return true;
@@ -2161,7 +2161,7 @@
             setTimeout(() => alertDiv.remove(), 3000);
         }
 
-        function switchModule(module) {
+        window.switchModule = function(module) {
             document.querySelectorAll('[id$="-section"]').forEach(el => el.classList.add('hidden'));
             document.getElementById(module + '-section').classList.remove('hidden');
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -2171,86 +2171,58 @@
             if (module === 'progress') updateProgressSection();
             if (module === 'results') updateResultsSection();
             if (module === 'instructor') {
-                updateUIFromConfig();
+                // Update UI with current config values
+                document.getElementById('param-mumbai-wd').value = simulationState.config.marketAssumptions.Mumbai.baseWeekday;
+                document.getElementById('param-mumbai-we').value = simulationState.config.marketAssumptions.Mumbai.baseWeekend;
+                document.getElementById('param-mumbai-ela').value = simulationState.config.marketAssumptions.Mumbai.elasticity;
+                
+                document.getElementById('param-delhi-wd').value = simulationState.config.marketAssumptions.Delhi.baseWeekday;
+                document.getElementById('param-delhi-we').value = simulationState.config.marketAssumptions.Delhi.baseWeekend;
+                document.getElementById('param-delhi-ela').value = simulationState.config.marketAssumptions.Delhi.elasticity;
+                
+                document.getElementById('param-blr-wd').value = simulationState.config.marketAssumptions.Bengaluru.baseWeekday;
+                document.getElementById('param-blr-we').value = simulationState.config.marketAssumptions.Bengaluru.baseWeekend;
+                document.getElementById('param-blr-ela').value = simulationState.config.marketAssumptions.Bengaluru.elasticity;
+                
+                document.getElementById('season-normal').value = simulationState.config.seasonMultipliers.Normal;
+                document.getElementById('season-festive').value = simulationState.config.seasonMultipliers.Festive;
+                document.getElementById('season-exam').value = simulationState.config.seasonMultipliers.Exam;
+                document.getElementById('season-monsoon').value = simulationState.config.seasonMultipliers.Monsoon;
+                
+                document.getElementById('segment-block-share').value = simulationState.config.movieSegments.blockbuster.share;
+                document.getElementById('segment-block-mult').value = simulationState.config.movieSegments.blockbuster.multiplier;
+                document.getElementById('segment-main-share').value = simulationState.config.movieSegments.mainstream.share;
+                document.getElementById('segment-main-mult').value = simulationState.config.movieSegments.mainstream.multiplier;
+                document.getElementById('segment-niche-share').value = simulationState.config.movieSegments.niche.share;
+                document.getElementById('segment-niche-mult').value = simulationState.config.movieSegments.niche.multiplier;
+                
+                document.getElementById('scen-none').value = simulationState.config.scenarioMultipliers.none;
+                document.getElementById('scen-blockbuster').value = simulationState.config.scenarioMultipliers.blockbuster;
+                document.getElementById('scen-demand-drop').value = simulationState.config.scenarioMultipliers.demand_drop;
+                document.getElementById('scen-boom').value = simulationState.config.scenarioMultipliers.economic_boom;
+                document.getElementById('scen-recession').value = simulationState.config.scenarioMultipliers.recession;
+                
+                document.getElementById('cost-mumbai-var').value = simulationState.config.financials.Mumbai.variableCost;
+                document.getElementById('cost-mumbai-fixed').value = simulationState.config.financials.Mumbai.fixedDailyCost;
+                document.getElementById('cost-delhi-var').value = simulationState.config.financials.Delhi.variableCost;
+                document.getElementById('cost-delhi-fixed').value = simulationState.config.financials.Delhi.fixedDailyCost;
+                document.getElementById('cost-blr-var').value = simulationState.config.financials.Bengaluru.variableCost;
+                document.getElementById('cost-blr-fixed').value = simulationState.config.financials.Bengaluru.fixedDailyCost;
+                
+                document.getElementById('weekday-days').value = simulationState.config.operational.weekdayDays;
+                document.getElementById('weekend-days').value = simulationState.config.operational.weekendDays;
+                
+                updateCapacity();
                 renderRoundConfig();
                 renderRoundPreview();
             }
-        }
-
-        function updateUIFromConfig() {
-            // Market Assumptions
-            document.getElementById('param-mumbai-wd').value = simulationState.config.marketAssumptions.Mumbai.baseWeekday;
-            document.getElementById('param-mumbai-we').value = simulationState.config.marketAssumptions.Mumbai.baseWeekend;
-            document.getElementById('param-mumbai-ela').value = simulationState.config.marketAssumptions.Mumbai.elasticity;
-            
-            document.getElementById('param-delhi-wd').value = simulationState.config.marketAssumptions.Delhi.baseWeekday;
-            document.getElementById('param-delhi-we').value = simulationState.config.marketAssumptions.Delhi.baseWeekend;
-            document.getElementById('param-delhi-ela').value = simulationState.config.marketAssumptions.Delhi.elasticity;
-            
-            document.getElementById('param-blr-wd').value = simulationState.config.marketAssumptions.Bengaluru.baseWeekday;
-            document.getElementById('param-blr-we').value = simulationState.config.marketAssumptions.Bengaluru.baseWeekend;
-            document.getElementById('param-blr-ela').value = simulationState.config.marketAssumptions.Bengaluru.elasticity;
-            
-            // Season Multipliers
-            document.getElementById('season-normal').value = simulationState.config.seasonMultipliers.Normal;
-            document.getElementById('season-festive').value = simulationState.config.seasonMultipliers.Festive;
-            document.getElementById('season-exam').value = simulationState.config.seasonMultipliers.Exam;
-            document.getElementById('season-monsoon').value = simulationState.config.seasonMultipliers.Monsoon;
-            
-            // Movie Segments
-            document.getElementById('segment-block-share').value = simulationState.config.movieSegments.blockbuster.share;
-            document.getElementById('segment-block-mult').value = simulationState.config.movieSegments.blockbuster.multiplier;
-            document.getElementById('segment-main-share').value = simulationState.config.movieSegments.mainstream.share;
-            document.getElementById('segment-main-mult').value = simulationState.config.movieSegments.mainstream.multiplier;
-            document.getElementById('segment-niche-share').value = simulationState.config.movieSegments.niche.share;
-            document.getElementById('segment-niche-mult').value = simulationState.config.movieSegments.niche.multiplier;
-            
-            // Scenario Multipliers
-            document.getElementById('scen-none').value = simulationState.config.scenarioMultipliers.none;
-            document.getElementById('scen-blockbuster').value = simulationState.config.scenarioMultipliers.blockbuster;
-            document.getElementById('scen-demand-drop').value = simulationState.config.scenarioMultipliers.demand_drop;
-            document.getElementById('scen-boom').value = simulationState.config.scenarioMultipliers.economic_boom;
-            document.getElementById('scen-recession').value = simulationState.config.scenarioMultipliers.recession;
-            
-            // Theatre Capacity
-            document.getElementById('cap-mumbai-screens').value = simulationState.config.theatreCapacity.Mumbai.screens;
-            document.getElementById('cap-mumbai-seats').value = simulationState.config.theatreCapacity.Mumbai.seatsPerScreen;
-            document.getElementById('cap-mumbai-shows').value = simulationState.config.theatreCapacity.Mumbai.showsPerDay;
-            
-            document.getElementById('cap-delhi-screens').value = simulationState.config.theatreCapacity.Delhi.screens;
-            document.getElementById('cap-delhi-seats').value = simulationState.config.theatreCapacity.Delhi.seatsPerScreen;
-            document.getElementById('cap-delhi-shows').value = simulationState.config.theatreCapacity.Delhi.showsPerDay;
-            
-            document.getElementById('cap-blr-screens').value = simulationState.config.theatreCapacity.Bengaluru.screens;
-            document.getElementById('cap-blr-seats').value = simulationState.config.theatreCapacity.Bengaluru.seatsPerScreen;
-            document.getElementById('cap-blr-shows').value = simulationState.config.theatreCapacity.Bengaluru.showsPerDay;
-            
-            // Financials
-            document.getElementById('cost-mumbai-var').value = simulationState.config.financials.Mumbai.variableCost;
-            document.getElementById('cost-mumbai-fixed').value = simulationState.config.financials.Mumbai.fixedDailyCost;
-            document.getElementById('cost-delhi-var').value = simulationState.config.financials.Delhi.variableCost;
-            document.getElementById('cost-delhi-fixed').value = simulationState.config.financials.Delhi.fixedDailyCost;
-            document.getElementById('cost-blr-var').value = simulationState.config.financials.Bengaluru.variableCost;
-            document.getElementById('cost-blr-fixed').value = simulationState.config.financials.Bengaluru.fixedDailyCost;
-            
-            // Operational
-            document.getElementById('weekday-days').value = simulationState.config.operational.weekdayDays;
-            document.getElementById('weekend-days').value = simulationState.config.operational.weekendDays;
-            
-            // Update capacity displays
-            updateCapacity();
-        }
+        };
 
         function init() {
             if (!loadFromLocalStorage()) {
                 initializeSampleRounds();
             }
-            updateUIFromConfig();
-            renderRoundConfig();
-            renderRoundPreview();
-            loadStudentRound();
-            updateResultsSection();
-            updateProgressSection();
+            switchModule('intro');
         }
 
         window.addEventListener('DOMContentLoaded', init);
