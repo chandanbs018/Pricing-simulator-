@@ -818,6 +818,7 @@
             
             <div class="header-banner">
                 <h1>Cineprice Strategic Pricing Simulation</h1>
+                <p>Excel-Aligned Level 1 Model</p>
             </div>
         </div>
 
@@ -877,7 +878,6 @@
                                         <th>Base Weekday Demand</th>
                                         <th>Base Weekend Demand</th>
                                         <th>Price Elasticity</th>
-                                        <th>Season Multiplier</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -886,28 +886,26 @@
                                         <td><input type="number" id="param-mumbai-wd" value="2200" step="100" onchange="updateConfigFromUI()"></td>
                                         <td><input type="number" id="param-mumbai-we" value="4200" step="100" onchange="updateConfigFromUI()"></td>
                                         <td><input type="number" id="param-mumbai-ela" value="-1.4" step="0.1" onchange="updateConfigFromUI()"></td>
-                                        <td><input type="number" id="param-mumbai-season" value="1.1" step="0.05" onchange="updateConfigFromUI()"></td>
                                     </tr>
                                     <tr>
                                         <td>Delhi</td>
                                         <td><input type="number" id="param-delhi-wd" value="2000" step="100" onchange="updateConfigFromUI()"></td>
                                         <td><input type="number" id="param-delhi-we" value="3900" step="100" onchange="updateConfigFromUI()"></td>
                                         <td><input type="number" id="param-delhi-ela" value="-1.3" step="0.1" onchange="updateConfigFromUI()"></td>
-                                        <td><input type="number" id="param-delhi-season" value="1.05" step="0.05" onchange="updateConfigFromUI()"></td>
                                     </tr>
                                     <tr>
                                         <td>Bengaluru</td>
                                         <td><input type="number" id="param-blr-wd" value="1800" step="100" onchange="updateConfigFromUI()"></td>
                                         <td><input type="number" id="param-blr-we" value="3600" step="100" onchange="updateConfigFromUI()"></td>
                                         <td><input type="number" id="param-blr-ela" value="-1.5" step="0.1" onchange="updateConfigFromUI()"></td>
-                                        <td><input type="number" id="param-blr-season" value="1.0" step="0.05" onchange="updateConfigFromUI()"></td>
                                     </tr>
                                 </tbody>
                             </table>
+                            <p class="muted">Note: City-specific season multipliers (1.1, 1.05, 1.0) are NOT used in the Excel formula</p>
                         </div>
                         
                         <div class="card">
-                            <h4>Season Multiplier Lookup Table</h4>
+                            <h4>Season Multiplier Lookup Table (VLOOKUP)</h4>
                             <div class="grid-3">
                                 <div><label>Normal</label><input type="number" id="season-normal" value="1.0" step="0.05" onchange="updateConfigFromUI()"></div>
                                 <div><label>Festive</label><input type="number" id="season-festive" value="1.25" step="0.05" onchange="updateConfigFromUI()"></div>
@@ -983,6 +981,17 @@
                                     </tr>
                                 </tbody>
                             </table>
+                        </div>
+                        
+                        <div class="card">
+                            <h4>Scenario Multipliers (Additional)</h4>
+                            <div class="grid-3">
+                                <div><label>None</label><input type="number" id="scen-none" value="1.0" step="0.05" onchange="updateConfigFromUI()"></div>
+                                <div><label>Blockbuster</label><input type="number" id="scen-blockbuster" value="1.2" step="0.05" onchange="updateConfigFromUI()"></div>
+                                <div><label>Demand Drop</label><input type="number" id="scen-demand-drop" value="0.8" step="0.05" onchange="updateConfigFromUI()"></div>
+                                <div><label>Economic Boom</label><input type="number" id="scen-boom" value="1.15" step="0.05" onchange="updateConfigFromUI()"></div>
+                                <div><label>Recession</label><input type="number" id="scen-recession" value="0.7" step="0.05" onchange="updateConfigFromUI()"></div>
+                            </div>
                         </div>
                         
                         <div class="card">
@@ -1261,9 +1270,9 @@
         const simulationState = {
             config: {
                 marketAssumptions: {
-                    Mumbai: { baseWeekday: 2200, baseWeekend: 4200, elasticity: -1.4, seasonMult: 1.1 },
-                    Delhi: { baseWeekday: 2000, baseWeekend: 3900, elasticity: -1.3, seasonMult: 1.05 },
-                    Bengaluru: { baseWeekday: 1800, baseWeekend: 3600, elasticity: -1.5, seasonMult: 1.0 }
+                    Mumbai: { baseWeekday: 2200, baseWeekend: 4200, elasticity: -1.4 },
+                    Delhi: { baseWeekday: 2000, baseWeekend: 3900, elasticity: -1.3 },
+                    Bengaluru: { baseWeekday: 1800, baseWeekend: 3600, elasticity: -1.5 }
                 },
                 seasonMultipliers: {
                     Normal: 1.0,
@@ -1275,6 +1284,13 @@
                     blockbuster: { share: 0.45, multiplier: 1.15 },
                     mainstream: { share: 0.35, multiplier: 1.0 },
                     niche: { share: 0.20, multiplier: 0.85 }
+                },
+                scenarioMultipliers: {
+                    none: 1.0,
+                    blockbuster: 1.2,
+                    demand_drop: 0.8,
+                    economic_boom: 1.15,
+                    recession: 0.7
                 },
                 theatreCapacity: {
                     Mumbai: { screens: 10, seatsPerScreen: 220, showsPerDay: 5 },
@@ -1332,38 +1348,38 @@
 
         // Get scenario multiplier
         function getScenarioMultiplier(scenario) {
-            const multipliers = {
-                none: 1.0,
-                blockbuster: 1.2,
-                demand_drop: 0.8,
-                economic_boom: 1.15,
-                recession: 0.7
-            };
-            return multipliers[scenario] || 1.0;
+            return simulationState.config.scenarioMultipliers[scenario] || 1.0;
         }
 
-        // Excel-Aligned Simulate City
+        // EXACT Excel-Aligned Simulate City
         function simulateCity(city, season, weekdayPrice, weekendPrice, scenario, competitorData) {
             const market = simulationState.config.marketAssumptions[city];
             const capacity = calculateDailyCapacity(city);
             const financial = simulationState.config.financials[city];
             
+            // Get season multiplier from lookup table (VLOOKUP in Excel)
             const seasonMult = simulationState.config.seasonMultipliers[season] || 1;
+            
+            // Calculate Segment Adjustment Factor (F2 in Excel)
             const segmentFactor = calculateSegmentAdjustmentFactor();
+            
+            // Get scenario multiplier (this would be in a scenario lookup in more complex Excel)
             const scenarioMult = getScenarioMultiplier(scenario);
             
-            // Excel formula: Adj_Weekday_Demand = Base_Weekday_Demand × Segment_Adjustment_Factor × (Competitor_Price / Your_Price) ^ ABS(Elasticity) × VLOOKUP(Season, Season_Table)
+            // EXACT Excel formula for Weekday Demand:
+            // =Market_Assumptions!B2 * F2 * (Pricing_Decisions!D2 / Pricing_Decisions!B2)^ABS(Market_Assumptions!D2) * VLOOKUP(Pricing_Decisions!F2, Market_Assumptions!A6:B10, 2, FALSE)
             const adjWeekdayDemand = market.baseWeekday * 
                 segmentFactor * 
                 Math.pow(competitorData.weekdayPrice / weekdayPrice, Math.abs(market.elasticity)) * 
                 seasonMult;
             
+            // EXACT Excel formula for Weekend Demand:
             const adjWeekendDemand = market.baseWeekend * 
                 segmentFactor * 
                 Math.pow(competitorData.weekendPrice / weekendPrice, Math.abs(market.elasticity)) * 
                 seasonMult;
             
-            // Apply scenario multiplier (this would be in the Segment_Adjustment_Factor in more complex Excel)
+            // Apply scenario multiplier (this would be part of segment factor in more complex Excel)
             const adjWeekdayDemandWithScenario = adjWeekdayDemand * scenarioMult;
             const adjWeekendDemandWithScenario = adjWeekendDemand * scenarioMult;
             
@@ -1478,20 +1494,17 @@
             simulationState.config.marketAssumptions.Mumbai = {
                 baseWeekday: parseFloat(document.getElementById('param-mumbai-wd').value) || 2200,
                 baseWeekend: parseFloat(document.getElementById('param-mumbai-we').value) || 4200,
-                elasticity: parseFloat(document.getElementById('param-mumbai-ela').value) || -1.4,
-                seasonMult: parseFloat(document.getElementById('param-mumbai-season').value) || 1.1
+                elasticity: parseFloat(document.getElementById('param-mumbai-ela').value) || -1.4
             };
             simulationState.config.marketAssumptions.Delhi = {
                 baseWeekday: parseFloat(document.getElementById('param-delhi-wd').value) || 2000,
                 baseWeekend: parseFloat(document.getElementById('param-delhi-we').value) || 3900,
-                elasticity: parseFloat(document.getElementById('param-delhi-ela').value) || -1.3,
-                seasonMult: parseFloat(document.getElementById('param-delhi-season').value) || 1.05
+                elasticity: parseFloat(document.getElementById('param-delhi-ela').value) || -1.3
             };
             simulationState.config.marketAssumptions.Bengaluru = {
                 baseWeekday: parseFloat(document.getElementById('param-blr-wd').value) || 1800,
                 baseWeekend: parseFloat(document.getElementById('param-blr-we').value) || 3600,
-                elasticity: parseFloat(document.getElementById('param-blr-ela').value) || -1.5,
-                seasonMult: parseFloat(document.getElementById('param-blr-season').value) || 1.0
+                elasticity: parseFloat(document.getElementById('param-blr-ela').value) || -1.5
             };
             
             // Season Multipliers
@@ -1507,6 +1520,13 @@
             simulationState.config.movieSegments.mainstream.multiplier = parseFloat(document.getElementById('segment-main-mult').value) || 1.0;
             simulationState.config.movieSegments.niche.share = parseFloat(document.getElementById('segment-niche-share').value) || 0.20;
             simulationState.config.movieSegments.niche.multiplier = parseFloat(document.getElementById('segment-niche-mult').value) || 0.85;
+            
+            // Scenario Multipliers
+            simulationState.config.scenarioMultipliers.none = parseFloat(document.getElementById('scen-none').value) || 1.0;
+            simulationState.config.scenarioMultipliers.blockbuster = parseFloat(document.getElementById('scen-blockbuster').value) || 1.2;
+            simulationState.config.scenarioMultipliers.demand_drop = parseFloat(document.getElementById('scen-demand-drop').value) || 0.8;
+            simulationState.config.scenarioMultipliers.economic_boom = parseFloat(document.getElementById('scen-boom').value) || 1.15;
+            simulationState.config.scenarioMultipliers.recession = parseFloat(document.getElementById('scen-recession').value) || 0.7;
             
             // Financials
             simulationState.config.financials.Mumbai.variableCost = parseFloat(document.getElementById('cost-mumbai-var').value) || 35;
@@ -2162,17 +2182,14 @@
             document.getElementById('param-mumbai-wd').value = simulationState.config.marketAssumptions.Mumbai.baseWeekday;
             document.getElementById('param-mumbai-we').value = simulationState.config.marketAssumptions.Mumbai.baseWeekend;
             document.getElementById('param-mumbai-ela').value = simulationState.config.marketAssumptions.Mumbai.elasticity;
-            document.getElementById('param-mumbai-season').value = simulationState.config.marketAssumptions.Mumbai.seasonMult;
             
             document.getElementById('param-delhi-wd').value = simulationState.config.marketAssumptions.Delhi.baseWeekday;
             document.getElementById('param-delhi-we').value = simulationState.config.marketAssumptions.Delhi.baseWeekend;
             document.getElementById('param-delhi-ela').value = simulationState.config.marketAssumptions.Delhi.elasticity;
-            document.getElementById('param-delhi-season').value = simulationState.config.marketAssumptions.Delhi.seasonMult;
             
             document.getElementById('param-blr-wd').value = simulationState.config.marketAssumptions.Bengaluru.baseWeekday;
             document.getElementById('param-blr-we').value = simulationState.config.marketAssumptions.Bengaluru.baseWeekend;
             document.getElementById('param-blr-ela').value = simulationState.config.marketAssumptions.Bengaluru.elasticity;
-            document.getElementById('param-blr-season').value = simulationState.config.marketAssumptions.Bengaluru.seasonMult;
             
             // Season Multipliers
             document.getElementById('season-normal').value = simulationState.config.seasonMultipliers.Normal;
@@ -2187,6 +2204,13 @@
             document.getElementById('segment-main-mult').value = simulationState.config.movieSegments.mainstream.multiplier;
             document.getElementById('segment-niche-share').value = simulationState.config.movieSegments.niche.share;
             document.getElementById('segment-niche-mult').value = simulationState.config.movieSegments.niche.multiplier;
+            
+            // Scenario Multipliers
+            document.getElementById('scen-none').value = simulationState.config.scenarioMultipliers.none;
+            document.getElementById('scen-blockbuster').value = simulationState.config.scenarioMultipliers.blockbuster;
+            document.getElementById('scen-demand-drop').value = simulationState.config.scenarioMultipliers.demand_drop;
+            document.getElementById('scen-boom').value = simulationState.config.scenarioMultipliers.economic_boom;
+            document.getElementById('scen-recession').value = simulationState.config.scenarioMultipliers.recession;
             
             // Theatre Capacity
             document.getElementById('cap-mumbai-screens').value = simulationState.config.theatreCapacity.Mumbai.screens;
