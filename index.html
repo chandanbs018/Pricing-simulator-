@@ -847,7 +847,7 @@
                         </div>
                         <div class="card">
                             <h4>Your decisions</h4>
-                            <p class="muted">For every month you choose one weekday price and one weekend price per city based on limited information about season, competitor bands, and capacity tightness.</p>
+                            <p class="muted">For every month you choose one weekday price and one weekend price per city based on limited information about season, competitor bands.</p>
                         </div>
                         <div class="card">
                             <h4>How outcomes are calculated</h4>
@@ -901,15 +901,6 @@
                                     <label for="weekend-days">Weekend Days per Month</label>
                                     <input type="number" id="weekend-days" value="8" min="1" max="31" onchange="updateConfigFromUI()">
                                 </div>
-                            </div>
-                        </div>
-                        
-                        <div class="card">
-                            <h4>Capacity Adjustment by Label</h4>
-                            <div class="grid-3">
-                                <div><label for="cap-tight">Tight Multiplier</label><input type="number" id="cap-tight" value="0.9" step="0.05" onchange="updateConfigFromUI()"></div>
-                                <div><label for="cap-balanced">Balanced Multiplier</label><input type="number" id="cap-balanced" value="1.0" step="0.05" onchange="updateConfigFromUI()"></div>
-                                <div><label for="cap-slack">Slack Multiplier</label><input type="number" id="cap-slack" value="1.1" step="0.05" onchange="updateConfigFromUI()"></div>
                             </div>
                         </div>
                         
@@ -1062,12 +1053,6 @@
                                         <input type="text" id="edit-mumbaiWeekday" value="₹220 – ₹280" onchange="updateCurrentMonthConfig()">
                                         <label>Competitor weekend range</label>
                                         <input type="text" id="edit-mumbaiWeekend" value="₹280 – ₹360" onchange="updateCurrentMonthConfig()">
-                                        <label>Capacity type</label>
-                                        <select id="edit-mumbaiCapacity" onchange="updateCurrentMonthConfig()">
-                                            <option selected>Balanced</option>
-                                            <option>Tight</option>
-                                            <option>Slack</option>
-                                        </select>
                                     </div>
                                     <div>
                                         <h4>Delhi</h4>
@@ -1075,12 +1060,6 @@
                                         <input type="text" id="edit-delhiWeekday" value="₹200 – ₹260" onchange="updateCurrentMonthConfig()">
                                         <label>Competitor weekend range</label>
                                         <input type="text" id="edit-delhiWeekend" value="₹260 – ₹340" onchange="updateCurrentMonthConfig()">
-                                        <label>Capacity type</label>
-                                        <select id="edit-delhiCapacity" onchange="updateCurrentMonthConfig()">
-                                            <option>Tight</option>
-                                            <option selected>Balanced</option>
-                                            <option>Slack</option>
-                                        </select>
                                     </div>
                                     <div>
                                         <h4>Bengaluru</h4>
@@ -1088,12 +1067,6 @@
                                         <input type="text" id="edit-blrWeekday" value="₹180 – ₹240" onchange="updateCurrentMonthConfig()">
                                         <label>Competitor weekend range</label>
                                         <input type="text" id="edit-blrWeekend" value="₹240 – ₹320" onchange="updateCurrentMonthConfig()">
-                                        <label>Capacity type</label>
-                                        <select id="edit-blrCapacity" onchange="updateCurrentMonthConfig()">
-                                            <option selected>Balanced</option>
-                                            <option>Tight</option>
-                                            <option>Slack</option>
-                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -1221,11 +1194,6 @@
                     weekdayDays: 22,
                     weekendDays: 8
                 },
-                capacityAdjustment: {
-                    Tight: 0.9,
-                    Balanced: 1.0,
-                    Slack: 1.1
-                },
                 seasonMultipliers: {
                     Normal: 1.0,
                     Festive: 1.25,
@@ -1285,7 +1253,7 @@
             currentMetricTab: 'pricing'
         };
 
-        // Helper function to extract lower bound from price band
+        // Helper function to extract lower bound from price band (exactly as in first version)
         function extractLowerBound(priceBand) {
             if (!priceBand) return 1;
             const cleaned = priceBand.replace(/₹/g, '').trim();
@@ -1294,24 +1262,32 @@
             return isNaN(lower) ? 1 : lower;
         }
 
-        // Simulate city with configurable parameters
+        // Simulate city with Excel-aligned demand formula (exactly as in first version)
         function simulateCity(city, season, weekdayPrice, weekendPrice, scenario, competitorData) {
             const p = simulationState.config.cityParams[city];
-            const compW = extractLowerBound(competitorData.weekdayBand);
-            const compE = extractLowerBound(competitorData.weekendBand);
+            
+            // Extract competitor base prices from the range
+            const competitorWeekdayBase = extractLowerBound(competitorData.weekdayBand);
+            const competitorWeekendBase = extractLowerBound(competitorData.weekendBand);
             
             const seasonMult = simulationState.config.seasonMultipliers[season] || 1;
             const scenarioMult = simulationState.config.scenarioMultipliers[scenario] || 1;
             
-            // Apply capacity label adjustment
-            const capMult = simulationState.config.capacityAdjustment[competitorData.capacityLabel] || 1;
-            const effectiveCapacity = p.capacity * capMult;
+            // Excel-aligned demand formula:
+            // BaseDemand × ScenarioMultiplier × (CompetitorBase / YourPrice) ^ |Elasticity| × SeasonMultiplier
+            const adjWeekdayDemand = p.baseWeekday * 
+                scenarioMult * 
+                Math.pow(competitorWeekdayBase / weekdayPrice, Math.abs(p.elasticityWeekday)) * 
+                seasonMult;
             
-            const adjWeekdayDemand = p.baseWeekday * scenarioMult * Math.pow(compW / weekdayPrice, Math.abs(p.elasticityWeekday)) * seasonMult;
-            const adjWeekendDemand = p.baseWeekend * scenarioMult * Math.pow(compE / weekendPrice, Math.abs(p.elasticityWeekend)) * seasonMult;
+            const adjWeekendDemand = p.baseWeekend * 
+                scenarioMult * 
+                Math.pow(competitorWeekendBase / weekendPrice, Math.abs(p.elasticityWeekend)) * 
+                seasonMult;
             
-            const weekdayAttendance = Math.min(adjWeekdayDemand, effectiveCapacity);
-            const weekendAttendance = Math.min(adjWeekendDemand, effectiveCapacity);
+            // Capacity constraint - exactly MIN(AdjustedDemand, Capacity)
+            const weekdayAttendance = Math.min(adjWeekdayDemand, p.capacity);
+            const weekendAttendance = Math.min(adjWeekendDemand, p.capacity);
             
             const weekdayDays = simulationState.config.operational.weekdayDays;
             const weekendDays = simulationState.config.operational.weekendDays;
@@ -1330,10 +1306,10 @@
             
             const profit = revenueTotal - costTotal;
             
-            const utilization = (weekdayAttendance + weekendAttendance) / (2 * effectiveCapacity);
+            const utilization = (weekdayAttendance + weekendAttendance) / (2 * p.capacity);
             
-            const lostDemand = Math.max(0, adjWeekdayDemand - effectiveCapacity) * weekdayDays +
-                              Math.max(0, adjWeekendDemand - effectiveCapacity) * weekendDays;
+            const lostDemand = Math.max(0, adjWeekdayDemand - p.capacity) * weekdayDays +
+                              Math.max(0, adjWeekendDemand - p.capacity) * weekendDays;
             
             const contribution = revenueTotal - varCostTotal;
             const contributionMargin = revenueTotal > 0 ? (contribution / revenueTotal) * 100 : 0;
@@ -1343,8 +1319,8 @@
             return {
                 weekdayPrice,
                 weekendPrice,
-                competitorWeekdayBase: compW,
-                competitorWeekendBase: compE,
+                competitorWeekdayBase,
+                competitorWeekendBase,
                 adjWeekdayDemand,
                 adjWeekendDemand,
                 weekdayAttendance,
@@ -1411,18 +1387,15 @@
                     competitors: {
                         Mumbai: { 
                             weekdayBand: `₹${mBase - spread} – ₹${mBase + spread}`, 
-                            weekendBand: `₹${mBase + weekend - spread} – ₹${mBase + weekend + spread}`, 
-                            capacityLabel: i % 3 === 0 ? 'Tight' : i % 3 === 1 ? 'Balanced' : 'Slack' 
+                            weekendBand: `₹${mBase + weekend - spread} – ₹${mBase + weekend + spread}`
                         },
                         Delhi: { 
                             weekdayBand: `₹${dBase - spread} – ₹${dBase + spread}`, 
-                            weekendBand: `₹${dBase + weekend - spread} – ₹${dBase + weekend + spread}`, 
-                            capacityLabel: i % 3 === 1 ? 'Tight' : i % 3 === 2 ? 'Balanced' : 'Slack' 
+                            weekendBand: `₹${dBase + weekend - spread} – ₹${dBase + weekend + spread}`
                         },
                         Bengaluru: { 
                             weekdayBand: `₹${bBase - spread} – ₹${bBase + spread}`, 
-                            weekendBand: `₹${bBase + weekend - spread} – ₹${bBase + weekend + spread}`, 
-                            capacityLabel: i % 3 === 2 ? 'Tight' : i % 3 === 0 ? 'Balanced' : 'Slack' 
+                            weekendBand: `₹${bBase + weekend - spread} – ₹${bBase + weekend + spread}`
                         }
                     },
                     studentDecisions: null,
@@ -1469,10 +1442,6 @@
             document.getElementById('total-months').value = simulationState.config.totalMonths;
             document.getElementById('weekday-days').value = simulationState.config.operational.weekdayDays;
             document.getElementById('weekend-days').value = simulationState.config.operational.weekendDays;
-            
-            document.getElementById('cap-tight').value = simulationState.config.capacityAdjustment.Tight;
-            document.getElementById('cap-balanced').value = simulationState.config.capacityAdjustment.Balanced;
-            document.getElementById('cap-slack').value = simulationState.config.capacityAdjustment.Slack;
             
             document.getElementById('mult-normal').value = simulationState.config.seasonMultipliers.Normal;
             document.getElementById('mult-festive').value = simulationState.config.seasonMultipliers.Festive;
@@ -1523,10 +1492,6 @@
             simulationState.config.totalMonths = parseInt(document.getElementById('total-months').value) || 3;
             simulationState.config.operational.weekdayDays = parseInt(document.getElementById('weekday-days').value) || 22;
             simulationState.config.operational.weekendDays = parseInt(document.getElementById('weekend-days').value) || 8;
-            
-            simulationState.config.capacityAdjustment.Tight = parseFloat(document.getElementById('cap-tight').value) || 0.9;
-            simulationState.config.capacityAdjustment.Balanced = parseFloat(document.getElementById('cap-balanced').value) || 1.0;
-            simulationState.config.capacityAdjustment.Slack = parseFloat(document.getElementById('cap-slack').value) || 1.1;
             
             simulationState.config.seasonMultipliers.Normal = parseFloat(document.getElementById('mult-normal').value) || 1.0;
             simulationState.config.seasonMultipliers.Festive = parseFloat(document.getElementById('mult-festive').value) || 1.25;
@@ -1592,7 +1557,6 @@
                     <div class="month-summary">
                         <p><strong>Season:</strong> ${month.season}</p>
                         <p><strong>Scenario:</strong> ${month.scenario.replace('_', ' ')}</p>
-                        <p><strong>Mumbai Capacity:</strong> ${month.competitors.Mumbai.capacityLabel}</p>
                         ${month.results ? `<p><strong>Profit:</strong> ₹${Math.round(month.results.totalProfit).toLocaleString('en-IN')}</p>` : ''}
                     </div>
                 </div>
@@ -1657,18 +1621,15 @@
                     competitors: {
                         Mumbai: { 
                             weekdayBand: `₹${mBase - spread} – ₹${mBase + spread}`, 
-                            weekendBand: `₹${mBase + weekend - spread} – ₹${mBase + weekend + spread}`, 
-                            capacityLabel: i % 3 === 0 ? 'Tight' : i % 3 === 1 ? 'Balanced' : 'Slack' 
+                            weekendBand: `₹${mBase + weekend - spread} – ₹${mBase + weekend + spread}`
                         },
                         Delhi: { 
                             weekdayBand: `₹${dBase - spread} – ₹${dBase + spread}`, 
-                            weekendBand: `₹${dBase + weekend - spread} – ₹${dBase + weekend + spread}`, 
-                            capacityLabel: i % 3 === 1 ? 'Tight' : i % 3 === 2 ? 'Balanced' : 'Slack' 
+                            weekendBand: `₹${dBase + weekend - spread} – ₹${dBase + weekend + spread}`
                         },
                         Bengaluru: { 
                             weekdayBand: `₹${bBase - spread} – ₹${bBase + spread}`, 
-                            weekendBand: `₹${bBase + weekend - spread} – ₹${bBase + weekend + spread}`, 
-                            capacityLabel: i % 3 === 2 ? 'Tight' : i % 3 === 0 ? 'Balanced' : 'Slack' 
+                            weekendBand: `₹${bBase + weekend - spread} – ₹${bBase + weekend + spread}`
                         }
                     },
                     studentDecisions: null,
@@ -1708,18 +1669,15 @@
                 competitors: {
                     Mumbai: { 
                         weekdayBand: `₹${mBase - spread} – ₹${mBase + spread}`, 
-                        weekendBand: `₹${mBase + weekend - spread} – ₹${mBase + weekend + spread}`, 
-                        capacityLabel: 'Balanced' 
+                        weekendBand: `₹${mBase + weekend - spread} – ₹${mBase + weekend + spread}`
                     },
                     Delhi: { 
                         weekdayBand: `₹${dBase - spread} – ₹${dBase + spread}`, 
-                        weekendBand: `₹${dBase + weekend - spread} – ₹${dBase + weekend + spread}`, 
-                        capacityLabel: 'Balanced' 
+                        weekendBand: `₹${dBase + weekend - spread} – ₹${dBase + weekend + spread}`
                     },
                     Bengaluru: { 
                         weekdayBand: `₹${bBase - spread} – ₹${bBase + spread}`, 
-                        weekendBand: `₹${bBase + weekend - spread} – ₹${bBase + weekend + spread}`, 
-                        capacityLabel: 'Balanced' 
+                        weekendBand: `₹${bBase + weekend - spread} – ₹${bBase + weekend + spread}`
                     }
                 },
                 studentDecisions: null,
@@ -1792,15 +1750,12 @@
             
             document.getElementById('edit-mumbaiWeekday').value = month.competitors.Mumbai.weekdayBand;
             document.getElementById('edit-mumbaiWeekend').value = month.competitors.Mumbai.weekendBand;
-            document.getElementById('edit-mumbaiCapacity').value = month.competitors.Mumbai.capacityLabel;
             
             document.getElementById('edit-delhiWeekday').value = month.competitors.Delhi.weekdayBand;
             document.getElementById('edit-delhiWeekend').value = month.competitors.Delhi.weekendBand;
-            document.getElementById('edit-delhiCapacity').value = month.competitors.Delhi.capacityLabel;
             
             document.getElementById('edit-blrWeekday').value = month.competitors.Bengaluru.weekdayBand;
             document.getElementById('edit-blrWeekend').value = month.competitors.Bengaluru.weekendBand;
-            document.getElementById('edit-blrCapacity').value = month.competitors.Bengaluru.capacityLabel;
             
             document.getElementById('month-detail-editor').classList.remove('hidden');
             
@@ -1821,15 +1776,12 @@
             
             month.competitors.Mumbai.weekdayBand = document.getElementById('edit-mumbaiWeekday').value;
             month.competitors.Mumbai.weekendBand = document.getElementById('edit-mumbaiWeekend').value;
-            month.competitors.Mumbai.capacityLabel = document.getElementById('edit-mumbaiCapacity').value;
             
             month.competitors.Delhi.weekdayBand = document.getElementById('edit-delhiWeekday').value;
             month.competitors.Delhi.weekendBand = document.getElementById('edit-delhiWeekend').value;
-            month.competitors.Delhi.capacityLabel = document.getElementById('edit-delhiCapacity').value;
             
             month.competitors.Bengaluru.weekdayBand = document.getElementById('edit-blrWeekday').value;
             month.competitors.Bengaluru.weekendBand = document.getElementById('edit-blrWeekend').value;
-            month.competitors.Bengaluru.capacityLabel = document.getElementById('edit-blrCapacity').value;
             
             renderMonthConfig();
             renderMonthPreview();
@@ -1946,7 +1898,6 @@
                                     <h4>${city}</h4>
                                     <p><strong>Competitor Weekday:</strong> ${current.competitors[city].weekdayBand}</p>
                                     <p><strong>Competitor Weekend:</strong> ${current.competitors[city].weekendBand}</p>
-                                    <p><strong>Capacity:</strong> ${current.competitors[city].capacityLabel}</p>
                                 </div>
                             `).join('')}
                         </div>
