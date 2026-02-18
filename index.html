@@ -847,7 +847,7 @@
                         </div>
                         <div class="card">
                             <h4>Your decisions</h4>
-                            <p class="muted">For every month you choose one weekday price and one weekend price per city based on limited information about season, competitor bands.</p>
+                            <p class="muted">For every month you choose one weekday price and one weekend price per city based on limited information about season and competitor prices.</p>
                         </div>
                         <div class="card">
                             <h4>How outcomes are calculated</h4>
@@ -926,18 +926,6 @@
                         </div>
                         
                         <div class="card">
-                            <h4>Competitor Base Pricing</h4>
-                            <div class="grid-3">
-                                <div><label for="comp-mumbai">Mumbai Base</label><input type="number" id="comp-mumbai" value="220" step="10" onchange="updateConfigFromUI()"></div>
-                                <div><label for="comp-delhi">Delhi Base</label><input type="number" id="comp-delhi" value="200" step="10" onchange="updateConfigFromUI()"></div>
-                                <div><label for="comp-blr">Bengaluru Base</label><input type="number" id="comp-blr" value="180" step="10" onchange="updateConfigFromUI()"></div>
-                                <div><label for="comp-growth">Growth per Month</label><input type="number" id="comp-growth" value="10" step="5" onchange="updateConfigFromUI()"></div>
-                                <div><label for="comp-weekend-premium">Weekend Premium</label><input type="number" id="comp-weekend-premium" value="60" step="10" onchange="updateConfigFromUI()"></div>
-                                <div><label for="comp-band-spread">Band Spread</label><input type="number" id="comp-band-spread" value="20" step="5" onchange="updateConfigFromUI()"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="card">
                             <h4>City Demand Parameters</h4>
                             <table class="param-table">
                                 <thead>
@@ -1006,7 +994,7 @@
                     
                     <div class="card">
                         <h4>Month Configuration</h4>
-                        <p class="muted">Configure each month's season, scenario, and competitor bands.</p>
+                        <p class="muted">Configure each month's season, scenario, and competitor prices.</p>
                         <div class="quick-actions-row">
                             <button class="btn" onclick="addNewMonth()">Add Single Month</button>
                             <button class="btn" onclick="deleteAllMonths()">Delete All Months</button>
@@ -1045,28 +1033,28 @@
                                 </div>
                             </div>
                             <div style="margin-top: 15px;">
-                                <h4>Competitor Settings for This Month</h4>
+                                <h4>Competitor Prices for This Month</h4>
                                 <div class="grid-3">
                                     <div>
                                         <h4>Mumbai</h4>
-                                        <label>Competitor weekday range</label>
-                                        <input type="text" id="edit-mumbaiWeekday" value="₹220 – ₹280" onchange="updateCurrentMonthConfig()">
-                                        <label>Competitor weekend range</label>
-                                        <input type="text" id="edit-mumbaiWeekend" value="₹280 – ₹360" onchange="updateCurrentMonthConfig()">
+                                        <label>Competitor Weekday Price (₹)</label>
+                                        <input type="number" id="edit-mumbaiWeekday" value="240" min="50" max="1000" step="5" onchange="updateCurrentMonthConfig()">
+                                        <label>Competitor Weekend Price (₹)</label>
+                                        <input type="number" id="edit-mumbaiWeekend" value="340" min="50" max="1000" step="5" onchange="updateCurrentMonthConfig()">
                                     </div>
                                     <div>
                                         <h4>Delhi</h4>
-                                        <label>Competitor weekday range</label>
-                                        <input type="text" id="edit-delhiWeekday" value="₹200 – ₹260" onchange="updateCurrentMonthConfig()">
-                                        <label>Competitor weekend range</label>
-                                        <input type="text" id="edit-delhiWeekend" value="₹260 – ₹340" onchange="updateCurrentMonthConfig()">
+                                        <label>Competitor Weekday Price (₹)</label>
+                                        <input type="number" id="edit-delhiWeekday" value="210" min="50" max="1000" step="5" onchange="updateCurrentMonthConfig()">
+                                        <label>Competitor Weekend Price (₹)</label>
+                                        <input type="number" id="edit-delhiWeekend" value="310" min="50" max="1000" step="5" onchange="updateCurrentMonthConfig()">
                                     </div>
                                     <div>
                                         <h4>Bengaluru</h4>
-                                        <label>Competitor weekday range</label>
-                                        <input type="text" id="edit-blrWeekday" value="₹180 – ₹240" onchange="updateCurrentMonthConfig()">
-                                        <label>Competitor weekend range</label>
-                                        <input type="text" id="edit-blrWeekend" value="₹240 – ₹320" onchange="updateCurrentMonthConfig()">
+                                        <label>Competitor Weekday Price (₹)</label>
+                                        <input type="number" id="edit-blrWeekday" value="190" min="50" max="1000" step="5" onchange="updateCurrentMonthConfig()">
+                                        <label>Competitor Weekend Price (₹)</label>
+                                        <input type="number" id="edit-blrWeekend" value="290" min="50" max="1000" step="5" onchange="updateCurrentMonthConfig()">
                                     </div>
                                 </div>
                             </div>
@@ -1207,14 +1195,6 @@
                     economic_boom: 1.15,
                     recession: 0.7
                 },
-                competitorBase: {
-                    Mumbai: 220,
-                    Delhi: 200,
-                    Bengaluru: 180,
-                    growthPerMonth: 10,
-                    weekendPremium: 60,
-                    bandSpread: 20
-                },
                 cityParams: {
                     Mumbai: {
                         baseWeekday: 2200,
@@ -1253,28 +1233,19 @@
             currentMetricTab: 'pricing'
         };
 
-        // Helper function to extract lower bound from price band (exactly as in first version)
-        function extractLowerBound(priceBand) {
-            if (!priceBand) return 1;
-            const cleaned = priceBand.replace(/₹/g, '').trim();
-            const parts = cleaned.split(/[–-]/);
-            const lower = parseFloat(parts[0].trim());
-            return isNaN(lower) ? 1 : lower;
-        }
-
-        // Simulate city with Excel-aligned demand formula (exactly as in first version)
+        // Simulate city with Excel-aligned demand formula (exactly as in Excel sheet)
         function simulateCity(city, season, weekdayPrice, weekendPrice, scenario, competitorData) {
             const p = simulationState.config.cityParams[city];
             
-            // Extract competitor base prices from the range
-            const competitorWeekdayBase = extractLowerBound(competitorData.weekdayBand);
-            const competitorWeekendBase = extractLowerBound(competitorData.weekendBand);
+            // Direct competitor prices - no extraction needed
+            const competitorWeekdayBase = competitorData.weekdayPrice;
+            const competitorWeekendBase = competitorData.weekendPrice;
             
             const seasonMult = simulationState.config.seasonMultipliers[season] || 1;
             const scenarioMult = simulationState.config.scenarioMultipliers[scenario] || 1;
             
-            // Excel-aligned demand formula:
-            // BaseDemand × ScenarioMultiplier × (CompetitorBase / YourPrice) ^ |Elasticity| × SeasonMultiplier
+            // Excel-aligned demand formula exactly as in Demand_Model sheet:
+            // =Market_Assumptions!B2 * ScenarioMultiplier * (CompetitorPrice / YourPrice) ^ ABS(Elasticity) * SeasonMultiplier
             const adjWeekdayDemand = p.baseWeekday * 
                 scenarioMult * 
                 Math.pow(competitorWeekdayBase / weekdayPrice, Math.abs(p.elasticityWeekday)) * 
@@ -1370,15 +1341,7 @@
         function initSampleMonths() {
             if (simulationState.months.length > 0) return;
             
-            const base = simulationState.config.competitorBase;
-            
             for (let i = 1; i <= simulationState.config.totalMonths; i++) {
-                const mBase = base.Mumbai + i * base.growthPerMonth;
-                const dBase = base.Delhi + i * base.growthPerMonth;
-                const bBase = base.Bengaluru + i * base.growthPerMonth;
-                const spread = base.bandSpread;
-                const weekend = base.weekendPremium;
-                
                 simulationState.months.push({
                     monthIndex: i,
                     season: i === 1 ? 'Festive' : (i === 2 ? 'Normal' : 'Festive'),
@@ -1386,16 +1349,16 @@
                     status: i === 1 ? 'active' : 'planned',
                     competitors: {
                         Mumbai: { 
-                            weekdayBand: `₹${mBase - spread} – ₹${mBase + spread}`, 
-                            weekendBand: `₹${mBase + weekend - spread} – ₹${mBase + weekend + spread}`
+                            weekdayPrice: 240 + (i-1)*5, 
+                            weekendPrice: 340 + (i-1)*5
                         },
                         Delhi: { 
-                            weekdayBand: `₹${dBase - spread} – ₹${dBase + spread}`, 
-                            weekendBand: `₹${dBase + weekend - spread} – ₹${dBase + weekend + spread}`
+                            weekdayPrice: 210 + (i-1)*5, 
+                            weekendPrice: 310 + (i-1)*5
                         },
                         Bengaluru: { 
-                            weekdayBand: `₹${bBase - spread} – ₹${bBase + spread}`, 
-                            weekendBand: `₹${bBase + weekend - spread} – ₹${bBase + weekend + spread}`
+                            weekdayPrice: 190 + (i-1)*5, 
+                            weekendPrice: 290 + (i-1)*5
                         }
                     },
                     studentDecisions: null,
@@ -1454,13 +1417,6 @@
             document.getElementById('scen-boom').value = simulationState.config.scenarioMultipliers.economic_boom;
             document.getElementById('scen-recession').value = simulationState.config.scenarioMultipliers.recession;
             
-            document.getElementById('comp-mumbai').value = simulationState.config.competitorBase.Mumbai;
-            document.getElementById('comp-delhi').value = simulationState.config.competitorBase.Delhi;
-            document.getElementById('comp-blr').value = simulationState.config.competitorBase.Bengaluru;
-            document.getElementById('comp-growth').value = simulationState.config.competitorBase.growthPerMonth;
-            document.getElementById('comp-weekend-premium').value = simulationState.config.competitorBase.weekendPremium;
-            document.getElementById('comp-band-spread').value = simulationState.config.competitorBase.bandSpread;
-            
             document.getElementById('param-mumbai-wd').value = simulationState.config.cityParams.Mumbai.baseWeekday;
             document.getElementById('param-mumbai-we').value = simulationState.config.cityParams.Mumbai.baseWeekend;
             document.getElementById('param-mumbai-ela-wd').value = simulationState.config.cityParams.Mumbai.elasticityWeekday;
@@ -1503,13 +1459,6 @@
             simulationState.config.scenarioMultipliers.demand_drop = parseFloat(document.getElementById('scen-demand-drop').value) || 0.8;
             simulationState.config.scenarioMultipliers.economic_boom = parseFloat(document.getElementById('scen-boom').value) || 1.15;
             simulationState.config.scenarioMultipliers.recession = parseFloat(document.getElementById('scen-recession').value) || 0.7;
-            
-            simulationState.config.competitorBase.Mumbai = parseFloat(document.getElementById('comp-mumbai').value) || 220;
-            simulationState.config.competitorBase.Delhi = parseFloat(document.getElementById('comp-delhi').value) || 200;
-            simulationState.config.competitorBase.Bengaluru = parseFloat(document.getElementById('comp-blr').value) || 180;
-            simulationState.config.competitorBase.growthPerMonth = parseFloat(document.getElementById('comp-growth').value) || 10;
-            simulationState.config.competitorBase.weekendPremium = parseFloat(document.getElementById('comp-weekend-premium').value) || 60;
-            simulationState.config.competitorBase.bandSpread = parseFloat(document.getElementById('comp-band-spread').value) || 20;
             
             simulationState.config.cityParams.Mumbai.baseWeekday = parseFloat(document.getElementById('param-mumbai-wd').value) || 2200;
             simulationState.config.cityParams.Mumbai.baseWeekend = parseFloat(document.getElementById('param-mumbai-we').value) || 4200;
@@ -1602,17 +1551,10 @@
         window.createMonths = function() {
             updateConfigFromUI();
             const cnt = simulationState.config.totalMonths;
-            const base = simulationState.config.competitorBase;
             
             simulationState.months = [];
             
             for (let i = 1; i <= cnt; i++) {
-                const mBase = base.Mumbai + i * base.growthPerMonth;
-                const dBase = base.Delhi + i * base.growthPerMonth;
-                const bBase = base.Bengaluru + i * base.growthPerMonth;
-                const spread = base.bandSpread;
-                const weekend = base.weekendPremium;
-                
                 simulationState.months.push({
                     monthIndex: i,
                     season: 'Festive',
@@ -1620,16 +1562,16 @@
                     status: i === 1 ? 'active' : 'planned',
                     competitors: {
                         Mumbai: { 
-                            weekdayBand: `₹${mBase - spread} – ₹${mBase + spread}`, 
-                            weekendBand: `₹${mBase + weekend - spread} – ₹${mBase + weekend + spread}`
+                            weekdayPrice: 240, 
+                            weekendPrice: 340
                         },
                         Delhi: { 
-                            weekdayBand: `₹${dBase - spread} – ₹${dBase + spread}`, 
-                            weekendBand: `₹${dBase + weekend - spread} – ₹${dBase + weekend + spread}`
+                            weekdayPrice: 210, 
+                            weekendPrice: 310
                         },
                         Bengaluru: { 
-                            weekdayBand: `₹${bBase - spread} – ₹${bBase + spread}`, 
-                            weekendBand: `₹${bBase + weekend - spread} – ₹${bBase + weekend + spread}`
+                            weekdayPrice: 190, 
+                            weekendPrice: 290
                         }
                     },
                     studentDecisions: null,
@@ -1653,13 +1595,6 @@
         window.addNewMonth = function() {
             updateConfigFromUI();
             const i = simulationState.months.length + 1;
-            const base = simulationState.config.competitorBase;
-            
-            const mBase = base.Mumbai + i * base.growthPerMonth;
-            const dBase = base.Delhi + i * base.growthPerMonth;
-            const bBase = base.Bengaluru + i * base.growthPerMonth;
-            const spread = base.bandSpread;
-            const weekend = base.weekendPremium;
             
             simulationState.months.push({
                 monthIndex: i,
@@ -1668,16 +1603,16 @@
                 status: 'planned',
                 competitors: {
                     Mumbai: { 
-                        weekdayBand: `₹${mBase - spread} – ₹${mBase + spread}`, 
-                        weekendBand: `₹${mBase + weekend - spread} – ₹${mBase + weekend + spread}`
+                        weekdayPrice: 240, 
+                        weekendPrice: 340
                     },
                     Delhi: { 
-                        weekdayBand: `₹${dBase - spread} – ₹${dBase + spread}`, 
-                        weekendBand: `₹${dBase + weekend - spread} – ₹${dBase + weekend + spread}`
+                        weekdayPrice: 210, 
+                        weekendPrice: 310
                     },
                     Bengaluru: { 
-                        weekdayBand: `₹${bBase - spread} – ₹${bBase + spread}`, 
-                        weekendBand: `₹${bBase + weekend - spread} – ₹${bBase + weekend + spread}`
+                        weekdayPrice: 190, 
+                        weekendPrice: 290
                     }
                 },
                 studentDecisions: null,
@@ -1748,14 +1683,14 @@
             document.getElementById('edit-scenario').value = month.scenario;
             document.getElementById('edit-status').value = month.status;
             
-            document.getElementById('edit-mumbaiWeekday').value = month.competitors.Mumbai.weekdayBand;
-            document.getElementById('edit-mumbaiWeekend').value = month.competitors.Mumbai.weekendBand;
+            document.getElementById('edit-mumbaiWeekday').value = month.competitors.Mumbai.weekdayPrice;
+            document.getElementById('edit-mumbaiWeekend').value = month.competitors.Mumbai.weekendPrice;
             
-            document.getElementById('edit-delhiWeekday').value = month.competitors.Delhi.weekdayBand;
-            document.getElementById('edit-delhiWeekend').value = month.competitors.Delhi.weekendBand;
+            document.getElementById('edit-delhiWeekday').value = month.competitors.Delhi.weekdayPrice;
+            document.getElementById('edit-delhiWeekend').value = month.competitors.Delhi.weekendPrice;
             
-            document.getElementById('edit-blrWeekday').value = month.competitors.Bengaluru.weekdayBand;
-            document.getElementById('edit-blrWeekend').value = month.competitors.Bengaluru.weekendBand;
+            document.getElementById('edit-blrWeekday').value = month.competitors.Bengaluru.weekdayPrice;
+            document.getElementById('edit-blrWeekend').value = month.competitors.Bengaluru.weekendPrice;
             
             document.getElementById('month-detail-editor').classList.remove('hidden');
             
@@ -1774,14 +1709,14 @@
             month.scenario = document.getElementById('edit-scenario').value;
             month.status = document.getElementById('edit-status').value;
             
-            month.competitors.Mumbai.weekdayBand = document.getElementById('edit-mumbaiWeekday').value;
-            month.competitors.Mumbai.weekendBand = document.getElementById('edit-mumbaiWeekend').value;
+            month.competitors.Mumbai.weekdayPrice = parseFloat(document.getElementById('edit-mumbaiWeekday').value) || 240;
+            month.competitors.Mumbai.weekendPrice = parseFloat(document.getElementById('edit-mumbaiWeekend').value) || 340;
             
-            month.competitors.Delhi.weekdayBand = document.getElementById('edit-delhiWeekday').value;
-            month.competitors.Delhi.weekendBand = document.getElementById('edit-delhiWeekend').value;
+            month.competitors.Delhi.weekdayPrice = parseFloat(document.getElementById('edit-delhiWeekday').value) || 210;
+            month.competitors.Delhi.weekendPrice = parseFloat(document.getElementById('edit-delhiWeekend').value) || 310;
             
-            month.competitors.Bengaluru.weekdayBand = document.getElementById('edit-blrWeekday').value;
-            month.competitors.Bengaluru.weekendBand = document.getElementById('edit-blrWeekend').value;
+            month.competitors.Bengaluru.weekdayPrice = parseFloat(document.getElementById('edit-blrWeekday').value) || 190;
+            month.competitors.Bengaluru.weekendPrice = parseFloat(document.getElementById('edit-blrWeekend').value) || 290;
             
             renderMonthConfig();
             renderMonthPreview();
@@ -1896,8 +1831,8 @@
                             ${Object.keys(current.competitors).map(city => `
                                 <div class="card">
                                     <h4>${city}</h4>
-                                    <p><strong>Competitor Weekday:</strong> ${current.competitors[city].weekdayBand}</p>
-                                    <p><strong>Competitor Weekend:</strong> ${current.competitors[city].weekendBand}</p>
+                                    <p><strong>Competitor Weekday:</strong> ₹${current.competitors[city].weekdayPrice}</p>
+                                    <p><strong>Competitor Weekend:</strong> ₹${current.competitors[city].weekendPrice}</p>
                                 </div>
                             `).join('')}
                         </div>
@@ -2083,8 +2018,8 @@
                 case 'pricing':
                     tableHtml += '<th>Your Weekday (₹)</th>';
                     tableHtml += '<th>Your Weekend (₹)</th>';
-                    tableHtml += '<th>Comp Weekday Base (₹)</th>';
-                    tableHtml += '<th>Comp Weekend Base (₹)</th>';
+                    tableHtml += '<th>Comp Weekday (₹)</th>';
+                    tableHtml += '<th>Comp Weekend (₹)</th>';
                     tableHtml += '<th>Avg Ticket (₹)</th>';
                     break;
                 case 'demand':
