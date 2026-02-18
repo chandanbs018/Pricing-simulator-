@@ -1185,9 +1185,15 @@
                     
                     <div class="student-round-selector" id="round-selector"></div>
                     <div id="current-round-display"></div>
-                    <div class="quick-actions">
+                    
+                    <!-- Single Reset My Progress button at the bottom -->
+                    <div class="quick-actions" style="margin-top: 20px;">
                         <h4>Round Navigation</h4>
-                        <button class="btn btn-warning" onclick="resetStudentProgress()">Reset My Progress</button>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <button class="btn" onclick="prevStudentRound()" id="prev-round-btn" style="display: none;">Previous Round</button>
+                            <button class="btn btn-primary" onclick="nextStudentRound()" id="next-round-btn" style="display: none;">Next Round</button>
+                            <button class="btn btn-warning" onclick="resetStudentProgress()">Reset My Progress</button>
+                        </div>
                     </div>
                 </div>
 
@@ -1784,6 +1790,10 @@
             if (simulationState.rounds.length === 0) {
                 sel.innerHTML = '<p class="muted">No rounds configured.</p>';
                 disp.innerHTML = '<div class="card"><h3>No Rounds Available</h3><p class="muted">Please ask instructor to create rounds.</p></div>';
+                
+                // Hide navigation buttons
+                document.getElementById('prev-round-btn').style.display = 'none';
+                document.getElementById('next-round-btn').style.display = 'none';
                 return;
             }
             
@@ -1841,13 +1851,11 @@
                             <button class="btn btn-primary" onclick="submitRoundPrices(${cur.roundNumber})" style="margin-top:15px;">Submit Prices for Round ${cur.roundNumber}</button>
                         </div>`
                     }
-                </div>
-                <div class="quick-actions" style="margin-top:20px;">
-                    <h4>Round Navigation</h4>
-                    ${simulationState.currentRoundIndex > 1 ? `<button class="btn" onclick="prevStudentRound()">Previous Round</button>` : ''}
-                    ${simulationState.currentRoundIndex < simulationState.rounds.length ? `<button class="btn btn-primary" onclick="nextStudentRound()" style="margin-left:10px;">Next Round</button>` : ''}
-                    <button class="btn btn-warning" onclick="resetStudentProgress()" style="margin-left:10px;">Reset My Progress</button>
                 </div>`;
+                
+                // Show/hide navigation buttons
+                document.getElementById('prev-round-btn').style.display = simulationState.currentRoundIndex > 1 ? 'inline-block' : 'none';
+                document.getElementById('next-round-btn').style.display = simulationState.currentRoundIndex < simulationState.rounds.length ? 'inline-block' : 'none';
             }
         }
 
