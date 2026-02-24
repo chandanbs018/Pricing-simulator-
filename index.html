@@ -696,38 +696,6 @@
             margin-top: 20px;
         }
 
-        .level-tabs {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            margin: 20px 0;
-            border-bottom: 2px solid var(--color-border);
-            padding-bottom: 10px;
-        }
-
-        .level-tab {
-            padding: 10px 20px;
-            background: var(--color-white);
-            border: 1px solid var(--color-border);
-            border-radius: 6px 6px 0 0;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            margin-bottom: -2px;
-            border-bottom: 2px solid transparent;
-        }
-
-        .level-tab:hover {
-            background: var(--color-bg);
-        }
-
-        .level-tab.active {
-            background: var(--color-primary);
-            color: white;
-            border-color: var(--color-primary);
-            border-bottom: 2px solid var(--color-primary);
-        }
-
         .param-table {
             width: 100%;
             border-collapse: collapse;
@@ -825,7 +793,7 @@
             <div class="sidebar">
                 <h3>Modules</h3>
                 <div class="nav-item active" onclick="switchModule('intro')">Introduction</div>
-                <div class="nav-item" onclick="switchModule('instructor')">Instructor Setup</div>
+                <div class="nav-item" onclick="switchModule('instructor')">Admin Panel</div>
                 <div class="nav-item" onclick="switchModule('student')">Student Rounds</div>
                 <div class="nav-item" onclick="switchModule('results')">Results</div>
                 <div class="nav-item" onclick="switchModule('progress')">Progress</div>
@@ -857,17 +825,10 @@
                 </div>
 
                 <div id="instructor-section" class="hidden">
-                    <h2>Instructor Control Panel</h2>
+                    <h2>Admin Panel</h2>
                     
-                    <!-- Level Tabs -->
-                    <div class="level-tabs" id="level-tabs">
-                        <span class="level-tab active" onclick="switchLevelTab(event, 1)">Level 1 Settings</span>
-                        <span class="level-tab" onclick="switchLevelTab(event, 2)">Level 2 Settings</span>
-                        <span class="level-tab" onclick="switchLevelTab(event, 3)">Level 3 Settings</span>
-                    </div>
-                    
-                    <!-- Level 1 Settings - Excel Aligned -->
-                    <div id="level1-settings">
+                    <!-- All Level 1 Settings - Excel Aligned -->
+                    <div>
                         <div class="card">
                             <h4>Market Assumptions</h4>
                             <table class="param-table">
@@ -1065,22 +1026,6 @@
                                 <button class="btn btn-success" onclick="saveAllRounds()">Save All</button>
                                 <button class="btn delete-round-btn" onclick="deleteAllRounds()">Delete All</button>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Level 2 Settings (placeholder) -->
-                    <div id="level2-settings" class="hidden">
-                        <div class="card">
-                            <h4>Level 2 Settings</h4>
-                            <p class="muted">Competitor reaction parameters will be configured here in future updates.</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Level 3 Settings (placeholder) -->
-                    <div id="level3-settings" class="hidden">
-                        <div class="card">
-                            <h4>Level 3 Settings</h4>
-                            <p class="muted">Working capital and segmented demand parameters will be configured here in future updates.</p>
                         </div>
                     </div>
                     
@@ -1977,17 +1922,6 @@
             updateResultsSection();
             updateProgressSection();
             showAlert('Round ' + rn + ' completed! Profit: ' + formatCurrency(result.totalProfit), 'success');
-        };
-
-        window.switchLevelTab = function(event, level) {
-            document.querySelectorAll('.level-tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            document.getElementById('level1-settings').classList.add('hidden');
-            document.getElementById('level2-settings').classList.add('hidden');
-            document.getElementById('level3-settings').classList.add('hidden');
-            
-            document.getElementById('level' + level + '-settings').classList.remove('hidden');
         };
 
         window.switchMetricTab = function(event, tabId) {
