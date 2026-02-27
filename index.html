@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cineprice – Strategic Pricing P&L</title>
+    <title>Cineprice – Strategic Pricing P&L (Logit Model) v3.0</title>
     <style>
         :root {
             --color-primary: #4F82CC;
@@ -720,6 +720,27 @@
             font-size: 0.9em;
         }
 
+        .feature-badge {
+            background: #2c3e50;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: normal;
+            margin-left: 8px;
+        }
+
+        .model-badge {
+            background: #8e44ad;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 16px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-left: 10px;
+        }
+
         @media (max-width: 1024px) {
             .main-grid {
                 grid-template-columns: 1fr;
@@ -785,7 +806,8 @@
             </div>
             
             <div class="header-banner">
-                <h1>Cineprice Strategic Pricing Simulation</h1>
+                <h1>Cineprice Strategic Pricing Simulation v3.0</h1>
+                <p>Logit Demand | Supply‑side Capacity Constraint | MBA‑grade Microeconomics</p>
             </div>
         </div>
 
@@ -804,22 +826,22 @@
                     <h2>Simulation Overview</h2>
                     <p class="muted">You play the role of regional pricing manager for a multiplex chain in Mumbai, Delhi, and Bengaluru. Each round is one month of operations.</p>
                     <div class="card">
-                        <h4>Business context</h4>
-                        <p>You set weekday and weekend ticket prices for each city. Demand responds to your prices, the current season, and competitive positioning. Capacity is fixed; once seats are full, extra demand is lost.</p>
-                        <p class="muted">The objective is to maximise cumulative profit, not just revenue or occupancy.</p>
+                        <h4>Business context <span class="model-badge">Corrected Model v3.0</span></h4>
+                        <p>You set weekday and weekend ticket prices for each city and decide how many screens to allocate. Demand is calculated using a logit share model based on your price vs competitor price, then adjusted by movie segment, season, and scenario multipliers. Screens only affect your <strong>supply capacity</strong> — they do not reduce underlying demand.</p>
+                        <p class="muted">The objective is to maximise cumulative profit by balancing price, screen allocation, and the resulting lost demand when capacity is insufficient.</p>
                     </div>
                     <div class="grid-3">
                         <div class="card">
                             <h4>Cities and capacity</h4>
-                            <p class="muted">Mumbai, Delhi, and Bengaluru each have fixed screens, seats per screen, and shows per day, which set a daily capacity limit.</p>
+                            <p class="muted">Mumbai, Delhi, and Bengaluru each have fixed screens, seats per screen, and shows per day. You choose how many screens to use each month.</p>
                         </div>
                         <div class="card">
                             <h4>Your decisions</h4>
-                            <p class="muted">For every month you choose one weekday price and one weekend price per city based on limited information about season and competitor prices.</p>
+                            <p class="muted">For every month you choose weekday and weekend prices per city, plus screens allocated, based on season and competitor prices.</p>
                         </div>
                         <div class="card">
                             <h4>How outcomes are calculated</h4>
-                            <p class="muted">A demand model with price elasticity and season multipliers estimates attendance, then revenue, variable costs, fixed costs, and profit are computed for each city.</p>
+                            <p class="muted">Logit share model: exp(λ·P_your) / (exp(λ·P_your) + exp(λ·P_comp)) × base demand × segment × season × scenario. Attendance is then limited by screen capacity.</p>
                         </div>
                     </div>
                 </div>
@@ -827,6 +849,18 @@
                 <div id="instructor-section" class="hidden">
                     <h2>Admin Panel</h2>
                     
+                    <!-- Logit Lambda Card -->
+                    <div class="card">
+                        <h4>Logit Model Parameter</h4>
+                        <div class="grid-3">
+                            <div>
+                                <label>Lambda (Price Sensitivity)</label>
+                                <input type="number" id="param-lambda" value="-0.02" step="0.001" onchange="updateConfig()">
+                                <p class="muted">Higher absolute value = more price sensitive market</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- All Level 1 Settings - Excel Aligned -->
                     <div>
                         <div class="card">
@@ -837,7 +871,7 @@
                                         <th>City</th>
                                         <th>Base Weekday Demand</th>
                                         <th>Base Weekend Demand</th>
-                                        <th>Price Elasticity</th>
+                                        <th>Price Elasticity (Not used in Logit)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -845,23 +879,23 @@
                                         <td>Mumbai</td>
                                         <td><input type="number" id="param-mumbai-wd" value="2200" step="100" onchange="updateConfig()"></td>
                                         <td><input type="number" id="param-mumbai-we" value="4200" step="100" onchange="updateConfig()"></td>
-                                        <td><input type="number" id="param-mumbai-ela" value="-1.4" step="0.1" onchange="updateConfig()"></td>
+                                        <td><input type="number" id="param-mumbai-ela" value="-1.4" step="0.1" disabled style="background:#e5e7eb;"></td>
                                     </tr>
                                     <tr>
                                         <td>Delhi</td>
                                         <td><input type="number" id="param-delhi-wd" value="2000" step="100" onchange="updateConfig()"></td>
                                         <td><input type="number" id="param-delhi-we" value="3900" step="100" onchange="updateConfig()"></td>
-                                        <td><input type="number" id="param-delhi-ela" value="-1.3" step="0.1" onchange="updateConfig()"></td>
+                                        <td><input type="number" id="param-delhi-ela" value="-1.3" step="0.1" disabled style="background:#e5e7eb;"></td>
                                     </tr>
                                     <tr>
                                         <td>Bengaluru</td>
                                         <td><input type="number" id="param-blr-wd" value="1800" step="100" onchange="updateConfig()"></td>
                                         <td><input type="number" id="param-blr-we" value="3600" step="100" onchange="updateConfig()"></td>
-                                        <td><input type="number" id="param-blr-ela" value="-1.5" step="0.1" onchange="updateConfig()"></td>
+                                        <td><input type="number" id="param-blr-ela" value="-1.5" step="0.1" disabled style="background:#e5e7eb;"></td>
                                     </tr>
                                 </tbody>
                             </table>
-                            <p class="muted">Note: City-specific season multipliers are NOT used in the Excel formula</p>
+                            <p class="muted">Note: Elasticity fields disabled — Logit λ now controls price sensitivity</p>
                         </div>
                         
                         <div class="card">
@@ -911,10 +945,10 @@
                                 <thead>
                                     <tr>
                                         <th>City</th>
-                                        <th>Screens</th>
+                                        <th>Total Screens</th>
                                         <th>Seats per Screen</th>
                                         <th>Shows per Day</th>
-                                        <th>Max Daily Capacity</th>
+                                        <th>Max Daily Capacity (per screen)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -923,24 +957,25 @@
                                         <td><input type="number" id="cap-mumbai-screens" value="10" min="1" onchange="updateCapacity()"></td>
                                         <td><input type="number" id="cap-mumbai-seats" value="220" min="1" onchange="updateCapacity()"></td>
                                         <td><input type="number" id="cap-mumbai-shows" value="5" min="1" onchange="updateCapacity()"></td>
-                                        <td><span id="cap-mumbai-total">11000</span></td>
+                                        <td><span id="cap-mumbai-per-screen">1100</span></td>
                                     </tr>
                                     <tr>
                                         <td>Delhi</td>
                                         <td><input type="number" id="cap-delhi-screens" value="8" min="1" onchange="updateCapacity()"></td>
                                         <td><input type="number" id="cap-delhi-seats" value="200" min="1" onchange="updateCapacity()"></td>
                                         <td><input type="number" id="cap-delhi-shows" value="5" min="1" onchange="updateCapacity()"></td>
-                                        <td><span id="cap-delhi-total">8000</span></td>
+                                        <td><span id="cap-delhi-per-screen">1000</span></td>
                                     </tr>
                                     <tr>
                                         <td>Bengaluru</td>
                                         <td><input type="number" id="cap-blr-screens" value="7" min="1" onchange="updateCapacity()"></td>
                                         <td><input type="number" id="cap-blr-seats" value="180" min="1" onchange="updateCapacity()"></td>
                                         <td><input type="number" id="cap-blr-shows" value="5" min="1" onchange="updateCapacity()"></td>
-                                        <td><span id="cap-blr-total">6300</span></td>
+                                        <td><span id="cap-blr-per-screen">900</span></td>
                                     </tr>
                                 </tbody>
                             </table>
+                            <p class="muted">Per-screen capacity = Seats × Shows. Students allocate screens each month.</p>
                         </div>
                         
                         <div class="card">
@@ -961,7 +996,7 @@
                                     <tr>
                                         <th>City</th>
                                         <th>Variable Cost per Ticket (₹)</th>
-                                        <th>Fixed Daily Cost (₹)</th>
+                                        <th>Fixed Daily Cost (₹) <span class="feature-badge">per full theatre</span></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -982,6 +1017,7 @@
                                     </tr>
                                 </tbody>
                             </table>
+                            <p class="muted"><strong>Corrected:</strong> Fixed cost scales with screens allocated (cost × studentScreens/totalScreens)</p>
                         </div>
                         
                         <div class="card">
@@ -1114,7 +1150,7 @@
 
                 <div id="student-section" class="hidden">
                     <h2>Student Rounds</h2>
-                    <p class="muted">Navigate through configured rounds and submit pricing decisions for each month.</p>
+                    <p class="muted">Navigate through configured rounds and submit pricing decisions + screen allocation for each month.</p>
                     
                     <div class="simulation-status">
                         <div class="status-card">
@@ -1210,13 +1246,16 @@
     </div>
 
     <script>
-        // Excel-Aligned Simulation State
+        // Excel-Aligned Simulation State with Logit Model - CORRECTED v3.0
         const simulationState = {
             config: {
+                logit: {
+                    lambda: -0.02
+                },
                 marketAssumptions: {
-                    Mumbai: { baseWeekday: 2200, baseWeekend: 4200, elasticity: -1.4 },
-                    Delhi: { baseWeekday: 2000, baseWeekend: 3900, elasticity: -1.3 },
-                    Bengaluru: { baseWeekday: 1800, baseWeekend: 3600, elasticity: -1.5 }
+                    Mumbai: { baseWeekday: 2200, baseWeekend: 4200 },
+                    Delhi: { baseWeekday: 2000, baseWeekend: 3900 },
+                    Bengaluru: { baseWeekday: 1800, baseWeekend: 3600 }
                 },
                 seasonMultipliers: {
                     Normal: 1.0,
@@ -1261,10 +1300,10 @@
 
         let editingRoundIndex = null;
 
-        // Calculate daily capacity = Screens × Seats_per_Screen × Shows_per_Day
-        function calculateDailyCapacity(city) {
+        // Calculate per-screen capacity = Seats × Shows
+        function calculatePerScreenCapacity(city) {
             const cap = simulationState.config.theatreCapacity[city];
-            return cap.screens * cap.seatsPerScreen * cap.showsPerDay;
+            return cap.seatsPerScreen * cap.showsPerDay;
         }
 
         // Update capacity displays
@@ -1274,8 +1313,8 @@
                 const screens = parseFloat(document.getElementById(`cap-${city.toLowerCase()}-screens`).value) || 1;
                 const seats = parseFloat(document.getElementById(`cap-${city.toLowerCase()}-seats`).value) || 1;
                 const shows = parseFloat(document.getElementById(`cap-${city.toLowerCase()}-shows`).value) || 1;
-                const capacity = screens * seats * shows;
-                document.getElementById(`cap-${city.toLowerCase()}-total`).textContent = capacity;
+                const perScreen = seats * shows;
+                document.getElementById(`cap-${city.toLowerCase()}-per-screen`).textContent = perScreen;
                 
                 simulationState.config.theatreCapacity[city].screens = screens;
                 simulationState.config.theatreCapacity[city].seatsPerScreen = seats;
@@ -1297,41 +1336,71 @@
             return simulationState.config.scenarioMultipliers[scenario] || 1.0;
         }
 
-        // EXACT Excel-Aligned Simulate City
-        function simulateCity(city, season, weekdayPrice, weekendPrice, scenario, competitorData) {
+        // Numerically stable logit share calculation
+        function calculateLogitShare(lambda, yourPrice, compPrice) {
+            const utilYour = lambda * yourPrice;
+            const utilComp = lambda * compPrice;
+            
+            // Subtract max for numerical stability (prevents overflow)
+            const maxUtil = Math.max(utilYour, utilComp);
+            
+            const expYour = Math.exp(utilYour - maxUtil);
+            const expComp = Math.exp(utilComp - maxUtil);
+            
+            return expYour / (expYour + expComp);
+        }
+
+        // CORRECTED LOGIT MODEL: Screens constrain supply, not demand
+        function simulateCity(city, season, weekdayPrice, weekendPrice, scenario, competitorData, studentScreens) {
             const market = simulationState.config.marketAssumptions[city];
-            const capacity = calculateDailyCapacity(city);
-            const financial = simulationState.config.financials[city];
+            const totalScreens = simulationState.config.theatreCapacity[city].screens;
+            const lambda = simulationState.config.logit.lambda;
+            const perScreenCapacity = calculatePerScreenCapacity(city);
             
-            // Get season multiplier from lookup table (VLOOKUP in Excel)
+            // Get multipliers
             const seasonMult = simulationState.config.seasonMultipliers[season] || 1;
-            
-            // Calculate Segment Adjustment Factor (F2 in Excel)
+            const scenarioMult = getScenarioMultiplier(scenario);
             const segmentFactor = calculateSegmentAdjustmentFactor();
             
-            // Get scenario multiplier
-            const scenarioMult = getScenarioMultiplier(scenario);
+            // Total capacity based on allocated screens (supply constraint)
+            const totalCapacity = studentScreens * perScreenCapacity;
             
-            // EXACT Excel formula for Weekday Demand:
-            // =Market_Assumptions!B2 * F2 * (Pricing_Decisions!D2 / Pricing_Decisions!B2)^ABS(Market_Assumptions!D2) * VLOOKUP(Pricing_Decisions!F2, Market_Assumptions!A6:B10, 2, FALSE)
-            const adjWeekdayDemand = market.baseWeekday * 
-                segmentFactor * 
-                Math.pow(competitorData.weekdayPrice / weekdayPrice, Math.abs(market.elasticity)) * 
-                seasonMult;
+            // Helper function to calculate DEMAND (unconstrained by screens)
+            function calculateDemand(baseDemand, yourPrice, compPrice) {
+                // Use numerically stable logit share
+                const shareYour = calculateLogitShare(lambda, yourPrice, compPrice);
+                
+                // Base demand × share
+                let demand = shareYour * baseDemand;
+                
+                // Apply segment factor
+                demand *= segmentFactor;
+                
+                // Apply season multiplier
+                demand *= seasonMult;
+                
+                // Apply scenario multiplier
+                demand *= scenarioMult;
+                
+                return demand;
+            }
             
-            // EXACT Excel formula for Weekend Demand:
-            const adjWeekendDemand = market.baseWeekend * 
-                segmentFactor * 
-                Math.pow(competitorData.weekendPrice / weekendPrice, Math.abs(market.elasticity)) * 
-                seasonMult;
+            // Calculate unconstrained demand
+            const rawWeekdayDemand = calculateDemand(
+                market.baseWeekday, 
+                weekdayPrice, 
+                competitorData.weekdayPrice
+            );
             
-            // Apply scenario multiplier
-            const adjWeekdayDemandWithScenario = adjWeekdayDemand * scenarioMult;
-            const adjWeekendDemandWithScenario = adjWeekendDemand * scenarioMult;
+            const rawWeekendDemand = calculateDemand(
+                market.baseWeekend, 
+                weekendPrice, 
+                competitorData.weekendPrice
+            );
             
-            // Capacity constraint
-            const weekdayAttendance = Math.min(adjWeekdayDemandWithScenario, capacity);
-            const weekendAttendance = Math.min(adjWeekendDemandWithScenario, capacity);
+            // Apply capacity constraint (screens limit attendance, not demand)
+            const weekdayAttendance = Math.min(rawWeekdayDemand, totalCapacity);
+            const weekendAttendance = Math.min(rawWeekendDemand, totalCapacity);
             
             const weekdayDays = simulationState.config.operational.weekdayDays;
             const weekendDays = simulationState.config.operational.weekendDays;
@@ -1344,29 +1413,42 @@
             const revenueE = ticketsE * weekendPrice;
             const revenueTotal = revenueW + revenueE;
             
-            const varCostTotal = ticketsTotal * financial.variableCost;
-            const fixedCostTotal = financial.fixedDailyCost * (weekdayDays + weekendDays);
+            const varCostTotal = ticketsTotal * simulationState.config.financials[city].variableCost;
+            
+            // Fixed cost scales with screens allocated
+            const totalDays = weekdayDays + weekendDays;
+            const fullFixedCost = simulationState.config.financials[city].fixedDailyCost * totalDays;
+            const fixedCostTotal = fullFixedCost * (studentScreens / totalScreens);
+            
             const costTotal = varCostTotal + fixedCostTotal;
             
             const profit = revenueTotal - costTotal;
             
-            const utilization = (weekdayAttendance + weekendAttendance) / (2 * capacity);
+            // Utilization relative to allocated capacity
+            const utilization = (weekdayAttendance + weekendAttendance) / (2 * totalCapacity);
             
-            const lostDemand = Math.max(0, adjWeekdayDemandWithScenario - capacity) * weekdayDays +
-                              Math.max(0, adjWeekendDemandWithScenario - capacity) * weekendDays;
+            // Lost demand (important KPI showing opportunity cost)
+            const lostDemand = (Math.max(0, rawWeekdayDemand - totalCapacity) * weekdayDays) +
+                              (Math.max(0, rawWeekendDemand - totalCapacity) * weekendDays);
             
             const contribution = revenueTotal - varCostTotal;
             const contributionMargin = revenueTotal > 0 ? (contribution / revenueTotal) * 100 : 0;
             const netMargin = revenueTotal > 0 ? (profit / revenueTotal) * 100 : 0;
             const avgTicketPrice = ticketsTotal > 0 ? revenueTotal / ticketsTotal : 0;
             
+            // Store logit share for reporting
+            const weekdayShare = calculateLogitShare(lambda, weekdayPrice, competitorData.weekdayPrice);
+            const weekendShare = calculateLogitShare(lambda, weekendPrice, competitorData.weekendPrice);
+            
             return {
                 weekdayPrice,
                 weekendPrice,
                 competitorWeekdayBase: competitorData.weekdayPrice,
                 competitorWeekendBase: competitorData.weekendPrice,
-                adjWeekdayDemand: adjWeekdayDemandWithScenario,
-                adjWeekendDemand: adjWeekendDemandWithScenario,
+                studentScreens,
+                totalScreens,
+                rawWeekdayDemand,
+                rawWeekendDemand,
                 weekdayAttendance,
                 weekendAttendance,
                 ticketsTotal,
@@ -1381,11 +1463,15 @@
                 contributionMargin,
                 netMargin,
                 avgTicketPrice,
-                segmentFactor
+                segmentFactor,
+                seasonMult,
+                scenarioMult,
+                weekdayShare,
+                weekendShare
             };
         }
 
-        function simulateRound(roundIndex, season, pricesByCity, scenario) {
+        function simulateRound(roundIndex, season, pricesByCity, scenario, screenAllocations) {
             const round = simulationState.rounds[roundIndex];
             const cityResults = {};
             let totalProfit = 0;
@@ -1398,7 +1484,8 @@
                     pricesByCity[city].weekday,
                     pricesByCity[city].weekend,
                     scenario,
-                    round.competitors[city]
+                    round.competitors[city],
+                    screenAllocations[city]
                 );
                 cityResults[city] = r;
                 totalProfit += r.profit;
@@ -1423,6 +1510,7 @@
                         Bengaluru: { weekdayPrice: 190 + (i-1)*5, weekendPrice: 290 + (i-1)*5 }
                     },
                     studentDecisions: null,
+                    screenAllocations: null,
                     results: null,
                     timestamp: null
                 });
@@ -1436,22 +1524,18 @@
 
         // Update config from UI
         window.updateConfig = function() {
-            // Market Assumptions
-            simulationState.config.marketAssumptions.Mumbai = {
-                baseWeekday: parseFloat(document.getElementById('param-mumbai-wd').value) || 2200,
-                baseWeekend: parseFloat(document.getElementById('param-mumbai-we').value) || 4200,
-                elasticity: parseFloat(document.getElementById('param-mumbai-ela').value) || -1.4
-            };
-            simulationState.config.marketAssumptions.Delhi = {
-                baseWeekday: parseFloat(document.getElementById('param-delhi-wd').value) || 2000,
-                baseWeekend: parseFloat(document.getElementById('param-delhi-we').value) || 3900,
-                elasticity: parseFloat(document.getElementById('param-delhi-ela').value) || -1.3
-            };
-            simulationState.config.marketAssumptions.Bengaluru = {
-                baseWeekday: parseFloat(document.getElementById('param-blr-wd').value) || 1800,
-                baseWeekend: parseFloat(document.getElementById('param-blr-we').value) || 3600,
-                elasticity: parseFloat(document.getElementById('param-blr-ela').value) || -1.5
-            };
+            // Logit Lambda
+            simulationState.config.logit.lambda = parseFloat(document.getElementById('param-lambda').value) || -0.02;
+            
+            // Market Assumptions (base demand only)
+            simulationState.config.marketAssumptions.Mumbai.baseWeekday = parseFloat(document.getElementById('param-mumbai-wd').value) || 2200;
+            simulationState.config.marketAssumptions.Mumbai.baseWeekend = parseFloat(document.getElementById('param-mumbai-we').value) || 4200;
+            
+            simulationState.config.marketAssumptions.Delhi.baseWeekday = parseFloat(document.getElementById('param-delhi-wd').value) || 2000;
+            simulationState.config.marketAssumptions.Delhi.baseWeekend = parseFloat(document.getElementById('param-delhi-we').value) || 3900;
+            
+            simulationState.config.marketAssumptions.Bengaluru.baseWeekday = parseFloat(document.getElementById('param-blr-wd').value) || 1800;
+            simulationState.config.marketAssumptions.Bengaluru.baseWeekend = parseFloat(document.getElementById('param-blr-we').value) || 3600;
             
             // Season Multipliers
             simulationState.config.seasonMultipliers.Normal = parseFloat(document.getElementById('season-normal').value) || 1.0;
@@ -1567,6 +1651,7 @@
                         Bengaluru: { weekdayPrice: 190, weekendPrice: 290 }
                     },
                     studentDecisions: null,
+                    screenAllocations: null,
                     results: null,
                     timestamp: null
                 });
@@ -1598,6 +1683,7 @@
                     Bengaluru: { weekdayPrice: 190, weekendPrice: 290 }
                 },
                 studentDecisions: null,
+                screenAllocations: null,
                 results: null,
                 timestamp: null
             });
@@ -1716,6 +1802,7 @@
                 r.scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
                 r.status = i === 0 ? 'active' : 'planned';
                 r.studentDecisions = null;
+                r.screenAllocations = null;
                 r.results = null;
                 r.timestamp = null;
             });
@@ -1768,6 +1855,17 @@
             
             if (cur) {
                 const isCompleted = cur.results !== null;
+                
+                // Get max screens per city for allocation inputs
+                const mumbaiMaxScreens = simulationState.config.theatreCapacity.Mumbai.screens;
+                const delhiMaxScreens = simulationState.config.theatreCapacity.Delhi.screens;
+                const blrMaxScreens = simulationState.config.theatreCapacity.Bengaluru.screens;
+                
+                // Default screen allocations (if previously set, use those)
+                const defaultMumbaiScreens = cur.screenAllocations?.Mumbai || Math.floor(mumbaiMaxScreens / 2) || 5;
+                const defaultDelhiScreens = cur.screenAllocations?.Delhi || Math.floor(delhiMaxScreens / 2) || 4;
+                const defaultBlrScreens = cur.screenAllocations?.Bengaluru || Math.floor(blrMaxScreens / 2) || 3;
+                
                 disp.innerHTML = `<div class="card">
                     <h3>Round ${cur.roundNumber}: ${cur.season} Season</h3>
                     <div class="student-round-info">
@@ -1782,6 +1880,8 @@
                                 <h4>${c}</h4>
                                 <p><strong>Competitor Weekday:</strong> ₹${cur.competitors[c].weekdayPrice}</p>
                                 <p><strong>Competitor Weekend:</strong> ₹${cur.competitors[c].weekendPrice}</p>
+                                <p><strong>Total Screens:</strong> ${simulationState.config.theatreCapacity[c].screens}</p>
+                                <p><small class="muted">Fixed cost scales with screens used</small></p>
                             </div>
                         `).join('')}
                     </div>
@@ -1789,29 +1889,44 @@
                         `<div class="alert alert-success" style="margin-top:20px;">
                             <h4>Round Completed</h4>
                             <p>Total profit: ${formatCurrency(cur.results.totalProfit)}</p>
+                            <p>Screens used: Mumbai ${cur.screenAllocations?.Mumbai || 'N/A'}, Delhi ${cur.screenAllocations?.Delhi || 'N/A'}, Bengaluru ${cur.screenAllocations?.Bengaluru || 'N/A'}</p>
+                            <p><strong>Lost demand (opportunity cost):</strong> ${Math.round(cur.results.cityResults.Mumbai.lostDemand + cur.results.cityResults.Delhi.lostDemand + cur.results.cityResults.Bengaluru.lostDemand).toLocaleString('en-IN')} tickets</p>
                             <button class="btn" onclick="switchModule('results')">View Detailed Results</button>
                         </div>` :
                         `<div style="margin-top:20px;">
-                            <h4>Set Your Prices</h4>
+                            <h4>Set Your Prices & Screen Allocation</h4>
+                            <p class="muted"><strong>Corrected economic model:</strong> Screens only constrain supply — demand is independent of screens allocated. Lost demand shows opportunity cost.</p>
                             <table>
                                 <thead>
                                     <tr>
                                         <th>City</th>
                                         <th>Weekday Price (₹)</th>
                                         <th>Weekend Price (₹)</th>
+                                        <th>Screens Allocated</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    ${Object.keys(cur.competitors).map(c => `
-                                        <tr>
-                                            <td>${c}</td>
-                                            <td><input type="number" id="price-${c.toLowerCase()}-weekday" placeholder="₹" min="50" max="1000" value="${cur.studentDecisions ? cur.studentDecisions[c].weekday : '250'}"></td>
-                                            <td><input type="number" id="price-${c.toLowerCase()}-weekend" placeholder="₹" min="50" max="1000" value="${cur.studentDecisions ? cur.studentDecisions[c].weekend : '350'}"></td>
-                                        </tr>
-                                    `).join('')}
+                                    <tr>
+                                        <td>Mumbai</td>
+                                        <td><input type="number" id="price-mumbai-weekday" min="50" max="1000" value="${cur.studentDecisions?.Mumbai?.weekday || '250'}"></td>
+                                        <td><input type="number" id="price-mumbai-weekend" min="50" max="1000" value="${cur.studentDecisions?.Mumbai?.weekend || '350'}"></td>
+                                        <td><input type="number" id="screens-mumbai" min="1" max="${mumbaiMaxScreens}" value="${defaultMumbaiScreens}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Delhi</td>
+                                        <td><input type="number" id="price-delhi-weekday" min="50" max="1000" value="${cur.studentDecisions?.Delhi?.weekday || '220'}"></td>
+                                        <td><input type="number" id="price-delhi-weekend" min="50" max="1000" value="${cur.studentDecisions?.Delhi?.weekend || '320'}"></td>
+                                        <td><input type="number" id="screens-delhi" min="1" max="${delhiMaxScreens}" value="${defaultDelhiScreens}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Bengaluru</td>
+                                        <td><input type="number" id="price-bengaluru-weekday" min="50" max="1000" value="${cur.studentDecisions?.Bengaluru?.weekday || '200'}"></td>
+                                        <td><input type="number" id="price-bengaluru-weekend" min="50" max="1000" value="${cur.studentDecisions?.Bengaluru?.weekend || '300'}"></td>
+                                        <td><input type="number" id="screens-bengaluru" min="1" max="${blrMaxScreens}" value="${defaultBlrScreens}"></td>
+                                    </tr>
                                 </tbody>
                             </table>
-                            <button class="btn btn-primary" onclick="submitRoundPrices(${cur.roundNumber})" style="margin-top:15px;">Submit Prices for Round ${cur.roundNumber}</button>
+                            <button class="btn btn-primary" onclick="submitRoundPrices(${cur.roundNumber})" style="margin-top:15px;">Submit Decisions for Round ${cur.roundNumber}</button>
                         </div>`
                     }
                 </div>`;
@@ -1855,6 +1970,7 @@
             if (confirm('Reset your progress?')) {
                 simulationState.rounds.forEach((r, i) => {
                     r.studentDecisions = null;
+                    r.screenAllocations = null;
                     r.results = null;
                     r.timestamp = null;
                     r.status = i === 0 ? 'active' : 'planned';
@@ -1875,20 +1991,30 @@
             const idx = rn - 1;
             const round = simulationState.rounds[idx];
             const prices = {};
+            const screenAllocations = {};
             
-            Object.keys(round.competitors).forEach(city => {
-                const low = city.toLowerCase();
-                const wd = parseInt(document.getElementById(`price-${low}-weekday`).value) || 0;
-                const we = parseInt(document.getElementById(`price-${low}-weekend`).value) || 0;
+            // Collect prices and screen allocations
+            ['Mumbai', 'Delhi', 'Bengaluru'].forEach(city => {
+                const cityKey = city.toLowerCase();
+                const wd = parseInt(document.getElementById(`price-${cityKey}-weekday`).value) || 0;
+                const we = parseInt(document.getElementById(`price-${cityKey}-weekend`).value) || 0;
                 prices[city] = { weekday: wd, weekend: we };
+                
+                const screens = parseInt(document.getElementById(`screens-${cityKey}`).value) || 1;
+                screenAllocations[city] = screens;
             });
             
+            // Validate prices
             const errors = [];
             Object.keys(prices).forEach(c => {
                 if (prices[c].weekday < 50 || prices[c].weekday > 1000)
                     errors.push(c + ' weekday price must be ₹50-1000');
                 if (prices[c].weekend < 50 || prices[c].weekend > 1000)
                     errors.push(c + ' weekend price must be ₹50-1000');
+                
+                const maxScreens = simulationState.config.theatreCapacity[c].screens;
+                if (screenAllocations[c] < 1 || screenAllocations[c] > maxScreens)
+                    errors.push(c + ` screens must be between 1 and ${maxScreens}`);
             });
             
             if (errors.length > 0) {
@@ -1896,9 +2022,11 @@
                 return;
             }
             
-            const result = simulateRound(idx, round.season, prices, round.scenario);
+            // Run simulation with screen allocations
+            const result = simulateRound(idx, round.season, prices, round.scenario, screenAllocations);
             
             round.studentDecisions = prices;
+            round.screenAllocations = screenAllocations;
             round.results = result;
             round.timestamp = new Date().toISOString();
             round.status = 'completed';
@@ -1951,12 +2079,17 @@
                     tableHtml += '<th>Your Weekend (₹)</th>';
                     tableHtml += '<th>Comp Weekday (₹)</th>';
                     tableHtml += '<th>Comp Weekend (₹)</th>';
-                    tableHtml += '<th>Avg Ticket (₹)</th>';
+                    tableHtml += '<th>Screens Used</th>';
+                    tableHtml += '<th>Weekday Share</th>';
+                    tableHtml += '<th>Weekend Share</th>';
                     break;
                 case 'demand':
-                    tableHtml += '<th>Adj Weekday Demand</th>';
-                    tableHtml += '<th>Adj Weekend Demand</th>';
+                    tableHtml += '<th>Raw Weekday Demand</th>';
+                    tableHtml += '<th>Raw Weekend Demand</th>';
                     tableHtml += '<th>Lost Demand</th>';
+                    tableHtml += '<th>Segment Factor</th>';
+                    tableHtml += '<th>Season Mult</th>';
+                    tableHtml += '<th>Scenario Mult</th>';
                     break;
                 case 'sales':
                     tableHtml += '<th>Tickets Sold</th>';
@@ -1968,6 +2101,7 @@
                     tableHtml += '<th>Total Revenue (₹)</th>';
                     tableHtml += '<th>Contribution (₹)</th>';
                     tableHtml += '<th>Contribution Margin %</th>';
+                    tableHtml += '<th>Avg Ticket (₹)</th>';
                     break;
                 case 'costs':
                     tableHtml += '<th>Variable Cost (₹)</th>';
@@ -1998,12 +2132,17 @@
                             tableHtml += `<td>₹${cr.weekendPrice}</td>`;
                             tableHtml += `<td>₹${cr.competitorWeekdayBase}</td>`;
                             tableHtml += `<td>₹${cr.competitorWeekendBase}</td>`;
-                            tableHtml += `<td>₹${Math.round(cr.avgTicketPrice).toLocaleString('en-IN')}</td>`;
+                            tableHtml += `<td>${cr.studentScreens} / ${cr.totalScreens}</td>`;
+                            tableHtml += `<td>${(cr.weekdayShare * 100).toFixed(1)}%</td>`;
+                            tableHtml += `<td>${(cr.weekendShare * 100).toFixed(1)}%</td>`;
                             break;
                         case 'demand':
-                            tableHtml += `<td>${Math.round(cr.adjWeekdayDemand).toLocaleString('en-IN')}</td>`;
-                            tableHtml += `<td>${Math.round(cr.adjWeekendDemand).toLocaleString('en-IN')}</td>`;
+                            tableHtml += `<td>${Math.round(cr.rawWeekdayDemand).toLocaleString('en-IN')}</td>`;
+                            tableHtml += `<td>${Math.round(cr.rawWeekendDemand).toLocaleString('en-IN')}</td>`;
                             tableHtml += `<td>${Math.round(cr.lostDemand).toLocaleString('en-IN')}</td>`;
+                            tableHtml += `<td>${cr.segmentFactor.toFixed(2)}</td>`;
+                            tableHtml += `<td>${cr.seasonMult.toFixed(2)}</td>`;
+                            tableHtml += `<td>${cr.scenarioMult.toFixed(2)}</td>`;
                             break;
                         case 'sales':
                             tableHtml += `<td>${Math.round(cr.ticketsTotal).toLocaleString('en-IN')}</td>`;
@@ -2015,6 +2154,7 @@
                             tableHtml += `<td>₹${Math.round(cr.revenueTotal).toLocaleString('en-IN')}</td>`;
                             tableHtml += `<td>₹${Math.round(cr.contribution).toLocaleString('en-IN')}</td>`;
                             tableHtml += `<td>${cr.contributionMargin.toFixed(1)}%</td>`;
+                            tableHtml += `<td>₹${Math.round(cr.avgTicketPrice).toLocaleString('en-IN')}</td>`;
                             break;
                         case 'costs':
                             tableHtml += `<td>₹${Math.round(cr.varCostTotal).toLocaleString('en-IN')}</td>`;
@@ -2061,7 +2201,7 @@
 
         function saveToLocalStorage() {
             try {
-                localStorage.setItem('cineprice_simulation', JSON.stringify(simulationState));
+                localStorage.setItem('cineprice_simulation_logit_v3', JSON.stringify(simulationState));
             } catch (e) {
                 console.warn('localStorage save failed', e);
             }
@@ -2069,7 +2209,7 @@
 
         function loadFromLocalStorage() {
             try {
-                const saved = localStorage.getItem('cineprice_simulation');
+                const saved = localStorage.getItem('cineprice_simulation_logit_v3');
                 if (saved) {
                     Object.assign(simulationState, JSON.parse(saved));
                     return true;
@@ -2105,17 +2245,16 @@
             if (module === 'results') updateResultsSection();
             if (module === 'instructor') {
                 // Update UI with current config values
+                document.getElementById('param-lambda').value = simulationState.config.logit.lambda;
+                
                 document.getElementById('param-mumbai-wd').value = simulationState.config.marketAssumptions.Mumbai.baseWeekday;
                 document.getElementById('param-mumbai-we').value = simulationState.config.marketAssumptions.Mumbai.baseWeekend;
-                document.getElementById('param-mumbai-ela').value = simulationState.config.marketAssumptions.Mumbai.elasticity;
                 
                 document.getElementById('param-delhi-wd').value = simulationState.config.marketAssumptions.Delhi.baseWeekday;
                 document.getElementById('param-delhi-we').value = simulationState.config.marketAssumptions.Delhi.baseWeekend;
-                document.getElementById('param-delhi-ela').value = simulationState.config.marketAssumptions.Delhi.elasticity;
                 
                 document.getElementById('param-blr-wd').value = simulationState.config.marketAssumptions.Bengaluru.baseWeekday;
                 document.getElementById('param-blr-we').value = simulationState.config.marketAssumptions.Bengaluru.baseWeekend;
-                document.getElementById('param-blr-ela').value = simulationState.config.marketAssumptions.Bengaluru.elasticity;
                 
                 document.getElementById('season-normal').value = simulationState.config.seasonMultipliers.Normal;
                 document.getElementById('season-festive').value = simulationState.config.seasonMultipliers.Festive;
