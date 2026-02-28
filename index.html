@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cineprice – Strategic Pricing P&L (Logit Model) v4.0</title>
+    <title>Cineprice – Strategic Pricing P&L (Logit Model) v5.0</title>
     <style>
         :root {
             --color-primary: #4F82CC;
@@ -806,8 +806,8 @@
             </div>
             
             <div class="header-banner">
-                <h1>Cineprice Strategic Pricing Simulation v4.0</h1>
-                <p>Logit Demand | Clean Demand Dashboard | Executive Decision Metrics</p>
+                <h1>Cineprice Strategic Pricing Simulation v5.0</h1>
+                <p>Logit Demand | Monthly Planning | Executive Dashboard</p>
             </div>
         </div>
 
@@ -816,7 +816,7 @@
                 <h3>Modules</h3>
                 <div class="nav-item active" onclick="switchModule('intro')">Introduction</div>
                 <div class="nav-item" onclick="switchModule('instructor')">Admin Panel</div>
-                <div class="nav-item" onclick="switchModule('student')">Student Rounds</div>
+                <div class="nav-item" onclick="switchModule('student')">Monthly Planning</div>
                 <div class="nav-item" onclick="switchModule('results')">Results</div>
                 <div class="nav-item" onclick="switchModule('progress')">Progress</div>
             </div>
@@ -824,11 +824,11 @@
             <div class="content">
                 <div id="intro-section">
                     <h2>Simulation Overview</h2>
-                    <p class="muted">You play the role of regional pricing manager for a multiplex chain in Mumbai, Delhi, and Bengaluru. Each round is one month of operations.</p>
+                    <p class="muted">You play the role of regional pricing manager for a multiplex chain in Mumbai, Delhi, and Bengaluru. Each month you make pricing and screen allocation decisions.</p>
                     <div class="card">
-                        <h4>Business context <span class="model-badge">v4.0 Clean Demand</span></h4>
+                        <h4>Business context <span class="model-badge">v5.0 Monthly</span></h4>
                         <p>You set weekday and weekend ticket prices for each city and decide how many screens to allocate. Demand is calculated using a logit share model based on your price vs competitor price, then adjusted by movie segment, season, and scenario multipliers. Screens only affect your <strong>supply capacity</strong> — they do not reduce underlying demand.</p>
-                        <p class="muted">The Demand dashboard shows only strategic metrics: Your Demand, Competitor Demand, Total Market, and Lost Demand.</p>
+                        <p class="muted">The objective is to maximise cumulative profit across all months.</p>
                     </div>
                     <div class="grid-3">
                         <div class="card">
@@ -1029,10 +1029,10 @@
                         </div>
                         
                         <div class="card">
-                            <h4>Create Rounds</h4>
+                            <h4>Create Months</h4>
                             <div class="grid-3">
                                 <div>
-                                    <label>Number of rounds</label>
+                                    <label>Number of months</label>
                                     <input type="number" id="rounds" min="1" max="20" value="3">
                                 </div>
                                 <div>
@@ -1056,9 +1056,9 @@
                                 </div>
                             </div>
                             <div class="quick-actions-row">
-                                <button class="btn btn-primary" onclick="createRounds()">Create Rounds</button>
+                                <button class="btn btn-primary" onclick="createRounds()">Create Months</button>
                                 <button class="btn btn-warning" onclick="randomizeAllRounds()">Randomize All</button>
-                                <button class="btn" onclick="addNewRound()">Add Round</button>
+                                <button class="btn" onclick="addNewRound()">Add Month</button>
                                 <button class="btn btn-success" onclick="saveAllRounds()">Save All</button>
                                 <button class="btn delete-round-btn" onclick="deleteAllRounds()">Delete All</button>
                             </div>
@@ -1066,11 +1066,11 @@
                     </div>
                     
                     <div class="card">
-                        <h4>Round Configuration</h4>
-                        <p class="muted">Click on any round to configure its settings.</p>
+                        <h4>Month Configuration</h4>
+                        <p class="muted">Click on any month to configure its settings.</p>
                         <div class="round-config-grid" id="round-config-container"></div>
                         <div id="round-detail-editor" class="hidden" style="margin-top: 20px;">
-                            <h4>Editing Round <span id="editing-round-number">1</span></h4>
+                            <h4>Editing Month <span id="editing-round-number">1</span></h4>
                             <div class="grid-3">
                                 <div>
                                     <label>Season</label>
@@ -1092,7 +1092,7 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label>Round Status</label>
+                                    <label>Month Status</label>
                                     <select id="edit-status" onchange="updateCurrentRoundConfig()">
                                         <option value="planned">Planned</option>
                                         <option value="active" selected>Active</option>
@@ -1101,7 +1101,7 @@
                                 </div>
                             </div>
                             <div style="margin-top: 15px;">
-                                <h4>Competitor Prices for This Round (Single Values, No Ranges)</h4>
+                                <h4>Competitor Prices for This Month</h4>
                                 <div class="grid-3">
                                     <div>
                                         <h4>Mumbai</h4>
@@ -1128,37 +1128,37 @@
                             </div>
                             <div class="grid-3" style="margin-top: 15px;">
                                 <div>
-                                    <button class="btn btn-primary" onclick="saveRoundConfig()">Save Round</button>
+                                    <button class="btn btn-primary" onclick="saveRoundConfig()">Save Month</button>
                                     <button class="btn" onclick="cancelEdit()" style="margin-left: 10px;">Cancel</button>
                                 </div>
                                 <div>
                                     <button class="btn btn-warning" onclick="applySeasonToAll()">Apply Season to All</button>
                                 </div>
                                 <div>
-                                    <button class="btn delete-round-btn" onclick="deleteRound()">Delete This Round</button>
+                                    <button class="btn delete-round-btn" onclick="deleteRound()">Delete This Month</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
                     <div class="card">
-                        <h4>Round Preview</h4>
-                        <p class="muted">All configured rounds (Total: <span id="round-count">0</span>)</p>
+                        <h4>Month Preview</h4>
+                        <p class="muted">All configured months (Total: <span id="round-count">0</span>)</p>
                         <div id="round-preview-container"></div>
                     </div>
                 </div>
 
                 <div id="student-section" class="hidden">
-                    <h2>Student Rounds</h2>
-                    <p class="muted">Navigate through configured rounds and submit pricing decisions + screen allocation for each month.</p>
+                    <h2>Monthly Planning</h2>
+                    <p class="muted">Navigate through configured months and submit pricing decisions + screen allocation for each month.</p>
                     
                     <div class="simulation-status">
                         <div class="status-card">
-                            <h4>Total Rounds</h4>
+                            <h4>Total Months</h4>
                             <div class="status-value" id="student-total-rounds">0</div>
                         </div>
                         <div class="status-card">
-                            <h4>Completed Rounds</h4>
+                            <h4>Completed Months</h4>
                             <div class="status-value" id="student-completed-rounds">0</div>
                         </div>
                         <div class="status-card">
@@ -1166,7 +1166,7 @@
                             <div class="status-value" id="student-total-profit">₹0</div>
                         </div>
                         <div class="status-card">
-                            <h4>Avg Profit/Round</h4>
+                            <h4>Avg Profit/Month</h4>
                             <div class="status-value" id="student-avg-profit">₹0</div>
                         </div>
                     </div>
@@ -1176,10 +1176,10 @@
                     
                     <!-- Single Reset My Progress button at the bottom -->
                     <div class="quick-actions" style="margin-top: 20px;">
-                        <h4>Round Navigation</h4>
+                        <h4>Month Navigation</h4>
                         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                            <button class="btn" onclick="prevStudentRound()" id="prev-round-btn" style="display: none;">Previous Round</button>
-                            <button class="btn btn-primary" onclick="nextStudentRound()" id="next-round-btn" style="display: none;">Next Round</button>
+                            <button class="btn" onclick="prevStudentRound()" id="prev-round-btn" style="display: none;">Previous Month</button>
+                            <button class="btn btn-primary" onclick="nextStudentRound()" id="next-round-btn" style="display: none;">Next Month</button>
                             <button class="btn btn-warning" onclick="resetStudentProgress()">Reset My Progress</button>
                         </div>
                     </div>
@@ -1187,7 +1187,7 @@
 
                 <div id="results-section" class="hidden">
                     <h2>Simulation Results – Executive P&L Dashboard</h2>
-                    <p class="muted">Click on tabs below to view different metrics across all completed rounds</p>
+                    <p class="muted">Click on tabs below to view different metrics across all completed months</p>
 
                     <div class="metrics-tabs" id="metrics-tabs">
                         <div class="metric-tab active" onclick="switchMetricTab(event, 'pricing')">Pricing</div>
@@ -1205,11 +1205,11 @@
                     <h2>Your Progress & Performance</h2>
                     <div class="simulation-status">
                         <div class="status-card">
-                            <h4>Configured Rounds</h4>
+                            <h4>Configured Months</h4>
                             <div class="status-value" id="progress-total-rounds">0</div>
                         </div>
                         <div class="status-card">
-                            <h4>Completed Rounds</h4>
+                            <h4>Completed Months</h4>
                             <div class="status-value" id="progress-completed-rounds">0</div>
                         </div>
                         <div class="status-card">
@@ -1222,7 +1222,7 @@
                         </div>
                     </div>
                     <div class="card">
-                        <h4>Round Completion Progress</h4>
+                        <h4>Month Completion Progress</h4>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                             <strong>Overall Progress</strong>
                             <span id="progress-percent">0%</span>
@@ -1231,13 +1231,13 @@
                             <div class="progress-fill" id="progress-bar-fill" style="width: 0%;"></div>
                         </div>
                         <div style="margin-top: 10px; font-size: 0.9em; color: #6b7280;">
-                            <span id="progress-text">0 of 0 rounds completed</span>
+                            <span id="progress-text">0 of 0 months completed</span>
                         </div>
                     </div>
                     <div class="card">
                         <h4>Performance Summary</h4>
                         <div id="performance-summary" style="margin-top: 15px;">
-                            <p class="muted">Complete rounds to see your performance summary</p>
+                            <p class="muted">Complete months to see your performance summary</p>
                         </div>
                     </div>
                 </div>
@@ -1246,7 +1246,7 @@
     </div>
 
     <script>
-        // Excel-Aligned Simulation State with Logit Model - CLEAN DEMAND v4.0
+        // Excel-Aligned Simulation State with Logit Model - CLEAN DEMAND v5.0
         const simulationState = {
             config: {
                 logit: {
@@ -1438,8 +1438,7 @@
                 competitorWeekendBase: competitorData.weekendPrice,
                 studentScreens,
                 totalScreens,
-                weekdayShare,
-                weekendShare,
+                // Shares removed from results tab
                 yourWeekdayDemand,
                 yourWeekendDemand,
                 compWeekdayDemand,
@@ -1448,7 +1447,7 @@
                 totalMarketWeekend,
                 weekdayAttendance,
                 weekendAttendance,
-                ticketsTotal,
+                // Tickets Sold removed from results tab
                 utilization,
                 revenueTotal,
                 varCostTotal,
@@ -1584,7 +1583,7 @@
             container.innerHTML = simulationState.rounds.map((r, i) => `
                 <div class="round-config-card ${editingRoundIndex === i ? 'active' : ''}" id="round-card-${i}" onclick="editRoundConfig(${i})">
                     <div class="round-config-header">
-                        <div class="round-number-badge">Round ${r.roundNumber}</div>
+                        <div class="round-number-badge">Month ${r.roundNumber}</div>
                         <div>
                             <span class="round-status-indicator status-${r.status}"></span>
                             <span style="font-size:0.8em;text-transform:capitalize;">${r.status}</span>
@@ -1604,14 +1603,14 @@
             const container = document.getElementById('round-preview-container');
             if (!container) return;
             if (simulationState.rounds.length === 0) {
-                container.innerHTML = '<p class="muted" style="text-align:center;padding:20px;">No rounds created yet.</p>';
+                container.innerHTML = '<p class="muted" style="text-align:center;padding:20px;">No months created yet.</p>';
                 return;
             }
             container.innerHTML = simulationState.rounds.map((r, i) => `
                 <div class="round-preview">
                     <div class="round-preview-number">${r.roundNumber}</div>
                     <div class="round-preview-details">
-                        <h4 style="margin:0 0 5px 0;">Round ${r.roundNumber}: ${r.season} Season</h4>
+                        <h4 style="margin:0 0 5px 0;">Month ${r.roundNumber}: ${r.season} Season</h4>
                         <p style="margin:0;color:#6b7280;font-size:0.9em;">
                             Scenario: ${r.scenario.replace('_',' ')} | Status: <span style="text-transform:capitalize;">${r.status}</span>
                         </p>
@@ -1662,7 +1661,7 @@
             renderRoundConfig();
             renderRoundPreview();
             saveToLocalStorage();
-            showAlert('Created ' + roundCount + ' new rounds', 'success');
+            showAlert('Created ' + roundCount + ' new months', 'success');
         };
 
         window.addNewRound = function() {
@@ -1689,7 +1688,7 @@
             renderRoundConfig();
             renderRoundPreview();
             saveToLocalStorage();
-            showAlert('Added Round ' + newRoundNumber, 'success');
+            showAlert('Added Month ' + newRoundNumber, 'success');
         };
 
         window.editRoundConfig = function(roundIndex) {
@@ -1731,7 +1730,7 @@
             updateCurrentRoundConfig();
             cancelEdit();
             saveToLocalStorage();
-            showAlert('Round configuration saved', 'success');
+            showAlert('Month configuration saved', 'success');
         };
 
         window.cancelEdit = function() {
@@ -1747,7 +1746,7 @@
         };
 
         window.deleteSingleRound = function(i) {
-            if (confirm('Delete Round ' + simulationState.rounds[i].roundNumber + '?')) {
+            if (confirm('Delete Month ' + simulationState.rounds[i].roundNumber + '?')) {
                 simulationState.rounds.splice(i, 1);
                 simulationState.rounds.forEach((r, idx) => r.roundNumber = idx + 1);
                 if (simulationState.currentRoundIndex > simulationState.rounds.length)
@@ -1761,13 +1760,13 @@
                 renderRoundConfig();
                 renderRoundPreview();
                 saveToLocalStorage();
-                showAlert('Round deleted', 'success');
+                showAlert('Month deleted', 'success');
             }
         };
 
         window.deleteAllRounds = function() {
             if (simulationState.rounds.length === 0) return;
-            if (confirm('Delete ALL rounds?')) {
+            if (confirm('Delete ALL months?')) {
                 simulationState.rounds = [];
                 simulationState.currentRoundIndex = 1;
                 simulationState.completedRounds = 0;
@@ -1778,7 +1777,7 @@
                 renderRoundConfig();
                 renderRoundPreview();
                 saveToLocalStorage();
-                showAlert('All rounds deleted', 'success');
+                showAlert('All months deleted', 'success');
             }
         };
 
@@ -1789,7 +1788,7 @@
             renderRoundConfig();
             renderRoundPreview();
             saveToLocalStorage();
-            showAlert('Applied ' + season + ' season to all rounds', 'success');
+            showAlert('Applied ' + season + ' season to all months', 'success');
         };
 
         window.randomizeAllRounds = function() {
@@ -1812,7 +1811,7 @@
             renderRoundConfig();
             renderRoundPreview();
             saveToLocalStorage();
-            showAlert('All rounds randomized and reset', 'success');
+            showAlert('All months randomized and reset', 'success');
         };
 
         window.saveAllRounds = function() {
@@ -1837,8 +1836,8 @@
             updateStudentStatus();
             
             if (simulationState.rounds.length === 0) {
-                sel.innerHTML = '<p class="muted">No rounds configured.</p>';
-                disp.innerHTML = '<div class="card"><h3>No Rounds Available</h3><p class="muted">Please ask instructor to create rounds.</p></div>';
+                sel.innerHTML = '<p class="muted">No months configured.</p>';
+                disp.innerHTML = '<div class="card"><h3>No Months Available</h3><p class="muted">Please ask instructor to create months.</p></div>';
                 
                 // Hide navigation buttons
                 document.getElementById('prev-round-btn').style.display = 'none';
@@ -1847,7 +1846,7 @@
             }
             
             sel.innerHTML = simulationState.rounds.map(r =>
-                `<button class="round-select-btn ${r.roundNumber === simulationState.currentRoundIndex ? 'active' : ''} ${r.results ? 'completed' : ''} ${r.status === 'planned' && r.roundNumber > 1 && !simulationState.rounds[r.roundNumber-2]?.results ? 'disabled' : ''}" onclick="selectStudentRound(${r.roundNumber})" ${r.status === 'planned' && r.roundNumber > 1 && !simulationState.rounds[r.roundNumber-2]?.results ? 'disabled' : ''}>Round ${r.roundNumber}${r.results ? ' ✓' : ''}</button>`
+                `<button class="round-select-btn ${r.roundNumber === simulationState.currentRoundIndex ? 'active' : ''} ${r.results ? 'completed' : ''} ${r.status === 'planned' && r.roundNumber > 1 && !simulationState.rounds[r.roundNumber-2]?.results ? 'disabled' : ''}" onclick="selectStudentRound(${r.roundNumber})" ${r.status === 'planned' && r.roundNumber > 1 && !simulationState.rounds[r.roundNumber-2]?.results ? 'disabled' : ''}>Month ${r.roundNumber}${r.results ? ' ✓' : ''}</button>`
             ).join('');
             
             const cur = simulationState.rounds.find(r => r.roundNumber === simulationState.currentRoundIndex);
@@ -1866,7 +1865,7 @@
                 const defaultBlrScreens = cur.screenAllocations?.Bengaluru || Math.floor(blrMaxScreens / 2) || 3;
                 
                 disp.innerHTML = `<div class="card">
-                    <h3>Round ${cur.roundNumber}: ${cur.season} Season</h3>
+                    <h3>Month ${cur.roundNumber}: ${cur.season} Season</h3>
                     <div class="student-round-info">
                         <p><strong>Scenario:</strong> ${cur.scenario.replace('_', ' ')}</p>
                         <p><strong>Status:</strong> <span style="text-transform:capitalize;">${cur.status}</span></p>
@@ -1886,7 +1885,7 @@
                     </div>
                     ${isCompleted ?
                         `<div class="alert alert-success" style="margin-top:20px;">
-                            <h4>Round Completed</h4>
+                            <h4>Month Completed</h4>
                             <p>Total profit: ${formatCurrency(cur.results.totalProfit)}</p>
                             <p>Screens used: Mumbai ${cur.screenAllocations?.Mumbai || 'N/A'}, Delhi ${cur.screenAllocations?.Delhi || 'N/A'}, Bengaluru ${cur.screenAllocations?.Bengaluru || 'N/A'}</p>
                             <p><strong>Lost demand:</strong> ${formatNumber(cur.results.cityResults.Mumbai.lostDemand + cur.results.cityResults.Delhi.lostDemand + cur.results.cityResults.Bengaluru.lostDemand)} tickets</p>
@@ -1925,7 +1924,7 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <button class="btn btn-primary" onclick="submitRoundPrices(${cur.roundNumber})" style="margin-top:15px;">Submit Decisions for Round ${cur.roundNumber}</button>
+                            <button class="btn btn-primary" onclick="submitRoundPrices(${cur.roundNumber})" style="margin-top:15px;">Submit Decisions for Month ${cur.roundNumber}</button>
                         </div>`
                     }
                 </div>`;
@@ -1939,7 +1938,7 @@
         window.selectStudentRound = function(rn) {
             const prev = simulationState.rounds.find(r => r.roundNumber === rn - 1);
             if (rn > 1 && prev && !prev.results) {
-                showAlert('Please complete previous round first', 'warning');
+                showAlert('Please complete previous month first', 'warning');
                 return;
             }
             simulationState.currentRoundIndex = rn;
@@ -1950,7 +1949,7 @@
             if (simulationState.currentRoundIndex < simulationState.rounds.length) {
                 const cur = simulationState.rounds.find(r => r.roundNumber === simulationState.currentRoundIndex);
                 if (!cur.results && cur.status !== 'completed') {
-                    showAlert('Complete current round first', 'warning');
+                    showAlert('Complete current month first', 'warning');
                     return;
                 }
                 simulationState.currentRoundIndex++;
@@ -2048,7 +2047,7 @@
             loadStudentRound();
             updateResultsSection();
             updateProgressSection();
-            showAlert('Round ' + rn + ' completed! Profit: ' + formatCurrency(result.totalProfit), 'success');
+            showAlert('Month ' + rn + ' completed! Profit: ' + formatCurrency(result.totalProfit), 'success');
         };
 
         window.switchMetricTab = function(event, tabId) {
@@ -2063,13 +2062,13 @@
             const completedRounds = simulationState.rounds.filter(r => r.results !== null);
             
             if (completedRounds.length === 0) {
-                container.innerHTML = '<div class="no-data-message">No completed rounds yet. Complete rounds in the Student section to view results.</div>';
+                container.innerHTML = '<div class="no-data-message">No completed months yet. Complete months in the Monthly Planning section to view results.</div>';
                 return;
             }
 
             let tableHtml = '<table class="metrics-table">';
             tableHtml += '<thead><tr>';
-            tableHtml += '<th>Round</th>';
+            tableHtml += '<th>Month</th>';
             tableHtml += '<th>City</th>';
             
             switch (simulationState.currentMetricTab) {
@@ -2079,8 +2078,6 @@
                     tableHtml += '<th>Comp Weekday (₹)</th>';
                     tableHtml += '<th>Comp Weekend (₹)</th>';
                     tableHtml += '<th>Screens Used</th>';
-                    tableHtml += '<th>Weekday Share</th>';
-                    tableHtml += '<th>Weekend Share</th>';
                     break;
                 case 'demand':
                     // CLEAN DEMAND TAB - Only strategic metrics
@@ -2090,7 +2087,6 @@
                     tableHtml += '<th>Lost Demand</th>';
                     break;
                 case 'sales':
-                    tableHtml += '<th>Tickets Sold</th>';
                     tableHtml += '<th>Utilization %</th>';
                     tableHtml += '<th>Weekday Attendance</th>';
                     tableHtml += '<th>Weekend Attendance</th>';
@@ -2109,7 +2105,7 @@
                 case 'profit':
                     tableHtml += '<th>Profit (₹)</th>';
                     tableHtml += '<th>Net Margin %</th>';
-                    tableHtml += '<th>Round Total (₹)</th>';
+                    tableHtml += '<th>Month Total (₹)</th>';
                     break;
             }
             tableHtml += '</tr></thead><tbody>';
@@ -2120,7 +2116,7 @@
                     const cr = round.results.cityResults[city];
                     tableHtml += '<tr>';
                     if (index === 0) {
-                        tableHtml += `<td rowspan="${cities.length}" style="background: #f8fafc; font-weight: 600;">Round ${round.roundNumber}<br><span style="font-size:0.85em; color:#64748b;">${round.season}</span></td>`;
+                        tableHtml += `<td rowspan="${cities.length}" style="background: #f8fafc; font-weight: 600;">Month ${round.roundNumber}<br><span style="font-size:0.85em; color:#64748b;">${round.season}</span></td>`;
                     }
                     tableHtml += `<td><strong>${city}</strong></td>`;
                     
@@ -2131,8 +2127,6 @@
                             tableHtml += `<td>₹${cr.competitorWeekdayBase}</td>`;
                             tableHtml += `<td>₹${cr.competitorWeekendBase}</td>`;
                             tableHtml += `<td>${cr.studentScreens} / ${cr.totalScreens}</td>`;
-                            tableHtml += `<td>${(cr.weekdayShare * 100).toFixed(1)}%</td>`;
-                            tableHtml += `<td>${(cr.weekendShare * 100).toFixed(1)}%</td>`;
                             break;
                         case 'demand':
                             // Clean strategic demand metrics
@@ -2143,7 +2137,6 @@
                             tableHtml += `<td class="${lostClass}">${formatNumber(cr.lostDemand)}</td>`;
                             break;
                         case 'sales':
-                            tableHtml += `<td>${Math.round(cr.ticketsTotal).toLocaleString('en-IN')}</td>`;
                             tableHtml += `<td>${(cr.utilization * 100).toFixed(1)}%</td>`;
                             tableHtml += `<td>${Math.round(cr.weekdayAttendance).toLocaleString('en-IN')}</td>`;
                             tableHtml += `<td>${Math.round(cr.weekendAttendance).toLocaleString('en-IN')}</td>`;
@@ -2186,20 +2179,20 @@
             const progPct = simulationState.rounds.length > 0 ? Math.round((simulationState.completedRounds / simulationState.rounds.length) * 100) : 0;
             document.getElementById('progress-percent').textContent = progPct + '%';
             document.getElementById('progress-bar-fill').style.width = progPct + '%';
-            document.getElementById('progress-text').textContent = simulationState.completedRounds + ' of ' + simulationState.rounds.length + ' rounds completed';
+            document.getElementById('progress-text').textContent = simulationState.completedRounds + ' of ' + simulationState.rounds.length + ' months completed';
             const sumEl = document.getElementById('performance-summary');
             if (simulationState.performanceHistory.length > 0) {
                 const best = simulationState.performanceHistory.reduce((b, r) => r.profit > b.profit ? r : b, { profit: -Infinity });
                 const worst = simulationState.performanceHistory.reduce((w, r) => r.profit < w.profit ? r : w, { profit: Infinity });
-                sumEl.innerHTML = '<div class="result-row"><span class="result-label">Avg profit/round:</span><span class="result-value">' + formatCurrency(avgProfit) + '</span></div><div class="result-row"><span class="result-label">Best round:</span><span class="result-value">Round ' + best.round + ' (' + formatCurrency(best.profit) + ')</span></div><div class="result-row"><span class="result-label">Worst round:</span><span class="result-value">Round ' + worst.round + ' (' + formatCurrency(worst.profit) + ')</span></div><div class="result-row"><span class="result-label">Completion rate:</span><span class="result-value">' + progPct + '%</span></div>';
+                sumEl.innerHTML = '<div class="result-row"><span class="result-label">Avg profit/month:</span><span class="result-value">' + formatCurrency(avgProfit) + '</span></div><div class="result-row"><span class="result-label">Best month:</span><span class="result-value">Month ' + best.round + ' (' + formatCurrency(best.profit) + ')</span></div><div class="result-row"><span class="result-label">Worst month:</span><span class="result-value">Month ' + worst.round + ' (' + formatCurrency(worst.profit) + ')</span></div><div class="result-row"><span class="result-label">Completion rate:</span><span class="result-value">' + progPct + '%</span></div>';
             } else {
-                sumEl.innerHTML = '<p class="muted">Complete rounds to see your performance summary</p>';
+                sumEl.innerHTML = '<p class="muted">Complete months to see your performance summary</p>';
             }
         }
 
         function saveToLocalStorage() {
             try {
-                localStorage.setItem('cineprice_simulation_logit_v4', JSON.stringify(simulationState));
+                localStorage.setItem('cineprice_simulation_logit_v5', JSON.stringify(simulationState));
             } catch (e) {
                 console.warn('localStorage save failed', e);
             }
@@ -2207,7 +2200,7 @@
 
         function loadFromLocalStorage() {
             try {
-                const saved = localStorage.getItem('cineprice_simulation_logit_v4');
+                const saved = localStorage.getItem('cineprice_simulation_logit_v5');
                 if (saved) {
                     Object.assign(simulationState, JSON.parse(saved));
                     return true;
