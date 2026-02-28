@@ -825,8 +825,10 @@
                     <h2>Simulation Overview</h2>
                     <p class="muted">You play the role of regional pricing manager for a multiplex chain in Mumbai, Delhi, and Bengaluru. Each month you make pricing and screen allocation decisions.</p>
                     <div class="card">
-                        <h4>Business context <span class="model-badge">v5.0 Monthly</span></h4>
-                        <p>You set weekday and weekend ticket prices for each city and decide how many screens to allocate. Demand is calculated using a logit share model based on your price vs competitor price, then adjusted by movie segment, season, and scenario multipliers. Screens only affect your <strong>supply capacity</strong> — they do not reduce underlying demand.</p>
+                        <h4>Business context</h4>
+                        <p>You set weekday and weekend ticket prices for each city. Demand responds to your prices, the current season, and competitive positioning. Capacity is fixed; once seats are full, extra demand is lost.
+
+The objective is to maximise cumulative profit, not just revenue or occupancy.</p>
                         <p class="muted">The objective is to maximise cumulative profit across all months.</p>
                     </div>
                     <div class="grid-3">
