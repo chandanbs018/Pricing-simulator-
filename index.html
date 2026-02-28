@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cineprice – Strategic Pricing P&L (Logit Model) v3.0</title>
+    <title>Cineprice – Strategic Pricing P&L (Logit Model) v4.0</title>
     <style>
         :root {
             --color-primary: #4F82CC;
@@ -806,8 +806,8 @@
             </div>
             
             <div class="header-banner">
-                <h1>Cineprice Strategic Pricing Simulation v3.0</h1>
-                <p>Logit Demand | Supply‑side Capacity Constraint | MBA‑grade Microeconomics</p>
+                <h1>Cineprice Strategic Pricing Simulation v4.0</h1>
+                <p>Logit Demand | Clean Demand Dashboard | Executive Decision Metrics</p>
             </div>
         </div>
 
@@ -826,9 +826,9 @@
                     <h2>Simulation Overview</h2>
                     <p class="muted">You play the role of regional pricing manager for a multiplex chain in Mumbai, Delhi, and Bengaluru. Each round is one month of operations.</p>
                     <div class="card">
-                        <h4>Business context <span class="model-badge">Corrected Model v3.0</span></h4>
+                        <h4>Business context <span class="model-badge">v4.0 Clean Demand</span></h4>
                         <p>You set weekday and weekend ticket prices for each city and decide how many screens to allocate. Demand is calculated using a logit share model based on your price vs competitor price, then adjusted by movie segment, season, and scenario multipliers. Screens only affect your <strong>supply capacity</strong> — they do not reduce underlying demand.</p>
-                        <p class="muted">The objective is to maximise cumulative profit by balancing price, screen allocation, and the resulting lost demand when capacity is insufficient.</p>
+                        <p class="muted">The Demand dashboard shows only strategic metrics: Your Demand, Competitor Demand, Total Market, and Lost Demand.</p>
                     </div>
                     <div class="grid-3">
                         <div class="card">
@@ -841,7 +841,7 @@
                         </div>
                         <div class="card">
                             <h4>How outcomes are calculated</h4>
-                            <p class="muted">Logit share model: exp(λ·P_your) / (exp(λ·P_your) + exp(λ·P_comp)) × base demand × segment × season × scenario. Attendance is then limited by screen capacity.</p>
+                            <p class="muted">Logit share model: exp(λ·P_your) / (exp(λ·P_your) + exp(λ·P_comp)) × total market demand. Attendance is then limited by screen capacity.</p>
                         </div>
                     </div>
                 </div>
@@ -936,7 +936,7 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <p class="muted">Segment Adjustment Factor = SUMPRODUCT(Demand_Share, Price_Multiplier)</p>
+                            <p class="muted">Segment Adjustment Factor = SUMPRODUCT(Demand_Share, Price_Multiplier) — applied to total market</p>
                         </div>
                         
                         <div class="card">
@@ -1246,7 +1246,7 @@
     </div>
 
     <script>
-        // Excel-Aligned Simulation State with Logit Model - CORRECTED v3.0
+        // Excel-Aligned Simulation State with Logit Model - CLEAN DEMAND v4.0
         const simulationState = {
             config: {
                 logit: {
@@ -1350,60 +1350,48 @@
             return expYour / (expYour + expComp);
         }
 
-        // CORRECTED LOGIT MODEL: Screens constrain supply, not demand
+        // CLEAN DEMAND MODEL: Separate total market, your demand, competitor demand
         function simulateCity(city, season, weekdayPrice, weekendPrice, scenario, competitorData, studentScreens) {
             const market = simulationState.config.marketAssumptions[city];
             const totalScreens = simulationState.config.theatreCapacity[city].screens;
             const lambda = simulationState.config.logit.lambda;
             const perScreenCapacity = calculatePerScreenCapacity(city);
             
-            // Get multipliers
+            // Get multipliers (applied to TOTAL MARKET, not just your share)
             const seasonMult = simulationState.config.seasonMultipliers[season] || 1;
             const scenarioMult = getScenarioMultiplier(scenario);
             const segmentFactor = calculateSegmentAdjustmentFactor();
             
-            // Total capacity based on allocated screens (supply constraint)
+            // Total market demand (before logit split)
+            const totalMarketWeekday = market.baseWeekday * segmentFactor * seasonMult * scenarioMult;
+            const totalMarketWeekend = market.baseWeekend * segmentFactor * seasonMult * scenarioMult;
+            
+            // Logit shares
+            const weekdayShare = calculateLogitShare(lambda, weekdayPrice, competitorData.weekdayPrice);
+            const weekendShare = calculateLogitShare(lambda, weekendPrice, competitorData.weekendPrice);
+            
+            // Your unconstrained demand
+            const yourWeekdayDemand = weekdayShare * totalMarketWeekday;
+            const yourWeekendDemand = weekendShare * totalMarketWeekend;
+            
+            // Competitor demand
+            const compWeekdayDemand = totalMarketWeekday - yourWeekdayDemand;
+            const compWeekendDemand = totalMarketWeekend - yourWeekendDemand;
+            
+            // Total capacity based on allocated screens
             const totalCapacity = studentScreens * perScreenCapacity;
             
-            // Helper function to calculate DEMAND (unconstrained by screens)
-            function calculateDemand(baseDemand, yourPrice, compPrice) {
-                // Use numerically stable logit share
-                const shareYour = calculateLogitShare(lambda, yourPrice, compPrice);
-                
-                // Base demand × share
-                let demand = shareYour * baseDemand;
-                
-                // Apply segment factor
-                demand *= segmentFactor;
-                
-                // Apply season multiplier
-                demand *= seasonMult;
-                
-                // Apply scenario multiplier
-                demand *= scenarioMult;
-                
-                return demand;
-            }
-            
-            // Calculate unconstrained demand
-            const rawWeekdayDemand = calculateDemand(
-                market.baseWeekday, 
-                weekdayPrice, 
-                competitorData.weekdayPrice
-            );
-            
-            const rawWeekendDemand = calculateDemand(
-                market.baseWeekend, 
-                weekendPrice, 
-                competitorData.weekendPrice
-            );
-            
             // Apply capacity constraint (screens limit attendance, not demand)
-            const weekdayAttendance = Math.min(rawWeekdayDemand, totalCapacity);
-            const weekendAttendance = Math.min(rawWeekendDemand, totalCapacity);
+            const weekdayAttendance = Math.min(yourWeekdayDemand, totalCapacity);
+            const weekendAttendance = Math.min(yourWeekendDemand, totalCapacity);
             
             const weekdayDays = simulationState.config.operational.weekdayDays;
             const weekendDays = simulationState.config.operational.weekendDays;
+            
+            // Monthly totals
+            const yourTotalDemandMonthly = (yourWeekdayDemand * weekdayDays) + (yourWeekendDemand * weekendDays);
+            const compTotalDemandMonthly = (compWeekdayDemand * weekdayDays) + (compWeekendDemand * weekendDays);
+            const totalMarketMonthly = yourTotalDemandMonthly + compTotalDemandMonthly;
             
             const ticketsW = weekdayAttendance * weekdayDays;
             const ticketsE = weekendAttendance * weekendDays;
@@ -1427,33 +1415,41 @@
             // Utilization relative to allocated capacity
             const utilization = (weekdayAttendance + weekendAttendance) / (2 * totalCapacity);
             
-            // Lost demand (important KPI showing opportunity cost)
-            const lostDemand = (Math.max(0, rawWeekdayDemand - totalCapacity) * weekdayDays) +
-                              (Math.max(0, rawWeekendDemand - totalCapacity) * weekendDays);
+            // Lost demand (monthly) - opportunity cost
+            const lostDemand = (Math.max(0, yourWeekdayDemand - totalCapacity) * weekdayDays) +
+                              (Math.max(0, yourWeekendDemand - totalCapacity) * weekendDays);
             
             const contribution = revenueTotal - varCostTotal;
             const contributionMargin = revenueTotal > 0 ? (contribution / revenueTotal) * 100 : 0;
             const netMargin = revenueTotal > 0 ? (profit / revenueTotal) * 100 : 0;
             const avgTicketPrice = ticketsTotal > 0 ? revenueTotal / ticketsTotal : 0;
             
-            // Store logit share for reporting
-            const weekdayShare = calculateLogitShare(lambda, weekdayPrice, competitorData.weekdayPrice);
-            const weekendShare = calculateLogitShare(lambda, weekendPrice, competitorData.weekendPrice);
-            
             return {
+                // Strategic demand metrics (monthly)
+                yourDemand: Math.round(yourTotalDemandMonthly),
+                competitorDemand: Math.round(compTotalDemandMonthly),
+                totalMarketDemand: Math.round(totalMarketMonthly),
+                lostDemand: Math.round(lostDemand),
+                
+                // Detailed (for other tabs)
                 weekdayPrice,
                 weekendPrice,
                 competitorWeekdayBase: competitorData.weekdayPrice,
                 competitorWeekendBase: competitorData.weekendPrice,
                 studentScreens,
                 totalScreens,
-                rawWeekdayDemand,
-                rawWeekendDemand,
+                weekdayShare,
+                weekendShare,
+                yourWeekdayDemand,
+                yourWeekendDemand,
+                compWeekdayDemand,
+                compWeekendDemand,
+                totalMarketWeekday,
+                totalMarketWeekend,
                 weekdayAttendance,
                 weekendAttendance,
                 ticketsTotal,
                 utilization,
-                lostDemand,
                 revenueTotal,
                 varCostTotal,
                 fixedCostTotal,
@@ -1465,9 +1461,7 @@
                 avgTicketPrice,
                 segmentFactor,
                 seasonMult,
-                scenarioMult,
-                weekdayShare,
-                weekendShare
+                scenarioMult
             };
         }
 
@@ -1576,6 +1570,11 @@
         // Format currency
         function formatCurrency(value) {
             return '₹' + Math.round(value).toLocaleString('en-IN');
+        }
+
+        // Format number
+        function formatNumber(value) {
+            return Math.round(value).toLocaleString('en-IN');
         }
 
         // Render functions
@@ -1890,7 +1889,7 @@
                             <h4>Round Completed</h4>
                             <p>Total profit: ${formatCurrency(cur.results.totalProfit)}</p>
                             <p>Screens used: Mumbai ${cur.screenAllocations?.Mumbai || 'N/A'}, Delhi ${cur.screenAllocations?.Delhi || 'N/A'}, Bengaluru ${cur.screenAllocations?.Bengaluru || 'N/A'}</p>
-                            <p><strong>Lost demand (opportunity cost):</strong> ${Math.round(cur.results.cityResults.Mumbai.lostDemand + cur.results.cityResults.Delhi.lostDemand + cur.results.cityResults.Bengaluru.lostDemand).toLocaleString('en-IN')} tickets</p>
+                            <p><strong>Lost demand:</strong> ${formatNumber(cur.results.cityResults.Mumbai.lostDemand + cur.results.cityResults.Delhi.lostDemand + cur.results.cityResults.Bengaluru.lostDemand)} tickets</p>
                             <button class="btn" onclick="switchModule('results')">View Detailed Results</button>
                         </div>` :
                         `<div style="margin-top:20px;">
@@ -2084,12 +2083,11 @@
                     tableHtml += '<th>Weekend Share</th>';
                     break;
                 case 'demand':
-                    tableHtml += '<th>Raw Weekday Demand</th>';
-                    tableHtml += '<th>Raw Weekend Demand</th>';
+                    // CLEAN DEMAND TAB - Only strategic metrics
+                    tableHtml += '<th>Your Demand</th>';
+                    tableHtml += '<th>Competitor Demand</th>';
+                    tableHtml += '<th>Total Market</th>';
                     tableHtml += '<th>Lost Demand</th>';
-                    tableHtml += '<th>Segment Factor</th>';
-                    tableHtml += '<th>Season Mult</th>';
-                    tableHtml += '<th>Scenario Mult</th>';
                     break;
                 case 'sales':
                     tableHtml += '<th>Tickets Sold</th>';
@@ -2137,12 +2135,12 @@
                             tableHtml += `<td>${(cr.weekendShare * 100).toFixed(1)}%</td>`;
                             break;
                         case 'demand':
-                            tableHtml += `<td>${Math.round(cr.rawWeekdayDemand).toLocaleString('en-IN')}</td>`;
-                            tableHtml += `<td>${Math.round(cr.rawWeekendDemand).toLocaleString('en-IN')}</td>`;
-                            tableHtml += `<td>${Math.round(cr.lostDemand).toLocaleString('en-IN')}</td>`;
-                            tableHtml += `<td>${cr.segmentFactor.toFixed(2)}</td>`;
-                            tableHtml += `<td>${cr.seasonMult.toFixed(2)}</td>`;
-                            tableHtml += `<td>${cr.scenarioMult.toFixed(2)}</td>`;
+                            // Clean strategic demand metrics
+                            tableHtml += `<td>${formatNumber(cr.yourDemand)}</td>`;
+                            tableHtml += `<td>${formatNumber(cr.competitorDemand)}</td>`;
+                            tableHtml += `<td>${formatNumber(cr.totalMarketDemand)}</td>`;
+                            const lostClass = cr.lostDemand > 0 ? 'metric-value-negative' : '';
+                            tableHtml += `<td class="${lostClass}">${formatNumber(cr.lostDemand)}</td>`;
                             break;
                         case 'sales':
                             tableHtml += `<td>${Math.round(cr.ticketsTotal).toLocaleString('en-IN')}</td>`;
@@ -2201,7 +2199,7 @@
 
         function saveToLocalStorage() {
             try {
-                localStorage.setItem('cineprice_simulation_logit_v3', JSON.stringify(simulationState));
+                localStorage.setItem('cineprice_simulation_logit_v4', JSON.stringify(simulationState));
             } catch (e) {
                 console.warn('localStorage save failed', e);
             }
@@ -2209,7 +2207,7 @@
 
         function loadFromLocalStorage() {
             try {
-                const saved = localStorage.getItem('cineprice_simulation_logit_v3');
+                const saved = localStorage.getItem('cineprice_simulation_logit_v4');
                 if (saved) {
                     Object.assign(simulationState, JSON.parse(saved));
                     return true;
