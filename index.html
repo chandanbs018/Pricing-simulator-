@@ -863,7 +863,7 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                         </div>
                     </div>
 
-                    <!-- All Level 1 Settings - Excel Aligned -->
+                    <!-- All Level 1 Settings -->
                     <div>
                         <div class="card">
                             <h4>Market Assumptions</h4>
@@ -911,7 +911,7 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                         </div>
                         
                         <div class="card">
-                            <h4>Movie Segments (Segment Adjustment Factor)</h4>
+                            <h4>Movie Segments</h4>
                             <table class="param-table">
                                 <thead>
                                     <tr>
@@ -938,7 +938,7 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                                     </tr>
                                 </tbody>
                             </table>
-                            <p class="muted">Segment Adjustment Factor = SUMPRODUCT(Demand_Share, Price_Multiplier) — applied to total market</p>
+                            <p class="muted">Segment Adjustment Factor = SUMPRODUCT(Demand_Share, Price_Multiplier)</p>
                         </div>
                         
                         <div class="card">
@@ -1019,7 +1019,7 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                                     </tr>
                                 </tbody>
                             </table>
-                            <p class="muted"><strong>Corrected:</strong> Fixed cost scales with screens allocated (cost × studentScreens/totalScreens)</p>
+                            <p class="muted">Fixed cost scales with screens allocated</p>
                         </div>
                         
                         <div class="card">
@@ -1248,7 +1248,7 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
     </div>
 
     <script>
-        // Excel-Aligned Simulation State with Logit Model - CLEAN DEMAND v5.0
+        // Simulation State
         const simulationState = {
             config: {
                 logit: {
@@ -1352,38 +1352,36 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             return expYour / (expYour + expComp);
         }
 
-        // CLEAN DEMAND MODEL: Separate total market, your demand, competitor demand
+        // Corrected demand model
         function simulateCity(city, season, weekdayPrice, weekendPrice, scenario, competitorData, studentScreens) {
             const market = simulationState.config.marketAssumptions[city];
             const totalScreens = simulationState.config.theatreCapacity[city].screens;
             const lambda = simulationState.config.logit.lambda;
             const perScreenCapacity = calculatePerScreenCapacity(city);
             
-            // Get multipliers (applied to TOTAL MARKET, not just your share)
+            // Get multipliers
             const seasonMult = simulationState.config.seasonMultipliers[season] || 1;
             const scenarioMult = getScenarioMultiplier(scenario);
             const segmentFactor = calculateSegmentAdjustmentFactor();
             
-            // Total market demand (before logit split)
-            const totalMarketWeekday = market.baseWeekday * segmentFactor * seasonMult * scenarioMult;
-            const totalMarketWeekend = market.baseWeekend * segmentFactor * seasonMult * scenarioMult;
-            
-            // Logit shares
+            // Step 1: Logit share
             const weekdayShare = calculateLogitShare(lambda, weekdayPrice, competitorData.weekdayPrice);
             const weekendShare = calculateLogitShare(lambda, weekendPrice, competitorData.weekendPrice);
             
-            // Your unconstrained demand
-            const yourWeekdayDemand = weekdayShare * totalMarketWeekday;
-            const yourWeekendDemand = weekendShare * totalMarketWeekend;
+            // Step 2: Adjust base market first (segment × season × scenario)
+            const adjustedWeekdayBase = market.baseWeekday * segmentFactor * seasonMult * scenarioMult;
+            const adjustedWeekendBase = market.baseWeekend * segmentFactor * seasonMult * scenarioMult;
             
-            // Competitor demand
-            const compWeekdayDemand = totalMarketWeekday - yourWeekdayDemand;
-            const compWeekendDemand = totalMarketWeekend - yourWeekendDemand;
+            // Step 3: Split market using logit shares
+            let yourWeekdayDemand = weekdayShare * adjustedWeekdayBase;
+            let yourWeekendDemand = weekendShare * adjustedWeekendBase;
             
-            // Total capacity based on allocated screens
+            let compWeekdayDemand = (1 - weekdayShare) * adjustedWeekdayBase;
+            let compWeekendDemand = (1 - weekendShare) * adjustedWeekendBase;
+            
+            // Step 4: Capacity only limits YOUR attendance
             const totalCapacity = studentScreens * perScreenCapacity;
             
-            // Apply capacity constraint (screens limit attendance, not demand)
             const weekdayAttendance = Math.min(yourWeekdayDemand, totalCapacity);
             const weekendAttendance = Math.min(yourWeekendDemand, totalCapacity);
             
@@ -1393,7 +1391,7 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             // Monthly totals
             const yourTotalDemandMonthly = (yourWeekdayDemand * weekdayDays) + (yourWeekendDemand * weekendDays);
             const compTotalDemandMonthly = (compWeekdayDemand * weekdayDays) + (compWeekendDemand * weekendDays);
-            const totalMarketMonthly = yourTotalDemandMonthly + compTotalDemandMonthly;
+            const totalMarketMonthly = (adjustedWeekdayBase * weekdayDays) + (adjustedWeekendBase * weekendDays);
             
             const ticketsW = weekdayAttendance * weekdayDays;
             const ticketsE = weekendAttendance * weekendDays;
@@ -1411,7 +1409,6 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             const fixedCostTotal = fullFixedCost * (studentScreens / totalScreens);
             
             const costTotal = varCostTotal + fixedCostTotal;
-            
             const profit = revenueTotal - costTotal;
             
             // Utilization relative to allocated capacity
@@ -1433,23 +1430,21 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                 totalMarketDemand: Math.round(totalMarketMonthly),
                 lostDemand: Math.round(lostDemand),
                 
-                // Detailed (for other tabs)
+                // Detailed metrics
                 weekdayPrice,
                 weekendPrice,
                 competitorWeekdayBase: competitorData.weekdayPrice,
                 competitorWeekendBase: competitorData.weekendPrice,
                 studentScreens,
                 totalScreens,
-                // Shares removed from results tab
                 yourWeekdayDemand,
                 yourWeekendDemand,
                 compWeekdayDemand,
                 compWeekendDemand,
-                totalMarketWeekday,
-                totalMarketWeekend,
+                adjustedWeekdayBase,
+                adjustedWeekendBase,
                 weekdayAttendance,
                 weekendAttendance,
-                // Tickets Sold removed from results tab
                 utilization,
                 revenueTotal,
                 varCostTotal,
@@ -1895,7 +1890,7 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                         </div>` :
                         `<div style="margin-top:20px;">
                             <h4>Set Your Prices & Screen Allocation</h4>
-                            <p class="muted"><strong>Corrected economic model:</strong> Screens only constrain supply — demand is independent of screens allocated. Lost demand shows opportunity cost.</p>
+                            <p class="muted">Screens constrain your attendance, not total market size. Lost demand shows opportunity cost.</p>
                             <table>
                                 <thead>
                                     <tr>
@@ -2082,7 +2077,7 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                     tableHtml += '<th>Screens Used</th>';
                     break;
                 case 'demand':
-                    // CLEAN DEMAND TAB - Only strategic metrics
+                    // Strategic demand metrics
                     tableHtml += '<th>Your Demand</th>';
                     tableHtml += '<th>Competitor Demand</th>';
                     tableHtml += '<th>Total Market</th>';
@@ -2131,7 +2126,6 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                             tableHtml += `<td>${cr.studentScreens} / ${cr.totalScreens}</td>`;
                             break;
                         case 'demand':
-                            // Clean strategic demand metrics
                             tableHtml += `<td>${formatNumber(cr.yourDemand)}</td>`;
                             tableHtml += `<td>${formatNumber(cr.competitorDemand)}</td>`;
                             tableHtml += `<td>${formatNumber(cr.totalMarketDemand)}</td>`;
@@ -2194,7 +2188,7 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
 
         function saveToLocalStorage() {
             try {
-                localStorage.setItem('cineprice_simulation_logit_v5', JSON.stringify(simulationState));
+                localStorage.setItem('cineprice_simulation', JSON.stringify(simulationState));
             } catch (e) {
                 console.warn('localStorage save failed', e);
             }
@@ -2202,7 +2196,7 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
 
         function loadFromLocalStorage() {
             try {
-                const saved = localStorage.getItem('cineprice_simulation_logit_v5');
+                const saved = localStorage.getItem('cineprice_simulation');
                 if (saved) {
                     Object.assign(simulationState, JSON.parse(saved));
                     return true;
