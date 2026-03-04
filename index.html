@@ -818,7 +818,7 @@
                 <div class="nav-item" onclick="switchModule('student')">Student Panel</div>
                 <div class="nav-item" onclick="switchModule('results')">Results</div>
                 <div class="nav-item" onclick="switchModule('progress')">Progress</div>
-                <div class="nav-item" onclick="switchModule('progress')">Instructor Panel</div>
+                <div class="nav-item" onclick="switchModule('instructor')">Instructor Panel</div>
             </div>
 
             <div class="content">
@@ -1379,7 +1379,8 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             let compWeekdayDemand = (1 - weekdayShare) * adjustedWeekdayBase;
             let compWeekendDemand = (1 - weekendShare) * adjustedWeekendBase;
             
-            // Step 4: Capacity only limits YOUR attendance
+            // Step 4: Capacity only limits YOUR attendance (safety fallback)
+            studentScreens = studentScreens || 1;
             const totalCapacity = studentScreens * perScreenCapacity;
             
             const weekdayAttendance = Math.min(yourWeekdayDemand, totalCapacity);
@@ -1988,9 +1989,16 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             const prices = {};
             const screenAllocations = {};
             
+            // Consistent city key mapping
+            const cityKeyMap = {
+                Mumbai: "mumbai",
+                Delhi: "delhi",
+                Bengaluru: "bengaluru"
+            };
+            
             // Collect prices and screen allocations
             ['Mumbai', 'Delhi', 'Bengaluru'].forEach(city => {
-                const cityKey = city.toLowerCase();
+                const cityKey = cityKeyMap[city];
                 const wd = parseInt(document.getElementById(`price-${cityKey}-weekday`).value) || 0;
                 const we = parseInt(document.getElementById(`price-${cityKey}-weekend`).value) || 0;
                 prices[city] = { weekday: wd, weekend: we };
