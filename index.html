@@ -1030,7 +1030,7 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                         </div>
                         
                         <div class="card">
-                            <h4>Create Month</h4>
+                            <h4>Create Months</h4>
                             <div class="grid-3">
                                 <div>
                                     <label>Number of months</label>
@@ -1352,7 +1352,7 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             };
         }
 
-        // Corrected demand model with outside option
+        // Excel-aligned demand model with correct order of operations
         function simulateCity(city, season, weekdayPrice, weekendPrice, scenario, competitorData, studentScreens) {
             const market = simulationState.config.marketAssumptions[city];
             const totalScreens = simulationState.config.theatreCapacity[city].screens;
@@ -1368,27 +1368,44 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             const weekdayShares = calculateLogitShares(lambda, weekdayPrice, competitorData.weekdayPrice);
             const weekendShares = calculateLogitShares(lambda, weekendPrice, competitorData.weekendPrice);
             
-            // Step 2: Adjust base market first (segment × season × scenario)
-            const adjustedWeekdayBase = market.baseWeekday * segmentFactor * seasonMult * scenarioMult;
-            const adjustedWeekendBase = market.baseWeekend * segmentFactor * seasonMult * scenarioMult;
+            // Step 2: Apply shares to BASE demand (not adjusted yet)
+            let yourWeekdayDemand = weekdayShares.yourShare * market.baseWeekday;
+            let yourWeekendDemand = weekendShares.yourShare * market.baseWeekend;
             
-            // Step 3: Split market using logit shares
-            let yourWeekdayDemand = weekdayShares.yourShare * adjustedWeekdayBase;
-            let yourWeekendDemand = weekendShares.yourShare * adjustedWeekendBase;
+            let compWeekdayDemand = weekdayShares.compShare * market.baseWeekday;
+            let compWeekendDemand = weekendShares.compShare * market.baseWeekend;
             
-            let compWeekdayDemand = weekdayShares.compShare * adjustedWeekdayBase;
-            let compWeekendDemand = weekendShares.compShare * adjustedWeekendBase;
+            // Store pre-adjustment demand for lost demand calculation
+            const preCapacityWeekdayDemand = yourWeekdayDemand;
+            const preCapacityWeekendDemand = yourWeekendDemand;
             
-            // Outside demand (not captured by you or competitor)
-            const outsideWeekdayDemand = adjustedWeekdayBase - yourWeekdayDemand - compWeekdayDemand;
-            const outsideWeekendDemand = adjustedWeekendBase - yourWeekendDemand - compWeekendDemand;
-            
-            // Step 4: Capacity only limits YOUR attendance (safety fallback)
+            // Step 3: Capacity adjustment (affects your demand only)
             studentScreens = studentScreens || 1;
             const totalCapacity = studentScreens * perScreenCapacity;
             
-            const weekdayAttendance = Math.min(yourWeekdayDemand, totalCapacity);
-            const weekendAttendance = Math.min(yourWeekendDemand, totalCapacity);
+            // Calculate capacity factors (how much of demand can be fulfilled)
+            const capacityFactorWeekday = Math.min(1, totalCapacity / Math.max(1, preCapacityWeekdayDemand));
+            const capacityFactorWeekend = Math.min(1, totalCapacity / Math.max(1, preCapacityWeekendDemand));
+            
+            // Apply capacity adjustment
+            yourWeekdayDemand = preCapacityWeekdayDemand * capacityFactorWeekday;
+            yourWeekendDemand = preCapacityWeekendDemand * capacityFactorWeekend;
+            
+            // Step 4: Apply segment factor
+            yourWeekdayDemand *= segmentFactor;
+            yourWeekendDemand *= segmentFactor;
+            compWeekdayDemand *= segmentFactor;
+            compWeekendDemand *= segmentFactor;
+            
+            // Step 5: Apply season and scenario multipliers
+            yourWeekdayDemand *= seasonMult * scenarioMult;
+            yourWeekendDemand *= seasonMult * scenarioMult;
+            compWeekdayDemand *= seasonMult * scenarioMult;
+            compWeekendDemand *= seasonMult * scenarioMult;
+            
+            // Calculate total market demand (for reference)
+            const totalMarketWeekday = market.baseWeekday * segmentFactor * seasonMult * scenarioMult;
+            const totalMarketWeekend = market.baseWeekend * segmentFactor * seasonMult * scenarioMult;
             
             const weekdayDays = simulationState.config.operational.weekdayDays;
             const weekendDays = simulationState.config.operational.weekendDays;
@@ -1396,7 +1413,11 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             // Monthly totals
             const yourTotalDemandMonthly = (yourWeekdayDemand * weekdayDays) + (yourWeekendDemand * weekendDays);
             const compTotalDemandMonthly = (compWeekdayDemand * weekdayDays) + (compWeekendDemand * weekendDays);
-            const totalMarketMonthly = (adjustedWeekdayBase * weekdayDays) + (adjustedWeekendBase * weekendDays);
+            const totalMarketMonthly = (totalMarketWeekday * weekdayDays) + (totalMarketWeekend * weekendDays);
+            
+            // Attendance (same as demand since capacity already applied)
+            const weekdayAttendance = yourWeekdayDemand;
+            const weekendAttendance = yourWeekendDemand;
             
             const ticketsW = weekdayAttendance * weekdayDays;
             const ticketsE = weekendAttendance * weekendDays;
@@ -1419,9 +1440,10 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             // Utilization relative to allocated capacity
             const utilization = (weekdayAttendance + weekendAttendance) / (2 * totalCapacity);
             
-            // Lost demand (monthly) - opportunity cost
-            const lostDemand = (Math.max(0, yourWeekdayDemand - totalCapacity) * weekdayDays) +
-                              (Math.max(0, yourWeekendDemand - totalCapacity) * weekendDays);
+            // Lost demand (monthly) - opportunity cost (pre-capacity demand vs capacity)
+            const lostDemandWeekday = Math.max(0, preCapacityWeekdayDemand * segmentFactor * seasonMult * scenarioMult - totalCapacity) * weekdayDays;
+            const lostDemandWeekend = Math.max(0, preCapacityWeekendDemand * segmentFactor * seasonMult * scenarioMult - totalCapacity) * weekendDays;
+            const lostDemand = lostDemandWeekday + lostDemandWeekend;
             
             const contribution = revenueTotal - varCostTotal;
             const contributionMargin = revenueTotal > 0 ? (contribution / revenueTotal) * 100 : 0;
@@ -1446,10 +1468,10 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                 yourWeekendDemand,
                 compWeekdayDemand,
                 compWeekendDemand,
-                outsideWeekdayDemand,
-                outsideWeekendDemand,
-                adjustedWeekdayBase,
-                adjustedWeekendBase,
+                preCapacityWeekdayDemand,
+                preCapacityWeekendDemand,
+                totalMarketWeekday,
+                totalMarketWeekend,
                 weekdayAttendance,
                 weekendAttendance,
                 utilization,
@@ -1464,7 +1486,9 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                 avgTicketPrice,
                 segmentFactor,
                 seasonMult,
-                scenarioMult
+                scenarioMult,
+                capacityFactorWeekday,
+                capacityFactorWeekend
             };
         }
 
