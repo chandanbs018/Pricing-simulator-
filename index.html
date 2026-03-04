@@ -1337,18 +1337,19 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             return simulationState.config.scenarioMultipliers[scenario] || 1.0;
         }
 
-        // Numerically stable logit share calculation with outside option
-        function calculateLogitShare(lambda, yourPrice, compPrice) {
-            const utilYour = lambda * yourPrice;
-            const utilComp = lambda * compPrice;
-            
-            const expYour = Math.exp(utilYour);
-            const expComp = Math.exp(utilComp);
-            
-            // Outside option fixed at 1
+        // Logit share calculation with outside option - returns all three shares
+        function calculateLogitShares(lambda, yourPrice, compPrice) {
+            const expYour = Math.exp(lambda * yourPrice);
+            const expComp = Math.exp(lambda * compPrice);
             const outside = 1;
             
-            return expYour / (expYour + expComp + outside);
+            const denom = expYour + expComp + outside;
+            
+            return {
+                yourShare: expYour / denom,
+                compShare: expComp / denom,
+                outsideShare: outside / denom
+            };
         }
 
         // Corrected demand model with outside option
@@ -1363,24 +1364,20 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             const scenarioMult = getScenarioMultiplier(scenario);
             const segmentFactor = calculateSegmentAdjustmentFactor();
             
-            // Step 1: Logit share with outside option
-            const weekdayShare = calculateLogitShare(lambda, weekdayPrice, competitorData.weekdayPrice);
-            const weekendShare = calculateLogitShare(lambda, weekendPrice, competitorData.weekendPrice);
-            
-            // Competitor share (complement of your share, excluding outside option)
-            const weekdayCompShare = 1 - weekdayShare;
-            const weekendCompShare = 1 - weekendShare;
+            // Step 1: Logit shares with outside option
+            const weekdayShares = calculateLogitShares(lambda, weekdayPrice, competitorData.weekdayPrice);
+            const weekendShares = calculateLogitShares(lambda, weekendPrice, competitorData.weekendPrice);
             
             // Step 2: Adjust base market first (segment × season × scenario)
             const adjustedWeekdayBase = market.baseWeekday * segmentFactor * seasonMult * scenarioMult;
             const adjustedWeekendBase = market.baseWeekend * segmentFactor * seasonMult * scenarioMult;
             
             // Step 3: Split market using logit shares
-            let yourWeekdayDemand = weekdayShare * adjustedWeekdayBase;
-            let yourWeekendDemand = weekendShare * adjustedWeekendBase;
+            let yourWeekdayDemand = weekdayShares.yourShare * adjustedWeekdayBase;
+            let yourWeekendDemand = weekendShares.yourShare * adjustedWeekendBase;
             
-            let compWeekdayDemand = weekdayCompShare * adjustedWeekdayBase;
-            let compWeekendDemand = weekendCompShare * adjustedWeekendBase;
+            let compWeekdayDemand = weekdayShares.compShare * adjustedWeekdayBase;
+            let compWeekendDemand = weekendShares.compShare * adjustedWeekendBase;
             
             // Outside demand (not captured by you or competitor)
             const outsideWeekdayDemand = adjustedWeekdayBase - yourWeekdayDemand - compWeekdayDemand;
@@ -1665,9 +1662,16 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             simulationState.completedRounds = 0;
             simulationState.totalProfit = 0;
             simulationState.performanceHistory = [];
+            
             renderRoundConfig();
             renderRoundPreview();
             saveToLocalStorage();
+            
+            // Refresh all panels so user sees changes immediately
+            loadStudentRound();
+            updateResultsSection();
+            updateProgressSection();
+            
             showAlert('Created ' + roundCount + ' new months', 'success');
         };
 
