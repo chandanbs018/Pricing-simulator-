@@ -818,7 +818,6 @@
                 <div class="nav-item" onclick="switchModule('student')">Student Panel</div>
                 <div class="nav-item" onclick="switchModule('results')">Results</div>
                 <div class="nav-item" onclick="switchModule('progress')">Progress</div>
-                <div class="nav-item" onclick="switchModule('instructor')">Instructor Panel</div>
             </div>
 
             <div class="content">
@@ -1338,21 +1337,21 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             return simulationState.config.scenarioMultipliers[scenario] || 1.0;
         }
 
-        // Numerically stable logit share calculation
+        // Numerically stable logit share calculation with outside option
         function calculateLogitShare(lambda, yourPrice, compPrice) {
             const utilYour = lambda * yourPrice;
             const utilComp = lambda * compPrice;
             
-            // Subtract max for numerical stability (prevents overflow)
-            const maxUtil = Math.max(utilYour, utilComp);
+            const expYour = Math.exp(utilYour);
+            const expComp = Math.exp(utilComp);
             
-            const expYour = Math.exp(utilYour - maxUtil);
-            const expComp = Math.exp(utilComp - maxUtil);
+            // Outside option fixed at 1
+            const outside = 1;
             
-            return expYour / (expYour + expComp);
+            return expYour / (expYour + expComp + outside);
         }
 
-        // Corrected demand model
+        // Corrected demand model with outside option
         function simulateCity(city, season, weekdayPrice, weekendPrice, scenario, competitorData, studentScreens) {
             const market = simulationState.config.marketAssumptions[city];
             const totalScreens = simulationState.config.theatreCapacity[city].screens;
@@ -1364,9 +1363,13 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             const scenarioMult = getScenarioMultiplier(scenario);
             const segmentFactor = calculateSegmentAdjustmentFactor();
             
-            // Step 1: Logit share
+            // Step 1: Logit share with outside option
             const weekdayShare = calculateLogitShare(lambda, weekdayPrice, competitorData.weekdayPrice);
             const weekendShare = calculateLogitShare(lambda, weekendPrice, competitorData.weekendPrice);
+            
+            // Competitor share (complement of your share, excluding outside option)
+            const weekdayCompShare = 1 - weekdayShare;
+            const weekendCompShare = 1 - weekendShare;
             
             // Step 2: Adjust base market first (segment × season × scenario)
             const adjustedWeekdayBase = market.baseWeekday * segmentFactor * seasonMult * scenarioMult;
@@ -1376,8 +1379,12 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             let yourWeekdayDemand = weekdayShare * adjustedWeekdayBase;
             let yourWeekendDemand = weekendShare * adjustedWeekendBase;
             
-            let compWeekdayDemand = (1 - weekdayShare) * adjustedWeekdayBase;
-            let compWeekendDemand = (1 - weekendShare) * adjustedWeekendBase;
+            let compWeekdayDemand = weekdayCompShare * adjustedWeekdayBase;
+            let compWeekendDemand = weekendCompShare * adjustedWeekendBase;
+            
+            // Outside demand (not captured by you or competitor)
+            const outsideWeekdayDemand = adjustedWeekdayBase - yourWeekdayDemand - compWeekdayDemand;
+            const outsideWeekendDemand = adjustedWeekendBase - yourWeekendDemand - compWeekendDemand;
             
             // Step 4: Capacity only limits YOUR attendance (safety fallback)
             studentScreens = studentScreens || 1;
@@ -1442,6 +1449,8 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                 yourWeekendDemand,
                 compWeekdayDemand,
                 compWeekendDemand,
+                outsideWeekdayDemand,
+                outsideWeekendDemand,
                 adjustedWeekdayBase,
                 adjustedWeekendBase,
                 weekdayAttendance,
