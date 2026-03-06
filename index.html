@@ -856,11 +856,6 @@
                                 <input type="number" id="param-lambda" value="-0.02" step="0.001" onchange="updateConfig()">
                                 <p class="muted">Higher absolute value = more price sensitive market</p>
                             </div>
-                            <div>
-                                <label>Outside Option</label>
-                                <input type="number" id="param-outside" value="1" step="0.1" min="0" onchange="updateConfig()">
-                                <p class="muted">Strength of outside option (default = 1)</p>
-                            </div>
                         </div>
                     </div>
 
@@ -1251,8 +1246,7 @@
         const simulationState = {
             config: {
                 logit: {
-                    lambda: -0.02,
-                    outside: 1
+                    lambda: -0.02
                 },
                 marketAssumptions: {
                     Mumbai: { baseWeekday: 2200, baseWeekend: 4200 },
@@ -1327,7 +1321,7 @@
         }
 
         function calculateLogitShares(lambda, yourPrice, compPrice) {
-            const outside = simulationState.config.logit.outside;
+            const outside = 1;
             const expYour = Math.exp(lambda * yourPrice);
             const expComp = Math.exp(lambda * compPrice);
             
@@ -1350,22 +1344,18 @@
             const scenarioMult = getScenarioMultiplier(scenario);
             const segmentFactor = calculateSegmentAdjustmentFactor();
             
-            // Calculate total market demand first (Excel order)
             const totalWeekdayMarket = market.baseWeekday * segmentFactor * seasonMult * scenarioMult;
             const totalWeekendMarket = market.baseWeekend * segmentFactor * seasonMult * scenarioMult;
             
-            // Calculate shares
             const weekdayShares = calculateLogitShares(lambda, weekdayPrice, competitorData.weekdayPrice);
             const weekendShares = calculateLogitShares(lambda, weekendPrice, competitorData.weekendPrice);
             
-            // Apply shares to total market
             let yourWeekdayDemand = weekdayShares.yourShare * totalWeekdayMarket;
             let yourWeekendDemand = weekendShares.yourShare * totalWeekendMarket;
             
             let compWeekdayDemand = weekdayShares.compShare * totalWeekdayMarket;
             let compWeekendDemand = weekendShares.compShare * totalWeekendMarket;
             
-            // Capacity adjustment
             studentScreens = studentScreens || 1;
             const totalCapacity = studentScreens * perScreenCapacity;
             
@@ -1521,7 +1511,6 @@
             saveToLocalStorage();
         }
 
-        // Formatting functions
         function formatCurrency(value) {
             return '₹' + Math.round(value).toLocaleString('en-IN');
         }
@@ -1530,7 +1519,6 @@
             return Math.round(value).toLocaleString('en-IN');
         }
 
-        // Storage functions
         function saveToLocalStorage() {
             try {
                 localStorage.setItem('cineprice_simulation', JSON.stringify(simulationState));
@@ -1543,7 +1531,8 @@
             try {
                 const saved = localStorage.getItem('cineprice_simulation');
                 if (saved) {
-                    Object.assign(simulationState, JSON.parse(saved));
+                    const loaded = JSON.parse(saved);
+                    Object.assign(simulationState, loaded);
                     return true;
                 }
             } catch (e) {
@@ -1566,10 +1555,13 @@
             setTimeout(() => alertDiv.remove(), 3000);
         }
 
-        // UI Update Functions
         function renderRoundConfig() {
             const container = document.getElementById('round-config-container');
             if (!container) return;
+            if (simulationState.rounds.length === 0) {
+                container.innerHTML = '<p class="muted" style="text-align:center;padding:20px;">No months created yet. Click "Create Months" to start.</p>';
+                return;
+            }
             container.innerHTML = simulationState.rounds.map((r, i) => `
                 <div class="round-config-card ${editingRoundIndex === i ? 'active' : ''}" id="round-card-${i}" onclick="editRoundConfig(${i})">
                     <div class="round-config-header">
@@ -1861,7 +1853,6 @@
             }
         }
 
-        // Global Functions (attached to window)
         window.updateCapacity = function() {
             const cities = ['Mumbai', 'Delhi', 'Bengaluru'];
             cities.forEach(city => {
@@ -1877,14 +1868,12 @@
                 simulationState.config.theatreCapacity[city].showsPerDay = shows;
             });
             saveToLocalStorage();
+            showAlert('Capacity updated successfully', 'success');
         };
 
         window.updateConfig = function() {
             const lambdaInput = document.getElementById('param-lambda').value;
             simulationState.config.logit.lambda = lambdaInput !== "" ? parseFloat(lambdaInput) : -0.02;
-            
-            const outsideInput = document.getElementById('param-outside').value;
-            simulationState.config.logit.outside = outsideInput !== "" ? parseFloat(outsideInput) : 1;
             
             simulationState.config.marketAssumptions.Mumbai.baseWeekday = parseFloat(document.getElementById('param-mumbai-wd').value) || 2200;
             simulationState.config.marketAssumptions.Mumbai.baseWeekend = parseFloat(document.getElementById('param-mumbai-we').value) || 4200;
@@ -1924,15 +1913,18 @@
             simulationState.config.operational.weekendDays = parseInt(document.getElementById('weekend-days').value) || 8;
             
             saveToLocalStorage();
+            showAlert('Configuration updated successfully', 'success');
         };
 
         window.createRounds = function() {
-            updateConfig();
+            window.updateConfig();
+            
             const roundCount = parseInt(document.getElementById('rounds').value) || 3;
             const defaultSeason = document.getElementById('defaultSeason').value;
             const defaultScenario = document.getElementById('defaultScenario').value;
             
             simulationState.rounds = [];
+            
             for (let i = 1; i <= roundCount; i++) {
                 simulationState.rounds.push({
                     roundNumber: i,
@@ -1950,24 +1942,28 @@
                     timestamp: null
                 });
             }
+            
             simulationState.currentRoundIndex = 1;
             simulationState.completedRounds = 0;
             simulationState.totalProfit = 0;
             simulationState.performanceHistory = [];
+            editingRoundIndex = null;
             
             renderRoundConfig();
             renderRoundPreview();
+            
             saveToLocalStorage();
             
             loadStudentRound();
             updateResultsSection();
             updateProgressSection();
             
-            showAlert('Created ' + roundCount + ' new months', 'success');
+            showAlert('Created ' + roundCount + ' new months successfully', 'success');
         };
 
         window.addNewRound = function() {
-            updateConfig();
+            window.updateConfig();
+            
             const newRoundNumber = simulationState.rounds.length + 1;
             const defaultSeason = document.getElementById('defaultSeason').value;
             const defaultScenario = document.getElementById('defaultScenario').value;
@@ -1987,10 +1983,11 @@
                 results: null,
                 timestamp: null
             });
+            
             renderRoundConfig();
             renderRoundPreview();
             saveToLocalStorage();
-            showAlert('Added Month ' + newRoundNumber, 'success');
+            showAlert('Added Month ' + newRoundNumber + ' successfully', 'success');
         };
 
         window.editRoundConfig = function(roundIndex) {
@@ -2029,10 +2026,10 @@
         };
 
         window.saveRoundConfig = function() {
-            updateCurrentRoundConfig();
-            cancelEdit();
+            window.updateCurrentRoundConfig();
+            window.cancelEdit();
             saveToLocalStorage();
-            showAlert('Month configuration saved', 'success');
+            showAlert('Month configuration saved successfully', 'success');
         };
 
         window.cancelEdit = function() {
@@ -2043,26 +2040,35 @@
 
         window.deleteRound = function() {
             if (editingRoundIndex === null) return;
-            deleteSingleRound(editingRoundIndex);
-            cancelEdit();
+            window.deleteSingleRound(editingRoundIndex);
+            window.cancelEdit();
         };
 
         window.deleteSingleRound = function(i) {
             if (confirm('Delete Month ' + simulationState.rounds[i].roundNumber + '?')) {
                 simulationState.rounds.splice(i, 1);
                 simulationState.rounds.forEach((r, idx) => r.roundNumber = idx + 1);
-                if (simulationState.currentRoundIndex > simulationState.rounds.length)
+                
+                if (simulationState.currentRoundIndex > simulationState.rounds.length) {
                     simulationState.currentRoundIndex = Math.max(1, simulationState.rounds.length);
+                }
+                
                 simulationState.completedRounds = simulationState.rounds.filter(r => r.results).length;
                 simulationState.totalProfit = simulationState.rounds.reduce((t, r) => t + (r.results ? r.results.totalProfit : 0), 0);
                 simulationState.performanceHistory = simulationState.rounds.filter(r => r.results).map(r => ({
                     round: r.roundNumber,
                     profit: r.results.totalProfit
                 }));
+                
                 renderRoundConfig();
                 renderRoundPreview();
                 saveToLocalStorage();
-                showAlert('Month deleted', 'success');
+                
+                loadStudentRound();
+                updateResultsSection();
+                updateProgressSection();
+                
+                showAlert('Month deleted successfully', 'success');
             }
         };
 
@@ -2075,11 +2081,17 @@
                 simulationState.totalProfit = 0;
                 simulationState.performanceHistory = [];
                 editingRoundIndex = null;
-                cancelEdit();
+                
+                window.cancelEdit();
                 renderRoundConfig();
                 renderRoundPreview();
                 saveToLocalStorage();
-                showAlert('All months deleted', 'success');
+                
+                loadStudentRound();
+                updateResultsSection();
+                updateProgressSection();
+                
+                showAlert('All months deleted successfully', 'success');
             }
         };
 
@@ -2106,20 +2118,27 @@
                 r.results = null;
                 r.timestamp = null;
             });
+            
             simulationState.completedRounds = 0;
             simulationState.totalProfit = 0;
             simulationState.performanceHistory = [];
             simulationState.currentRoundIndex = 1;
+            
             renderRoundConfig();
             renderRoundPreview();
             saveToLocalStorage();
+            
+            loadStudentRound();
+            updateResultsSection();
+            updateProgressSection();
+            
             showAlert('All months randomized and reset', 'success');
         };
 
         window.saveAllRounds = function() {
-            updateConfig();
+            window.updateConfig();
             saveToLocalStorage();
-            showAlert('All configurations saved', 'success');
+            showAlert('All configurations saved successfully', 'success');
         };
 
         window.selectStudentRound = function(rn) {
@@ -2152,7 +2171,7 @@
         };
 
         window.resetStudentProgress = function() {
-            if (confirm('Reset your progress?')) {
+            if (confirm('Reset your progress? This will clear all your submitted decisions.')) {
                 simulationState.rounds.forEach((r, i) => {
                     r.studentDecisions = null;
                     r.screenAllocations = null;
@@ -2168,7 +2187,7 @@
                 loadStudentRound();
                 updateResultsSection();
                 updateProgressSection();
-                showAlert('Progress reset', 'success');
+                showAlert('Progress reset successfully', 'success');
             }
         };
 
@@ -2253,12 +2272,18 @@
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             const navItem = document.querySelector(`.nav-item[onclick*="${module}"]`);
             if (navItem) navItem.classList.add('active');
-            if (module === 'student') loadStudentRound();
-            if (module === 'progress') updateProgressSection();
-            if (module === 'results') updateResultsSection();
+            
+            if (module === 'student') {
+                loadStudentRound();
+            }
+            if (module === 'progress') {
+                updateProgressSection();
+            }
+            if (module === 'results') {
+                updateResultsSection();
+            }
             if (module === 'instructor') {
                 document.getElementById('param-lambda').value = simulationState.config.logit.lambda;
-                document.getElementById('param-outside').value = simulationState.config.logit.outside || 1;
                 
                 document.getElementById('param-mumbai-wd').value = simulationState.config.marketAssumptions.Mumbai.baseWeekday;
                 document.getElementById('param-mumbai-we').value = simulationState.config.marketAssumptions.Mumbai.baseWeekend;
@@ -2297,13 +2322,12 @@
                 document.getElementById('weekday-days').value = simulationState.config.operational.weekdayDays;
                 document.getElementById('weekend-days').value = simulationState.config.operational.weekendDays;
                 
-                updateCapacity();
+                window.updateCapacity();
                 renderRoundConfig();
                 renderRoundPreview();
             }
         };
 
-        // Initialize
         function init() {
             if (!loadFromLocalStorage()) {
                 initializeSampleRounds();
