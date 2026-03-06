@@ -826,9 +826,7 @@
                     <p class="muted">You play the role of regional pricing manager for a multiplex chain in Mumbai, Delhi, and Bengaluru. Each month you make pricing and screen allocation decisions.</p>
                     <div class="card">
                         <h4>Business context</h4>
-                        <p>You set weekday and weekend ticket prices for each city. Demand responds to your prices, the current season, and competitive positioning. Capacity is fixed; once seats are full, extra demand is lost.
-
-The objective is to maximise cumulative profit, not just revenue or occupancy.</p>
+                        <p>You set weekday and weekend ticket prices for each city. Demand responds to your prices, the current season, and competitive positioning. Capacity is fixed; once seats are full, extra demand is lost.</p>
                         <p class="muted">The objective is to maximise cumulative profit across all months.</p>
                     </div>
                     <div class="grid-3">
@@ -842,7 +840,7 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                         </div>
                         <div class="card">
                             <h4>How outcomes are calculated</h4>
-                            <p class="muted"></p>
+                            <p class="muted">Market demand is split via logit model, then adjusted for season, segment mix, and scenario. Revenue minus variable and fixed costs determines profit.</p>
                         </div>
                     </div>
                 </div>
@@ -850,7 +848,6 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                 <div id="instructor-section" class="hidden">
                     <h2>Admin Panel</h2>
                     
-                    <!-- Logit Lambda Card -->
                     <div class="card">
                         <h4>Pricing Model Parameter</h4>
                         <div class="grid-3">
@@ -859,10 +856,14 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                                 <input type="number" id="param-lambda" value="-0.02" step="0.001" onchange="updateConfig()">
                                 <p class="muted">Higher absolute value = more price sensitive market</p>
                             </div>
+                            <div>
+                                <label>Outside Option</label>
+                                <input type="number" id="param-outside" value="1" step="0.1" min="0" onchange="updateConfig()">
+                                <p class="muted">Strength of outside option (default = 1)</p>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- All Level 1 Settings -->
                     <div>
                         <div class="card">
                             <h4>Market Assumptions</h4>
@@ -1175,7 +1176,6 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                     <div class="student-round-selector" id="round-selector"></div>
                     <div id="current-round-display"></div>
                     
-                    <!-- Single Reset My Progress button at the bottom -->
                     <div class="quick-actions" style="margin-top: 20px;">
                         <h4>Month Navigation</h4>
                         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
@@ -1186,7 +1186,7 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                     </div>
                 </div>
 
-                                <div id="results-section" class="hidden">
+                <div id="results-section" class="hidden">
                     <h2>Simulation Results – Executive P&L Dashboard</h2>
                     <p class="muted">Click on tabs below to view different metrics across all completed months</p>
 
@@ -1251,7 +1251,8 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
         const simulationState = {
             config: {
                 logit: {
-                    lambda: -0.02
+                    lambda: -0.02,
+                    outside: 1
                 },
                 marketAssumptions: {
                     Mumbai: { baseWeekday: 2200, baseWeekend: 4200 },
@@ -1301,21 +1302,27 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
 
         let editingRoundIndex = null;
 
-        // Calculate per-screen capacity = Seats × Shows
+        // City mapping for HTML IDs
+        const cityIdMap = {
+            Mumbai: "mumbai",
+            Delhi: "delhi",
+            Bengaluru: "blr"
+        };
+
         function calculatePerScreenCapacity(city) {
             const cap = simulationState.config.theatreCapacity[city];
             return cap.seatsPerScreen * cap.showsPerDay;
         }
 
-        // Update capacity displays
         window.updateCapacity = function() {
             const cities = ['Mumbai', 'Delhi', 'Bengaluru'];
             cities.forEach(city => {
-                const screens = parseFloat(document.getElementById(`cap-${city.toLowerCase()}-screens`).value) || 1;
-                const seats = parseFloat(document.getElementById(`cap-${city.toLowerCase()}-seats`).value) || 1;
-                const shows = parseFloat(document.getElementById(`cap-${city.toLowerCase()}-shows`).value) || 1;
+                const cityId = cityIdMap[city];
+                const screens = parseFloat(document.getElementById(`cap-${cityId}-screens`).value) || 1;
+                const seats = parseFloat(document.getElementById(`cap-${cityId}-seats`).value) || 1;
+                const shows = parseFloat(document.getElementById(`cap-${cityId}-shows`).value) || 1;
                 const perScreen = seats * shows;
-                document.getElementById(`cap-${city.toLowerCase()}-per-screen`).textContent = perScreen;
+                document.getElementById(`cap-${cityId}-per-screen`).textContent = perScreen;
                 
                 simulationState.config.theatreCapacity[city].screens = screens;
                 simulationState.config.theatreCapacity[city].seatsPerScreen = seats;
@@ -1324,7 +1331,6 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             saveToLocalStorage();
         };
 
-        // Calculate Segment Adjustment Factor = SUMPRODUCT(Demand_Share, Price_Multiplier)
         function calculateSegmentAdjustmentFactor() {
             const segments = simulationState.config.movieSegments;
             return (segments.blockbuster.share * segments.blockbuster.multiplier) +
@@ -1332,16 +1338,14 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                    (segments.niche.share * segments.niche.multiplier);
         }
 
-        // Get scenario multiplier
         function getScenarioMultiplier(scenario) {
             return simulationState.config.scenarioMultipliers[scenario] || 1.0;
         }
 
-        // Logit share calculation with outside option - returns all three shares
         function calculateLogitShares(lambda, yourPrice, compPrice) {
+            const outside = simulationState.config.logit.outside;
             const expYour = Math.exp(lambda * yourPrice);
             const expComp = Math.exp(lambda * compPrice);
-            const outside = 1;
             
             const denom = expYour + expComp + outside;
             
@@ -1352,7 +1356,6 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             };
         }
 
-        // UPDATED: Excel-aligned demand model with correct order of operations
         function simulateCity(city, season, weekdayPrice, weekendPrice, scenario, competitorData, studentScreens) {
             const market = simulationState.config.marketAssumptions[city];
             const totalScreens = simulationState.config.theatreCapacity[city].screens;
@@ -1363,32 +1366,26 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             const scenarioMult = getScenarioMultiplier(scenario);
             const segmentFactor = calculateSegmentAdjustmentFactor();
             
+            // Calculate total market demand first (Excel order)
+            const totalWeekdayMarket = market.baseWeekday * segmentFactor * seasonMult * scenarioMult;
+            const totalWeekendMarket = market.baseWeekend * segmentFactor * seasonMult * scenarioMult;
+            
+            // Calculate shares
             const weekdayShares = calculateLogitShares(lambda, weekdayPrice, competitorData.weekdayPrice);
             const weekendShares = calculateLogitShares(lambda, weekendPrice, competitorData.weekendPrice);
             
-            // STEP 1 — Demand from logit share
-            let yourWeekdayDemand = weekdayShares.yourShare * market.baseWeekday;
-            let yourWeekendDemand = weekendShares.yourShare * market.baseWeekend;
+            // Apply shares to total market
+            let yourWeekdayDemand = weekdayShares.yourShare * totalWeekdayMarket;
+            let yourWeekendDemand = weekendShares.yourShare * totalWeekendMarket;
             
-            let compWeekdayDemand = weekdayShares.compShare * market.baseWeekday;
-            let compWeekendDemand = weekendShares.compShare * market.baseWeekend;
+            let compWeekdayDemand = weekdayShares.compShare * totalWeekdayMarket;
+            let compWeekendDemand = weekendShares.compShare * totalWeekendMarket;
             
+            // Store pre-capacity demand for lost demand calculation
             const preCapacityWeekdayDemand = yourWeekdayDemand;
             const preCapacityWeekendDemand = yourWeekendDemand;
             
-            // STEP 2 — Apply segment multiplier
-            yourWeekdayDemand *= segmentFactor;
-            yourWeekendDemand *= segmentFactor;
-            compWeekdayDemand *= segmentFactor;
-            compWeekendDemand *= segmentFactor;
-            
-            // STEP 3 — Apply season and scenario multipliers
-            yourWeekdayDemand *= seasonMult * scenarioMult;
-            yourWeekendDemand *= seasonMult * scenarioMult;
-            compWeekdayDemand *= seasonMult * scenarioMult;
-            compWeekendDemand *= seasonMult * scenarioMult;
-            
-            // STEP 4 — Capacity adjustment
+            // Capacity adjustment
             studentScreens = studentScreens || 1;
             const totalCapacity = studentScreens * perScreenCapacity;
             
@@ -1436,10 +1433,7 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             
             const profit = revenueTotal - costTotal;
             
-            const utilization =
-                totalCapacity > 0
-                    ? (finalWeekdayDemand + finalWeekendDemand) / (2 * totalCapacity)
-                    : 0;
+            const utilization = ticketsTotal / (totalCapacity * totalDays);
             
             const contribution = revenueTotal - varCostTotal;
             
@@ -1494,6 +1488,8 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             const cityResults = {};
             let totalProfit = 0;
             let totalUtilization = 0;
+            let totalDemand = 0;
+            let totalCapacity = 0;
             
             ['Mumbai', 'Delhi', 'Bengaluru'].forEach(city => {
                 const r = simulateCity(
@@ -1508,10 +1504,15 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                 cityResults[city] = r;
                 totalProfit += r.profit;
                 totalUtilization += r.utilization;
+                totalDemand += r.yourDemand;
+                
+                const perScreenCapacity = calculatePerScreenCapacity(city);
+                totalCapacity += screenAllocations[city] * perScreenCapacity * 
+                    (simulationState.config.operational.weekdayDays + simulationState.config.operational.weekendDays);
             });
             
             const avgUtilization = totalUtilization / 3;
-            return { cityResults, totalProfit, avgUtilization };
+            return { cityResults, totalProfit, avgUtilization, totalDemand, totalCapacity };
         }
 
         function initializeSampleRounds() {
@@ -1540,13 +1541,13 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             saveToLocalStorage();
         }
 
-        // Update config from UI
         window.updateConfig = function() {
-            // FIXED: Lambda input handling
             const lambdaInput = document.getElementById('param-lambda').value;
             simulationState.config.logit.lambda = lambdaInput !== "" ? parseFloat(lambdaInput) : -0.02;
             
-            // Market Assumptions (base demand only)
+            const outsideInput = document.getElementById('param-outside').value;
+            simulationState.config.logit.outside = outsideInput !== "" ? parseFloat(outsideInput) : 1;
+            
             simulationState.config.marketAssumptions.Mumbai.baseWeekday = parseFloat(document.getElementById('param-mumbai-wd').value) || 2200;
             simulationState.config.marketAssumptions.Mumbai.baseWeekend = parseFloat(document.getElementById('param-mumbai-we').value) || 4200;
             
@@ -1556,13 +1557,11 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             simulationState.config.marketAssumptions.Bengaluru.baseWeekday = parseFloat(document.getElementById('param-blr-wd').value) || 1800;
             simulationState.config.marketAssumptions.Bengaluru.baseWeekend = parseFloat(document.getElementById('param-blr-we').value) || 3600;
             
-            // Season Multipliers
             simulationState.config.seasonMultipliers.Normal = parseFloat(document.getElementById('season-normal').value) || 1.0;
             simulationState.config.seasonMultipliers.Festive = parseFloat(document.getElementById('season-festive').value) || 1.25;
             simulationState.config.seasonMultipliers.Exam = parseFloat(document.getElementById('season-exam').value) || 0.85;
             simulationState.config.seasonMultipliers.Monsoon = parseFloat(document.getElementById('season-monsoon').value) || 0.9;
             
-            // Movie Segments
             simulationState.config.movieSegments.blockbuster.share = parseFloat(document.getElementById('segment-block-share').value) || 0.45;
             simulationState.config.movieSegments.blockbuster.multiplier = parseFloat(document.getElementById('segment-block-mult').value) || 1.15;
             simulationState.config.movieSegments.mainstream.share = parseFloat(document.getElementById('segment-main-share').value) || 0.35;
@@ -1570,14 +1569,12 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             simulationState.config.movieSegments.niche.share = parseFloat(document.getElementById('segment-niche-share').value) || 0.20;
             simulationState.config.movieSegments.niche.multiplier = parseFloat(document.getElementById('segment-niche-mult').value) || 0.85;
             
-            // Scenario Multipliers
             simulationState.config.scenarioMultipliers.none = parseFloat(document.getElementById('scen-none').value) || 1.0;
             simulationState.config.scenarioMultipliers.blockbuster = parseFloat(document.getElementById('scen-blockbuster').value) || 1.2;
             simulationState.config.scenarioMultipliers.demand_drop = parseFloat(document.getElementById('scen-demand-drop').value) || 0.8;
             simulationState.config.scenarioMultipliers.economic_boom = parseFloat(document.getElementById('scen-boom').value) || 1.15;
             simulationState.config.scenarioMultipliers.recession = parseFloat(document.getElementById('scen-recession').value) || 0.7;
             
-            // Financials
             simulationState.config.financials.Mumbai.variableCost = parseFloat(document.getElementById('cost-mumbai-var').value) || 35;
             simulationState.config.financials.Mumbai.fixedDailyCost = parseFloat(document.getElementById('cost-mumbai-fixed').value) || 250000;
             simulationState.config.financials.Delhi.variableCost = parseFloat(document.getElementById('cost-delhi-var').value) || 30;
@@ -1585,24 +1582,20 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             simulationState.config.financials.Bengaluru.variableCost = parseFloat(document.getElementById('cost-blr-var').value) || 28;
             simulationState.config.financials.Bengaluru.fixedDailyCost = parseFloat(document.getElementById('cost-blr-fixed').value) || 180000;
             
-            // Operational
             simulationState.config.operational.weekdayDays = parseInt(document.getElementById('weekday-days').value) || 22;
             simulationState.config.operational.weekendDays = parseInt(document.getElementById('weekend-days').value) || 8;
             
             saveToLocalStorage();
         };
 
-        // Format currency
         function formatCurrency(value) {
             return '₹' + Math.round(value).toLocaleString('en-IN');
         }
 
-        // Format number
         function formatNumber(value) {
             return Math.round(value).toLocaleString('en-IN');
         }
 
-        // Render functions
         function renderRoundConfig() {
             const container = document.getElementById('round-config-container');
             if (!container) return;
@@ -1655,7 +1648,6 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             `).join('');
         }
 
-        // Round management functions
         window.createRounds = function() {
             updateConfig();
             const roundCount = parseInt(document.getElementById('rounds').value) || 3;
@@ -1689,7 +1681,6 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             renderRoundPreview();
             saveToLocalStorage();
             
-            // Refresh all panels so user sees changes immediately
             loadStudentRound();
             updateResultsSection();
             updateProgressSection();
@@ -1853,7 +1844,6 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             showAlert('All configurations saved', 'success');
         };
 
-        // Student functions
         function updateStudentStatus() {
             document.getElementById('student-total-rounds').textContent = simulationState.rounds.length;
             document.getElementById('student-completed-rounds').textContent = simulationState.completedRounds;
@@ -1872,7 +1862,6 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                 sel.innerHTML = '<p class="muted">No months configured.</p>';
                 disp.innerHTML = '<div class="card"><h3>No Months Available</h3><p class="muted">Please ask instructor to create months.</p></div>';
                 
-                // Hide navigation buttons
                 document.getElementById('prev-round-btn').style.display = 'none';
                 document.getElementById('next-round-btn').style.display = 'none';
                 return;
@@ -1887,12 +1876,10 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             if (cur) {
                 const isCompleted = cur.results !== null;
                 
-                // Get max screens per city for allocation inputs
                 const mumbaiMaxScreens = simulationState.config.theatreCapacity.Mumbai.screens;
                 const delhiMaxScreens = simulationState.config.theatreCapacity.Delhi.screens;
                 const blrMaxScreens = simulationState.config.theatreCapacity.Bengaluru.screens;
                 
-                // Default screen allocations (if previously set, use those)
                 const defaultMumbaiScreens = cur.screenAllocations?.Mumbai || Math.floor(mumbaiMaxScreens / 2) || 5;
                 const defaultDelhiScreens = cur.screenAllocations?.Delhi || Math.floor(delhiMaxScreens / 2) || 4;
                 const defaultBlrScreens = cur.screenAllocations?.Bengaluru || Math.floor(blrMaxScreens / 2) || 3;
@@ -1922,6 +1909,7 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                             <p>Total profit: ${formatCurrency(cur.results.totalProfit)}</p>
                             <p>Screens used: Mumbai ${cur.screenAllocations?.Mumbai || 'N/A'}, Delhi ${cur.screenAllocations?.Delhi || 'N/A'}, Bengaluru ${cur.screenAllocations?.Bengaluru || 'N/A'}</p>
                             <p><strong>Lost demand:</strong> ${formatNumber(cur.results.cityResults.Mumbai.lostDemand + cur.results.cityResults.Delhi.lostDemand + cur.results.cityResults.Bengaluru.lostDemand)} tickets</p>
+                            <p><strong>Utilization:</strong> ${(cur.results.avgUtilization * 100).toFixed(1)}%</p>
                             <button class="btn" onclick="switchModule('results')">View Detailed Results</button>
                         </div>` :
                         `<div style="margin-top:20px;">
@@ -1962,7 +1950,6 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                     }
                 </div>`;
                 
-                // Show/hide navigation buttons
                 document.getElementById('prev-round-btn').style.display = simulationState.currentRoundIndex > 1 ? 'inline-block' : 'none';
                 document.getElementById('next-round-btn').style.display = simulationState.currentRoundIndex < simulationState.rounds.length ? 'inline-block' : 'none';
             }
@@ -2024,14 +2011,12 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             const prices = {};
             const screenAllocations = {};
             
-            // Consistent city key mapping
             const cityKeyMap = {
                 Mumbai: "mumbai",
                 Delhi: "delhi",
                 Bengaluru: "bengaluru"
             };
             
-            // Collect prices and screen allocations
             ['Mumbai', 'Delhi', 'Bengaluru'].forEach(city => {
                 const cityKey = cityKeyMap[city];
                 const wd = parseInt(document.getElementById(`price-${cityKey}-weekday`).value) || 0;
@@ -2042,7 +2027,6 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                 screenAllocations[city] = screens;
             });
             
-            // Validate prices
             const errors = [];
             Object.keys(prices).forEach(c => {
                 if (prices[c].weekday < 50 || prices[c].weekday > 1000)
@@ -2060,7 +2044,6 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                 return;
             }
             
-            // Run simulation with screen allocations
             const result = simulateRound(idx, round.season, prices, round.scenario, screenAllocations);
             
             round.studentDecisions = prices;
@@ -2120,7 +2103,6 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
                     tableHtml += '<th>Screens Used</th>';
                     break;
                 case 'demand':
-                    // Strategic demand metrics
                     tableHtml += '<th>Your Demand</th>';
                     tableHtml += '<th>Competitor Demand</th>';
                     tableHtml += '<th>Total Market</th>';
@@ -2274,8 +2256,8 @@ The objective is to maximise cumulative profit, not just revenue or occupancy.</
             if (module === 'progress') updateProgressSection();
             if (module === 'results') updateResultsSection();
             if (module === 'instructor') {
-                // Update UI with current config values
                 document.getElementById('param-lambda').value = simulationState.config.logit.lambda;
+                document.getElementById('param-outside').value = simulationState.config.logit.outside || 1;
                 
                 document.getElementById('param-mumbai-wd').value = simulationState.config.marketAssumptions.Mumbai.baseWeekday;
                 document.getElementById('param-mumbai-we').value = simulationState.config.marketAssumptions.Mumbai.baseWeekend;
