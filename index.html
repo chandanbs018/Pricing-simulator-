@@ -1413,6 +1413,154 @@
             });
         }
 
+        function calculateSegmentAdjustmentFactor() {
+            const segments = simulationState.config.movieSegments;
+            return (segments.blockbuster.share * segments.blockbuster.multiplier) +
+                   (segments.mainstream.share * segments.mainstream.multiplier) +
+                   (segments.niche.share * segments.niche.multiplier);
+        }
+
+        function calculateLogitShares(lambda, yourPrice, compPrice) {
+            const outside = 1;
+            const expYour = Math.exp(lambda * yourPrice);
+            const expComp = Math.exp(lambda * compPrice);
+            const denom = expYour + expComp + outside;
+            return {
+                yourShare: expYour / denom,
+                compShare: expComp / denom,
+                outsideShare: outside / denom
+            };
+        }
+
+        function simulateCity(city, season, weekdayPrice, weekendPrice, scenario, competitorData, studentScreens) {
+            const market = simulationState.config.marketAssumptions[city];
+            const totalScreens = simulationState.config.theatreCapacity[city].screens;
+            const lambda = simulationState.config.logit.lambda;
+            const perScreenCapacity = simulationState.config.theatreCapacity[city].seatsPerScreen * simulationState.config.theatreCapacity[city].showsPerDay;
+            
+            const seasonMult = simulationState.config.seasonMultipliers[season] || 1;
+            const scenarioMult = simulationState.config.scenarioMultipliers[scenario] || 1;
+            const segmentFactor = calculateSegmentAdjustmentFactor();
+            
+            // Step 1: Calculate logit shares based on prices only
+            const weekdayShares = calculateLogitShares(lambda, weekdayPrice, competitorData.weekdayPrice);
+            const weekendShares = calculateLogitShares(lambda, weekendPrice, competitorData.weekendPrice);
+            
+            // Step 2: Apply shares to base demand
+            let yourWeekdayDemand = weekdayShares.yourShare * market.baseWeekday;
+            let yourWeekendDemand = weekendShares.yourShare * market.baseWeekend;
+            
+            let compWeekdayDemand = weekdayShares.compShare * market.baseWeekday;
+            let compWeekendDemand = weekendShares.compShare * market.baseWeekend;
+            
+            // Step 3: Apply movie segment adjustment
+            yourWeekdayDemand *= segmentFactor;
+            yourWeekendDemand *= segmentFactor;
+            compWeekdayDemand *= segmentFactor;
+            compWeekendDemand *= segmentFactor;
+            
+            // Step 4: Apply season adjustment
+            yourWeekdayDemand *= seasonMult;
+            yourWeekendDemand *= seasonMult;
+            compWeekdayDemand *= seasonMult;
+            compWeekendDemand *= seasonMult;
+            
+            // Step 5: Apply scenario adjustment
+            yourWeekdayDemand *= scenarioMult;
+            yourWeekendDemand *= scenarioMult;
+            compWeekdayDemand *= scenarioMult;
+            compWeekendDemand *= scenarioMult;
+            
+            studentScreens = studentScreens || 1;
+            const totalCapacity = studentScreens * perScreenCapacity;
+            
+            // Safe capacity factor calculation (prevents division by zero)
+            const capacityFactorWeekday = yourWeekdayDemand > 0 ? Math.min(1, totalCapacity / yourWeekdayDemand) : 0;
+            const capacityFactorWeekend = yourWeekendDemand > 0 ? Math.min(1, totalCapacity / yourWeekendDemand) : 0;
+            
+            const finalWeekdayDemand = yourWeekdayDemand * capacityFactorWeekday;
+            const finalWeekendDemand = yourWeekendDemand * capacityFactorWeekend;
+            
+            const weekdayDays = simulationState.config.operational.weekdayDays;
+            const weekendDays = simulationState.config.operational.weekendDays;
+            
+            const yourTotalDemandMonthly = (finalWeekdayDemand * weekdayDays) + (finalWeekendDemand * weekendDays);
+            const compTotalDemandMonthly = (compWeekdayDemand * weekdayDays) + (compWeekendDemand * weekendDays);
+            const totalMarketMonthly = yourTotalDemandMonthly + compTotalDemandMonthly;
+            
+            const lostDemand = (Math.max(0, yourWeekdayDemand - totalCapacity) * weekdayDays) + 
+                              (Math.max(0, yourWeekendDemand - totalCapacity) * weekendDays);
+            const ticketsTotal = yourTotalDemandMonthly;
+            
+            const revenueTotal = (finalWeekdayDemand * weekdayDays * weekdayPrice) + (finalWeekendDemand * weekendDays * weekendPrice);
+            const varCostTotal = ticketsTotal * simulationState.config.financials[city].variableCost;
+            const totalDays = weekdayDays + weekendDays;
+            const fullFixedCost = simulationState.config.financials[city].fixedDailyCost * totalDays;
+            const fixedCostTotal = fullFixedCost * (studentScreens / totalScreens);
+            const costTotal = varCostTotal + fixedCostTotal;
+            const profit = revenueTotal - costTotal;
+            const utilization = totalCapacity > 0 ? ticketsTotal / (totalCapacity * totalDays) : 0;
+            const contribution = revenueTotal - varCostTotal;
+            const contributionMargin = revenueTotal > 0 ? (contribution / revenueTotal) * 100 : 0;
+            const netMargin = revenueTotal > 0 ? (profit / revenueTotal) * 100 : 0;
+            const avgTicketPrice = ticketsTotal > 0 ? revenueTotal / ticketsTotal : 0;
+            
+            return {
+                yourDemand: Math.round(yourTotalDemandMonthly),
+                competitorDemand: Math.round(compTotalDemandMonthly),
+                totalMarketDemand: Math.round(totalMarketMonthly),
+                lostDemand: Math.round(lostDemand),
+                weekdayPrice,
+                weekendPrice,
+                competitorWeekdayBase: competitorData.weekdayPrice,
+                competitorWeekendBase: competitorData.weekendPrice,
+                studentScreens,
+                totalScreens,
+                weekdayAttendance: finalWeekdayDemand,
+                weekendAttendance: finalWeekendDemand,
+                utilization,
+                revenueTotal,
+                varCostTotal,
+                fixedCostTotal,
+                costTotal,
+                profit,
+                contribution,
+                contributionMargin,
+                netMargin,
+                avgTicketPrice,
+                segmentFactor,
+                seasonMult,
+                scenarioMult,
+                capacityFactorWeekday,
+                capacityFactorWeekend
+            };
+        }
+
+        function simulateRound(roundIndex, season, pricesByCity, scenario, screenAllocations) {
+            const round = simulationState.rounds[roundIndex];
+            const cityResults = {};
+            let totalProfit = 0;
+            let totalUtilization = 0;
+            
+            ['Mumbai', 'Delhi', 'Bengaluru'].forEach(city => {
+                const r = simulateCity(
+                    city,
+                    season,
+                    pricesByCity[city].weekday,
+                    pricesByCity[city].weekend,
+                    scenario,
+                    round.competitors[city],
+                    screenAllocations[city]
+                );
+                cityResults[city] = r;
+                totalProfit += r.profit;
+                totalUtilization += r.utilization;
+            });
+            
+            const avgUtilization = totalUtilization / 3;
+            return { cityResults, totalProfit, avgUtilization };
+        }
+
         function formatCurrency(value) {
             return '₹' + Math.round(value).toLocaleString('en-IN');
         }
@@ -1970,17 +2118,7 @@
                 return;
             }
             
-            // Simple simulation function (abbreviated for brevity - full implementation would be here)
-            // For now just create a placeholder result
-            const result = {
-                totalProfit: 100000,
-                avgUtilization: 0.75,
-                cityResults: {
-                    Mumbai: { lostDemand: 100 },
-                    Delhi: { lostDemand: 50 },
-                    Bengaluru: { lostDemand: 75 }
-                }
-            };
+            const result = simulateRound(idx, round.season, prices, round.scenario, screenAllocations);
             
             round.studentDecisions = prices;
             round.screenAllocations = screenAllocations;
