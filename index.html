@@ -1296,14 +1296,12 @@
 
         let editingRoundIndex = null;
 
-        // City mapping for HTML IDs
         const cityIdMap = {
             Mumbai: "mumbai",
             Delhi: "delhi",
             Bengaluru: "blr"
         };
 
-        // Helper Functions
         function calculatePerScreenCapacity(city) {
             const cap = simulationState.config.theatreCapacity[city];
             return cap.seatsPerScreen * cap.showsPerDay;
@@ -1324,9 +1322,7 @@
             const outside = 1;
             const expYour = Math.exp(lambda * yourPrice);
             const expComp = Math.exp(lambda * compPrice);
-            
             const denom = expYour + expComp + outside;
-            
             return {
                 yourShare: expYour / denom,
                 compShare: expComp / denom,
@@ -1352,7 +1348,6 @@
             
             let yourWeekdayDemand = weekdayShares.yourShare * totalWeekdayMarket;
             let yourWeekendDemand = weekendShares.yourShare * totalWeekendMarket;
-            
             let compWeekdayDemand = weekdayShares.compShare * totalWeekdayMarket;
             let compWeekendDemand = weekendShares.compShare * totalWeekendMarket;
             
@@ -1368,79 +1363,45 @@
             const weekdayDays = simulationState.config.operational.weekdayDays;
             const weekendDays = simulationState.config.operational.weekendDays;
             
-            const yourTotalDemandMonthly =
-                (finalWeekdayDemand * weekdayDays) +
-                (finalWeekendDemand * weekendDays);
-            
-            const compTotalDemandMonthly =
-                (compWeekdayDemand * weekdayDays) +
-                (compWeekendDemand * weekendDays);
-            
+            const yourTotalDemandMonthly = (finalWeekdayDemand * weekdayDays) + (finalWeekendDemand * weekendDays);
+            const compTotalDemandMonthly = (compWeekdayDemand * weekdayDays) + (compWeekendDemand * weekendDays);
             const totalMarketMonthly = yourTotalDemandMonthly + compTotalDemandMonthly;
             
-            const lostDemand =
-                (Math.max(0, yourWeekdayDemand - totalCapacity) * weekdayDays) +
-                (Math.max(0, yourWeekendDemand - totalCapacity) * weekendDays);
-            
+            const lostDemand = (Math.max(0, yourWeekdayDemand - totalCapacity) * weekdayDays) + (Math.max(0, yourWeekendDemand - totalCapacity) * weekendDays);
             const ticketsTotal = yourTotalDemandMonthly;
             
-            const revenueTotal =
-                (finalWeekdayDemand * weekdayDays * weekdayPrice) +
-                (finalWeekendDemand * weekendDays * weekendPrice);
-            
-            const varCostTotal =
-                ticketsTotal * simulationState.config.financials[city].variableCost;
-            
+            const revenueTotal = (finalWeekdayDemand * weekdayDays * weekdayPrice) + (finalWeekendDemand * weekendDays * weekendPrice);
+            const varCostTotal = ticketsTotal * simulationState.config.financials[city].variableCost;
             const totalDays = weekdayDays + weekendDays;
-            
-            const fullFixedCost =
-                simulationState.config.financials[city].fixedDailyCost * totalDays;
-            
-            const fixedCostTotal =
-                fullFixedCost * (studentScreens / totalScreens);
-            
+            const fullFixedCost = simulationState.config.financials[city].fixedDailyCost * totalDays;
+            const fixedCostTotal = fullFixedCost * (studentScreens / totalScreens);
             const costTotal = varCostTotal + fixedCostTotal;
-            
             const profit = revenueTotal - costTotal;
-            
             const utilization = totalCapacity > 0 ? ticketsTotal / (totalCapacity * totalDays) : 0;
-            
             const contribution = revenueTotal - varCostTotal;
-            
-            const contributionMargin =
-                revenueTotal > 0 ? (contribution / revenueTotal) * 100 : 0;
-            
-            const netMargin =
-                revenueTotal > 0 ? (profit / revenueTotal) * 100 : 0;
-            
-            const avgTicketPrice =
-                ticketsTotal > 0 ? revenueTotal / ticketsTotal : 0;
+            const contributionMargin = revenueTotal > 0 ? (contribution / revenueTotal) * 100 : 0;
+            const netMargin = revenueTotal > 0 ? (profit / revenueTotal) * 100 : 0;
+            const avgTicketPrice = ticketsTotal > 0 ? revenueTotal / ticketsTotal : 0;
             
             return {
                 yourDemand: Math.round(yourTotalDemandMonthly),
                 competitorDemand: Math.round(compTotalDemandMonthly),
                 totalMarketDemand: Math.round(totalMarketMonthly),
                 lostDemand: Math.round(lostDemand),
-                
                 weekdayPrice,
                 weekendPrice,
                 competitorWeekdayBase: competitorData.weekdayPrice,
                 competitorWeekendBase: competitorData.weekendPrice,
-                
                 studentScreens,
                 totalScreens,
-                
                 weekdayAttendance: finalWeekdayDemand,
                 weekendAttendance: finalWeekendDemand,
-                
                 utilization,
-                
                 revenueTotal,
                 varCostTotal,
                 fixedCostTotal,
                 costTotal,
                 profit,
-                
                 contribution,
                 contributionMargin,
                 netMargin,
@@ -1853,7 +1814,6 @@
             }
         }
 
-        // Global Functions
         window.updateCapacity = function() {
             const cities = ['Mumbai', 'Delhi', 'Bengaluru'];
             cities.forEach(city => {
