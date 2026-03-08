@@ -259,6 +259,15 @@
             background: #229954;
         }
 
+        .btn-danger {
+            background: var(--color-danger);
+            color: var(--color-white);
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
         .btn:disabled {
             background: var(--color-border);
             cursor: not-allowed;
@@ -1054,10 +1063,7 @@
                             </div>
                             <div class="quick-actions-row">
                                 <button class="btn btn-primary" onclick="createRounds()">Create Months</button>
-                                <button class="btn btn-warning" onclick="randomizeAllRounds()">Randomize All</button>
-                                <button class="btn" onclick="addNewRound()">Add Month</button>
-                                <button class="btn btn-success" onclick="saveAllRounds()">Save All</button>
-                                <button class="btn delete-round-btn" onclick="deleteAllRounds()">Delete All</button>
+                                <button class="btn btn-danger" onclick="deleteAllRounds()">Delete All</button>
                             </div>
                         </div>
                     </div>
@@ -1922,35 +1928,6 @@
             showAlert('Created ' + roundCount + ' new months successfully', 'success');
         };
 
-        window.addNewRound = function() {
-            window.updateConfig();
-            
-            const newRoundNumber = simulationState.rounds.length + 1;
-            const defaultSeason = document.getElementById('defaultSeason').value;
-            const defaultScenario = document.getElementById('defaultScenario').value;
-            
-            simulationState.rounds.push({
-                roundNumber: newRoundNumber,
-                season: defaultSeason,
-                scenario: defaultScenario,
-                status: 'planned',
-                competitors: {
-                    Mumbai: { weekdayPrice: 240, weekendPrice: 340 },
-                    Delhi: { weekdayPrice: 210, weekendPrice: 310 },
-                    Bengaluru: { weekdayPrice: 190, weekendPrice: 290 }
-                },
-                studentDecisions: null,
-                screenAllocations: null,
-                results: null,
-                timestamp: null
-            });
-            
-            renderRoundConfig();
-            renderRoundPreview();
-            saveToLocalStorage();
-            showAlert('Added Month ' + newRoundNumber + ' successfully', 'success');
-        };
-
         window.editRoundConfig = function(roundIndex) {
             editingRoundIndex = roundIndex;
             const round = simulationState.rounds[roundIndex];
@@ -2064,42 +2041,6 @@
             renderRoundPreview();
             saveToLocalStorage();
             showAlert('Applied ' + season + ' season to all months', 'success');
-        };
-
-        window.randomizeAllRounds = function() {
-            if (simulationState.rounds.length === 0) return;
-            const seasons = ['Normal', 'Festive', 'Exam', 'Monsoon'];
-            const scenarios = ['none', 'blockbuster', 'demand_drop', 'economic_boom', 'recession'];
-            simulationState.rounds.forEach((r, i) => {
-                r.season = seasons[Math.floor(Math.random() * seasons.length)];
-                r.scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
-                r.status = i === 0 ? 'active' : 'planned';
-                r.studentDecisions = null;
-                r.screenAllocations = null;
-                r.results = null;
-                r.timestamp = null;
-            });
-            
-            simulationState.completedRounds = 0;
-            simulationState.totalProfit = 0;
-            simulationState.performanceHistory = [];
-            simulationState.currentRoundIndex = 1;
-            
-            renderRoundConfig();
-            renderRoundPreview();
-            saveToLocalStorage();
-            
-            loadStudentRound();
-            updateResultsSection();
-            updateProgressSection();
-            
-            showAlert('All months randomized and reset', 'success');
-        };
-
-        window.saveAllRounds = function() {
-            window.updateConfig();
-            saveToLocalStorage();
-            showAlert('All configurations saved successfully', 'success');
         };
 
         window.selectStudentRound = function(rn) {
