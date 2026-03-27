@@ -132,30 +132,16 @@
         .toast.danger  { border-left-color: var(--color-danger); }
         .toast.warning { border-left-color: var(--color-warning); }
         @keyframes toastIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
-        @media (max-width: 1024px) { .main-grid { grid-template-columns: 1fr; } .header-wrapper { grid-template-columns: 1fr; } }
-        @media (max-width: 900px)  { .city-charts-grid { grid-template-columns: 1fr; } }
-        @media (max-width: 768px)  { .header-banner h1 { font-size: 1.5em; } .grid-3, .grid-2 { grid-template-columns: 1fr; } .simulation-status { flex-direction: column; } .round-config-grid { grid-template-columns: 1fr; } .round-preview { flex-direction: column; } .metrics-tabs { flex-direction: column; } .metric-tab { width: 100%; text-align: center; } }
         
-        /* Student panel competitor price styling */
         .competitor-price-cell {
             background: #f5f5f5;
             color: #6c757d;
             font-weight: normal;
             text-align: center;
-            border-left: 1px solid var(--color-border);
         }
         .student-price-input {
             width: 100px;
             text-align: center;
-        }
-        .price-comparison-table td {
-            vertical-align: middle;
-        }
-        .competitor-label {
-            font-size: 0.7rem;
-            color: #6c757d;
-            display: block;
-            margin-top: 2px;
         }
         .dashboard-kpi-row {
             display: flex;
@@ -183,6 +169,10 @@
             font-weight: 700;
             color: #000;
         }
+        
+        @media (max-width: 1024px) { .main-grid { grid-template-columns: 1fr; } .header-wrapper { grid-template-columns: 1fr; } }
+        @media (max-width: 900px)  { .city-charts-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 768px)  { .header-banner h1 { font-size: 1.5em; } .grid-3, .grid-2 { grid-template-columns: 1fr; } .simulation-status { flex-direction: column; } .round-config-grid { grid-template-columns: 1fr; } .round-preview { flex-direction: column; } .metrics-tabs { flex-direction: column; } .metric-tab { width: 100%; text-align: center; } }
     </style>
 </head>
 <body>
@@ -239,11 +229,11 @@
                 <div class="card">
                     <h4>Market Assumptions</h4>
                     <table class="param-table">
-                        <thead><tr><th>City</th><th>Base Weekday Demand</th><th>Base Weekend Demand</th> </thead>
+                        <thead><tr><th>City</th><th>Base Weekday Demand</th><th>Base Weekend Demand</th></tr></thead>
                         <tbody>
-                            <tr><td>Mumbai</td><td><input type="number" id="param-mumbai-wd" value="2200" step="100"></td><td><input type="number" id="param-mumbai-we" value="4200" step="100"></td> </tr>
-                            <tr><td>Delhi</td><td><input type="number" id="param-delhi-wd" value="2000" step="100"></td><td><input type="number" id="param-delhi-we" value="3900" step="100"></td> </tr>
-                            <tr><td>Bengaluru</td><td><input type="number" id="param-blr-wd" value="1800" step="100"></td><td><input type="number" id="param-blr-we" value="3600" step="100"></td> </tr>
+                            <tr><td>Mumbai</td><td><input type="number" id="param-mumbai-wd" value="2200" step="100"></td><td><input type="number" id="param-mumbai-we" value="4200" step="100"></td></tr>
+                            <tr><td>Delhi</td><td><input type="number" id="param-delhi-wd" value="2000" step="100"></td><td><input type="number" id="param-delhi-we" value="3900" step="100"></td></tr>
+                            <tr><td>Bengaluru</td><td><input type="number" id="param-blr-wd" value="1800" step="100"></td><td><input type="number" id="param-blr-we" value="3600" step="100"></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -259,22 +249,22 @@
                 <div class="card">
                     <h4>Movie Segments <span class="random-badge">randomized per month</span> <span class="fixed-badge">values fixed by admin</span></h4>
                     <table class="param-table">
-                        <thead><tr><th>Category</th><th>Segment Adjustment Factor</th> </thead>
+                        <thead><tr><th>Category</th><th>Segment Adjustment Factor</th></tr></thead>
                         <tbody>
-                            <tr><td>Blockbuster</td><td><input type="number" id="segment-block-factor" value="1.0375" step="0.01"></td> </tr>
-                            <tr><td>Mainstream</td><td><input type="number" id="segment-main-factor" value="1.01" step="0.01"></td> </tr>
-                            <tr><td>Niche</td><td><input type="number" id="segment-niche-factor" value="0.95" step="0.01"></td> </tr>
+                            <tr><td>Blockbuster</td><td><input type="number" id="segment-block-factor" value="1.0375" step="0.01"></td></tr>
+                            <tr><td>Mainstream</td><td><input type="number" id="segment-main-factor" value="1.01" step="0.01"></td></tr>
+                            <tr><td>Niche</td><td><input type="number" id="segment-niche-factor" value="0.95" step="0.01"></td></tr>
                         </tbody>
                     </table>
                 </div>
                 <div class="card">
                     <h4>Screens Configuration</h4>
                     <table class="param-table">
-                        <thead><tr><th>City</th><th>Avg Screens (market)</th><th>Default Allocation (student)</th> </thead>
+                        <thead><tr><th>City</th><th>Avg Screens (market)</th><th>Default Allocation (student)</th></tr></thead>
                         <tbody>
-                            <tr><td>Mumbai</td><td><input type="number" id="cap-mumbai-screens" value="20" min="1" step="1"></td><td><input type="number" id="default-screens-mumbai" value="30" min="1" max="100" step="1"></td> </tr>
-                            <tr><td>Delhi</td><td><input type="number" id="cap-delhi-screens" value="15" min="1" step="1"></td><td><input type="number" id="default-screens-delhi" value="8" min="1" max="100" step="1"></td> </tr>
-                            <tr><td>Bengaluru</td><td><input type="number" id="cap-blr-screens" value="14" min="1" step="1"></td><td><input type="number" id="default-screens-blr" value="7" min="1" max="100" step="1"></td> </tr>
+                            <tr><td>Mumbai</td><td><input type="number" id="cap-mumbai-screens" value="20" min="1" step="1"></td><td><input type="number" id="default-screens-mumbai" value="30" min="1" max="100" step="1"></td></tr>
+                            <tr><td>Delhi</td><td><input type="number" id="cap-delhi-screens" value="15" min="1" step="1"></td><td><input type="number" id="default-screens-delhi" value="8" min="1" max="100" step="1"></td></tr>
+                            <tr><td>Bengaluru</td><td><input type="number" id="cap-blr-screens" value="14" min="1" step="1"></td><td><input type="number" id="default-screens-blr" value="7" min="1" max="100" step="1"></td></tr>
                         </tbody>
                     </table>
                     <p class="muted">Avg Screens = market benchmark used for capacity ratio. Default Allocation = pre-filled screen count shown to students each month.</p>
@@ -282,11 +272,11 @@
                 <div class="card">
                     <h4>Financial Parameters</h4>
                     <table class="param-table">
-                        <thead><tr><th>City</th><th>Variable Cost / Ticket (Rs)</th><th>Seats per Screen</th><th>Fixed Cost per Seat per Day (Rs)</th> </thead>
+                        <thead><tr><th>City</th><th>Variable Cost / Ticket (Rs)</th><th>Seats per Screen</th><th>Fixed Cost per Seat per Day (Rs)</th></tr></thead>
                         <tbody>
-                            <tr><td>Mumbai</td><td><input type="number" id="cost-mumbai-var" value="5" step="1"></td><td><input type="number" id="cost-mumbai-seats" value="220" step="10"></td><td><input type="number" id="cost-mumbai-fixed" value="18" step="1"></td> </tr>
-                            <tr><td>Delhi</td><td><input type="number" id="cost-delhi-var" value="5" step="1"></td><td><input type="number" id="cost-delhi-seats" value="200" step="10"></td><td><input type="number" id="cost-delhi-fixed" value="18" step="1"></td> </tr>
-                            <tr><td>Bengaluru</td><td><input type="number" id="cost-blr-var" value="5" step="1"></td><td><input type="number" id="cost-blr-seats" value="180" step="10"></td><td><input type="number" id="cost-blr-fixed" value="18" step="1"></td> </tr>
+                            <tr><td>Mumbai</td><td><input type="number" id="cost-mumbai-var" value="5" step="1"></td><td><input type="number" id="cost-mumbai-seats" value="220" step="10"></td><td><input type="number" id="cost-mumbai-fixed" value="18" step="1"></td></tr>
+                            <tr><td>Delhi</td><td><input type="number" id="cost-delhi-var" value="5" step="1"></td><td><input type="number" id="cost-delhi-seats" value="200" step="10"></td><td><input type="number" id="cost-delhi-fixed" value="18" step="1"></td></tr>
+                            <tr><td>Bengaluru</td><td><input type="number" id="cost-blr-var" value="5" step="1"></td><td><input type="number" id="cost-blr-seats" value="180" step="10"></td><td><input type="number" id="cost-blr-fixed" value="18" step="1"></td></tr>
                         </tbody>
                     </table>
                     <p class="muted">Fixed cost = Screens x Seats per Screen x 30 days x Fixed Cost per Seat</p>
@@ -301,24 +291,24 @@
                 <div class="card">
                     <h4>Default Competitor Prices</h4>
                     <table class="param-table">
-                        <thead><tr><th>City</th><th>Comp Weekday (Rs)</th><th>Comp Weekend (Rs)</th> </thead>
+                        <thead><tr><th>City</th><th>Comp Weekday (Rs)</th><th>Comp Weekend (Rs)</th></tr></thead>
                         <tbody>
-                            <tr><td>Mumbai</td><td><input type="number" id="default-comp-mumbai-wd" value="240" min="50" max="1000" step="5"></td><td><input type="number" id="default-comp-mumbai-we" value="270" min="50" max="1000" step="5"></td> </tr>
-                            <tr><td>Delhi</td><td><input type="number" id="default-comp-delhi-wd" value="240" min="50" max="1000" step="5"></td><td><input type="number" id="default-comp-delhi-we" value="300" min="50" max="1000" step="5"></td> </tr>
-                            <tr><td>Bengaluru</td><td><input type="number" id="default-comp-blr-wd" value="220" min="50" max="1000" step="5"></td><td><input type="number" id="default-comp-blr-we" value="310" min="50" max="1000" step="5"></td> </tr>
+                            <tr><td>Mumbai</td><td><input type="number" id="default-comp-mumbai-wd" value="240" min="50" max="1000" step="5"></td><td><input type="number" id="default-comp-mumbai-we" value="270" min="50" max="1000" step="5"></td></tr>
+                            <tr><td>Delhi</td><td><input type="number" id="default-comp-delhi-wd" value="240" min="50" max="1000" step="5"></td><td><input type="number" id="default-comp-delhi-we" value="300" min="50" max="1000" step="5"></td></tr>
+                            <tr><td>Bengaluru</td><td><input type="number" id="default-comp-blr-wd" value="220" min="50" max="1000" step="5"></td><td><input type="number" id="default-comp-blr-we" value="310" min="50" max="1000" step="5"></td></tr>
                         </tbody>
                     </table>
                 </div>
                 <div class="card">
                     <h4>Competitor Reaction Rules</h4>
                     <table class="param-table">
-                        <thead><tr><th>Price Difference Bracket</th><th>Adjustment Amount (Rs)</th> </thead>
+                        <thead><tr><th>Price Difference Bracket</th><th>Adjustment Amount (Rs)</th></tr></thead>
                         <tbody>
-                            <tr><td>>= +50 (you price much higher)</td><td>+25</td> </tr>
-                            <tr><td>>= +20</td><td>+10</td> </tr>
-                            <tr><td>0</td><td>0</td> </tr>
-                            <tr><td>>= -20</td><td>-10</td> </tr>
-                            <tr><td>>= -50 (you price much lower)</td><td>-30</td> </tr>
+                            <tr><td>>= +50 (you price much higher)</td><td>+25</td></tr>
+                            <tr><td>>= +20</td><td>+10</td></tr>
+                            <tr><td>0</td><td>0</td></tr>
+                            <tr><td>>= -20</td><td>-10</td></tr>
+                            <tr><td>>= -50 (you price much lower)</td><td>-30</td></tr>
                         </tbody>
                     </table>
                     <p class="muted">Applied with random multiplier (0.5-1.0x) to next month's competitor price.</p>
@@ -363,7 +353,7 @@
                 </div>
             </div>
 
-            <!-- STUDENT PANEL -->
+            <!-- STUDENT PANEL - COMPETITOR PRICES TABLE REMOVED -->
             <div id="student-section" class="hidden">
                 <h2>Monthly Planning</h2>
                 <div class="student-round-selector" id="round-selector"></div>
@@ -435,7 +425,7 @@
 </div>
 
 <script>
-// Full JavaScript implementation with all simulation logic
+// Full JavaScript implementation with all simulation logic - formulas unchanged
 let simulationState = {
     config: {
         logit: { lambda: 0.015, muBase: 40 },
@@ -661,7 +651,7 @@ function updateDashboardKPIs() {
 function buildDashboardTable(displayRounds, tab) {
     if (displayRounds.length === 0) return '<div class="no-data-message">No months to display yet. Submit or evaluate a month to see results.</div>';
     
-    let html = '<table class="metrics-table"><thead><tr>';
+    let html = '<table class="metrics-table"><thead> <tr>';
     if (tab === 'pricing') html += '<th>Month</th><th>City</th><th>Your WD (Rs)</th><th>Your WE (Rs)</th><th>Comp WD (Rs)</th><th>Comp WE (Rs)</th><th>Screens Used</th></tr></thead><tbody>';
     else if (tab === 'demand') html += '<th>Month</th><th>City</th><th>Your Demand</th><th>Weekday Demand</th><th>Weekend Demand</th><th>Revenue (Rs)</th><th>Profit (Rs)</th></tr></thead><tbody>';
     else if (tab === 'utilization') html += '<th>Month</th><th>City</th><th>Screens Used</th><th>Avg Screens</th><th>Capacity Ratio</th></tr></thead><tbody>';
@@ -779,15 +769,7 @@ function loadStudentRound() {
         '<div class="card" style="border-left-color:#27ae60;"><h4>Movie Segment</h4><p style="font-size:1.3em;font-weight:700;">' + cur.movieSegment.charAt(0).toUpperCase() + cur.movieSegment.slice(1) + '</p><p class="muted">Affects your final demand.</p></div>' +
         '</div>' +
         '<p style="margin-top:10px;"><strong>Status:</strong> <span style="text-transform:capitalize;">' + cur.status + '</span></p>' +
-        (done ? '<p><strong>Completed:</strong> ' + (cur.timestamp ? new Date(cur.timestamp).toLocaleString() : 'N/A') + '</p>' : '') +
-        '<h4 style="margin-top:15px;">Competitor Prices This Month</h4>' +
-        '<p class="muted" style="margin-bottom:8px;">Fixed for this month - competitor reacts next month based on your decisions.</p>' +
-        '<table class="param-table competitor-table"><thead><tr><th>City</th><th>Comp Weekday (Rs)</th><th>Comp Weekend (Rs)</th><th>Avg Screens</th></tr></thead><tbody>';
-    
-    for (let city of cities) {
-        html += '<tr><td><strong>' + city + '</strong></td><td>Rs' + cur.competitors[city].weekdayPrice + '</td><td>Rs' + cur.competitors[city].weekendPrice + '</td><td>' + simulationState.config.theatreCapacity[city].avgScreens + '</td></tr>';
-    }
-    html += '</tbody></table>';
+        (done ? '<p><strong>Completed:</strong> ' + (cur.timestamp ? new Date(cur.timestamp).toLocaleString() : 'N/A') + '</p>' : '');
     
     if (done) {
         html += '<div class="alert alert-success" style="margin-top:20px;"><h4>Month Completed</h4>' +
