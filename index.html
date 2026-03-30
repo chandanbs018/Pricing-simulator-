@@ -118,27 +118,7 @@
         .param-table th { background: #f3f4f6; padding: 12px 15px; text-align: left; font-weight: 600; color: #000; border-bottom: 1px solid var(--color-border); }
         .param-table td { padding: 12px 15px; border-bottom: 1px solid var(--color-border); }
         .param-table input { width: 100%; padding: 8px 10px; margin: 0; font-size: 0.95em; border-radius: 4px; border: 1px solid var(--color-border); }
-        .feature-badge { background: #2c3e50; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.7em; margin-left: 8px; }
-        .random-badge { background: #9b59b6; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.7em; font-weight: bold; margin-left: 8px; }
-        .fixed-badge { background: #27ae60; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.7em; font-weight: bold; margin-left: 8px; }
-        .competitor-table { background: #f9fafb; border: 1px solid #e5e7eb; }
-        .competitor-table td { color: #374151; }
-        .competitor-table td strong { color: #111827; }
-        .competitor-table th { background: #e5e7eb; color: #1f2937; }
-        .result-row { display: flex; justify-content: space-between; margin: 5px 0; font-size: 0.9em; }
-        .result-label { color: #6b7280; }
-        .result-value { font-weight: 600; }
-        #student-section { font-size: 0.95em; }
-        #student-section .status-card { background: var(--color-white); padding: 15px; border-radius: 8px; border: 1px solid var(--color-border); }
 
-        #toast-container { position: fixed; bottom: 28px; right: 28px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-        .toast { background: #2c3e50; color: #fff; padding: 13px 20px; border-radius: 6px; font-size: 0.9em; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.2); max-width: 360px; animation: toastIn 0.25s ease; border-left: 4px solid var(--color-primary); }
-        .toast.success { border-left-color: var(--color-success); }
-        .toast.danger  { border-left-color: var(--color-danger); }
-        .toast.warning { border-left-color: var(--color-warning); }
-        @keyframes toastIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
-
-        /* Dashboard header with progress bar in parallel */
         .dashboard-header {
             display: flex;
             justify-content: space-between;
@@ -263,7 +243,7 @@
                     </table>
                 </div>
                 <div class="card">
-                    <h4>Season Multipliers <span class="random-badge">randomized per month</span> <span class="fixed-badge">values fixed by admin</span></h4>
+                    <h4>Season Multipliers</h4>
                     <div class="grid-3">
                         <div><label>Normal</label><input type="number" id="season-normal" value="1.0" step="0.05"></div>
                         <div><label>Festive</label><input type="number" id="season-festive" value="1.25" step="0.05"></div>
@@ -272,7 +252,7 @@
                     </div>
                 </div>
                 <div class="card">
-                    <h4>Movie Segments <span class="random-badge">randomized per month</span> <span class="fixed-badge">values fixed by admin</span></h4>
+                    <h4>Movie Segments</h4>
                     <table class="param-table">
                         <thead><tr><th>Category</th><th>Segment Adjustment Factor</th></tr></thead>
                         <tbody>
@@ -292,7 +272,6 @@
                             <tr><td>Bengaluru</td><td><input type="number" id="cap-blr-screens" value="14" min="1" step="1"></td><td><input type="number" id="default-screens-blr" value="7" min="1" max="100" step="1"></td></tr>
                         </tbody>
                     </table>
-                    <p class="muted">Avg Screens = market benchmark used for capacity ratio. Default Allocation = pre-filled screen count shown to students each month.</p>
                 </div>
                 <div class="card">
                     <h4>Financial Parameters</h4>
@@ -304,7 +283,6 @@
                             <tr><td>Bengaluru</td><td><input type="number" id="cost-blr-var" value="5" step="1"></td><td><input type="number" id="cost-blr-seats" value="180" step="10"></td><td><input type="number" id="cost-blr-fixed" value="18" step="1"></td></tr>
                         </tbody>
                     </table>
-                    <p class="muted">Fixed cost = Screens x Seats per Screen x 30 days x Fixed Cost per Seat</p>
                 </div>
                 <div class="card">
                     <h4>Operational Calendar</h4>
@@ -336,7 +314,6 @@
                             <tr><td>>= -50 (you price much lower)</td><td>-30</td></tr>
                         </tbody>
                     </table>
-                    <p class="muted">Applied with random multiplier (0.5-1.0x) to next month's competitor price.</p>
                 </div>
                 <div class="card">
                     <h4>Create Months</h4>
@@ -393,7 +370,6 @@
             </div>
 
             <div id="dashboard-section" class="hidden">
-                <!-- Dashboard header with progress bar parallel to title -->
                 <div class="dashboard-header">
                     <h2>Executive Dashboard</h2>
                     <div class="progress-header-card">
@@ -408,7 +384,6 @@
                     </div>
                 </div>
 
-                <!-- KPI row -->
                 <div style="display:flex;gap:20px;margin-bottom:20px;align-items:flex-start;flex-wrap:wrap;">
                     <div class="simulation-status" style="flex:1;min-width:280px;margin:0;">
                         <div class="status-card"><h4>Total Months</h4><div class="status-value" id="dash-total-rounds">0</div></div>
@@ -458,7 +433,8 @@ function showToast(msg, type) {
     t.textContent = msg;
     tc.appendChild(t);
     setTimeout(function() {
-        t.style.opacity = '0'; t.style.transition = 'opacity 0.3s';
+        t.style.opacity = '0';
+        t.style.transition = 'opacity 0.3s';
         setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t); }, 300);
     }, 3000);
 }
@@ -467,8 +443,8 @@ var simulationState = {
     config: {
         logit: { lambda: -0.015, muBase: 40 },
         marketAssumptions: {
-            Mumbai:    { baseWeekday: 2200, baseWeekend: 4200 },
-            Delhi:     { baseWeekday: 2000, baseWeekend: 3900 },
+            Mumbai: { baseWeekday: 2200, baseWeekend: 4200 },
+            Delhi: { baseWeekday: 2000, baseWeekend: 3900 },
             Bengaluru: { baseWeekday: 1800, baseWeekend: 3600 }
         },
         seasonMultipliers: { Normal: 1.0, Festive: 1.25, Exam: 0.85, Monsoon: 0.9 },
@@ -476,15 +452,15 @@ var simulationState = {
         theatreCapacity: { Mumbai: { avgScreens: 20 }, Delhi: { avgScreens: 15 }, Bengaluru: { avgScreens: 14 } },
         defaultScreens: { Mumbai: 30, Delhi: 8, Bengaluru: 7 },
         financials: {
-            Mumbai:    { variableCost: 5, seatsPerScreen: 220, fixedCostPerSeat: 18 },
-            Delhi:     { variableCost: 5, seatsPerScreen: 200, fixedCostPerSeat: 18 },
+            Mumbai: { variableCost: 5, seatsPerScreen: 220, fixedCostPerSeat: 18 },
+            Delhi: { variableCost: 5, seatsPerScreen: 200, fixedCostPerSeat: 18 },
             Bengaluru: { variableCost: 5, seatsPerScreen: 180, fixedCostPerSeat: 18 }
         },
         operational: { weekdayDays: 22, weekendDays: 8 },
         competitorReaction: [
             { diff: -50, adjust: -30 }, { diff: -20, adjust: -10 },
-            { diff: 0,   adjust: 0   }, { diff: 20,  adjust: 10  },
-            { diff: 50,  adjust: 25  }
+            { diff: 0, adjust: 0 }, { diff: 20, adjust: 10 },
+            { diff: 50, adjust: 25 }
         ]
     },
     rounds: [], currentRoundIndex: 1, completedRounds: 0,
@@ -516,71 +492,74 @@ function loadFromLocalStorage() {
 function makeRound(i, compPrices) {
     var cp = compPrices || {
         Mumbai: { weekdayPrice: 240, weekendPrice: 270 },
-        Delhi:  { weekdayPrice: 240, weekendPrice: 300 },
+        Delhi: { weekdayPrice: 240, weekendPrice: 300 },
         Bengaluru: { weekdayPrice: 220, weekendPrice: 310 }
     };
     return {
         roundNumber: i, season: null, movieSegment: null,
         status: i === 1 ? 'active' : 'planned',
         competitors: {
-            Mumbai:    { weekdayPrice: cp.Mumbai.weekdayPrice,    weekendPrice: cp.Mumbai.weekendPrice    },
-            Delhi:     { weekdayPrice: cp.Delhi.weekdayPrice,     weekendPrice: cp.Delhi.weekendPrice     },
+            Mumbai: { weekdayPrice: cp.Mumbai.weekdayPrice, weekendPrice: cp.Mumbai.weekendPrice },
+            Delhi: { weekdayPrice: cp.Delhi.weekdayPrice, weekendPrice: cp.Delhi.weekendPrice },
             Bengaluru: { weekdayPrice: cp.Bengaluru.weekdayPrice, weekendPrice: cp.Bengaluru.weekendPrice }
         },
         studentDecisions: null, screenAllocations: null, results: null, timestamp: null
     };
 }
+
 function initializeSampleRounds() {
     simulationState.rounds = [];
     for (var i = 1; i <= 3; i++) simulationState.rounds.push(makeRound(i));
-    simulationState.currentRoundIndex = 1; simulationState.completedRounds = 0;
-    simulationState.totalProfit = 0; simulationState.performanceHistory = [];
+    simulationState.currentRoundIndex = 1;
+    simulationState.completedRounds = 0;
+    simulationState.totalProfit = 0;
+    simulationState.performanceHistory = [];
     simulationState.tempEvaluation = null;
     saveToLocalStorage();
 }
 
-function getVal(id, fb)    { var el = document.getElementById(id); if (!el) return fb; var v = parseFloat(el.value); return isNaN(v) ? fb : v; }
-function getIntVal(id, fb) { var el = document.getElementById(id); if (!el) return fb; var v = parseInt(el.value);   return isNaN(v) ? fb : v; }
-function pick(arr)         { return arr[Math.floor(Math.random() * arr.length)]; }
-function getRandomSeason()  { return pick(['Normal','Festive','Exam','Monsoon']); }
+function getVal(id, fb) { var el = document.getElementById(id); if (!el) return fb; var v = parseFloat(el.value); return isNaN(v) ? fb : v; }
+function getIntVal(id, fb) { var el = document.getElementById(id); if (!el) return fb; var v = parseInt(el.value); return isNaN(v) ? fb : v; }
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function getRandomSeason() { return pick(['Normal','Festive','Exam','Monsoon']); }
 function getRandomSegment() { return pick(['blockbuster','mainstream','niche']); }
 function fmtC(v) { return 'Rs' + Math.round(v).toLocaleString('en-IN'); }
 function fmtN(v) { return Math.round(v).toLocaleString('en-IN'); }
 
 function gatherConfigFromInputs() {
     var c = simulationState.config;
-    c.logit.lambda  = getVal('param-lambda', -0.015);
-    c.logit.muBase  = getVal('param-mu', 40);
-    c.marketAssumptions.Mumbai.baseWeekday    = getVal('param-mumbai-wd', 2200);
-    c.marketAssumptions.Mumbai.baseWeekend    = getVal('param-mumbai-we', 4200);
-    c.marketAssumptions.Delhi.baseWeekday     = getVal('param-delhi-wd',  2000);
-    c.marketAssumptions.Delhi.baseWeekend     = getVal('param-delhi-we',  3900);
-    c.marketAssumptions.Bengaluru.baseWeekday = getVal('param-blr-wd',    1800);
-    c.marketAssumptions.Bengaluru.baseWeekend = getVal('param-blr-we',    3600);
-    c.seasonMultipliers.Normal  = getVal('season-normal',   1.0);
-    c.seasonMultipliers.Festive = getVal('season-festive',  1.25);
-    c.seasonMultipliers.Exam    = getVal('season-exam',     0.85);
-    c.seasonMultipliers.Monsoon = getVal('season-monsoon',  0.9);
+    c.logit.lambda = getVal('param-lambda', -0.015);
+    c.logit.muBase = getVal('param-mu', 40);
+    c.marketAssumptions.Mumbai.baseWeekday = getVal('param-mumbai-wd', 2200);
+    c.marketAssumptions.Mumbai.baseWeekend = getVal('param-mumbai-we', 4200);
+    c.marketAssumptions.Delhi.baseWeekday = getVal('param-delhi-wd', 2000);
+    c.marketAssumptions.Delhi.baseWeekend = getVal('param-delhi-we', 3900);
+    c.marketAssumptions.Bengaluru.baseWeekday = getVal('param-blr-wd', 1800);
+    c.marketAssumptions.Bengaluru.baseWeekend = getVal('param-blr-we', 3600);
+    c.seasonMultipliers.Normal = getVal('season-normal', 1.0);
+    c.seasonMultipliers.Festive = getVal('season-festive', 1.25);
+    c.seasonMultipliers.Exam = getVal('season-exam', 0.85);
+    c.seasonMultipliers.Monsoon = getVal('season-monsoon', 0.9);
     c.movieSegments.blockbuster = getVal('segment-block-factor', 1.0375);
-    c.movieSegments.mainstream  = getVal('segment-main-factor',  1.01);
-    c.movieSegments.niche       = getVal('segment-niche-factor', 0.95);
-    c.financials.Mumbai.variableCost      = getVal('cost-mumbai-var',   5);
-    c.financials.Mumbai.seatsPerScreen    = getVal('cost-mumbai-seats', 220);
-    c.financials.Mumbai.fixedCostPerSeat  = getVal('cost-mumbai-fixed', 18);
-    c.financials.Delhi.variableCost       = getVal('cost-delhi-var',    5);
-    c.financials.Delhi.seatsPerScreen     = getVal('cost-delhi-seats',  200);
-    c.financials.Delhi.fixedCostPerSeat   = getVal('cost-delhi-fixed',  18);
-    c.financials.Bengaluru.variableCost     = getVal('cost-blr-var',   5);
-    c.financials.Bengaluru.seatsPerScreen   = getVal('cost-blr-seats', 180);
+    c.movieSegments.mainstream = getVal('segment-main-factor', 1.01);
+    c.movieSegments.niche = getVal('segment-niche-factor', 0.95);
+    c.financials.Mumbai.variableCost = getVal('cost-mumbai-var', 5);
+    c.financials.Mumbai.seatsPerScreen = getVal('cost-mumbai-seats', 220);
+    c.financials.Mumbai.fixedCostPerSeat = getVal('cost-mumbai-fixed', 18);
+    c.financials.Delhi.variableCost = getVal('cost-delhi-var', 5);
+    c.financials.Delhi.seatsPerScreen = getVal('cost-delhi-seats', 200);
+    c.financials.Delhi.fixedCostPerSeat = getVal('cost-delhi-fixed', 18);
+    c.financials.Bengaluru.variableCost = getVal('cost-blr-var', 5);
+    c.financials.Bengaluru.seatsPerScreen = getVal('cost-blr-seats', 180);
     c.financials.Bengaluru.fixedCostPerSeat = getVal('cost-blr-fixed', 18);
     c.operational.weekdayDays = getIntVal('weekday-days', 22);
     c.operational.weekendDays = getIntVal('weekend-days', 8);
     ['Mumbai','Delhi','Bengaluru'].forEach(function(city) {
         c.theatreCapacity[city].avgScreens = getVal('cap-' + cityIdMap[city] + '-screens', c.theatreCapacity[city].avgScreens);
     });
-    c.defaultScreens.Mumbai    = getIntVal('default-screens-mumbai', 30);
-    c.defaultScreens.Delhi     = getIntVal('default-screens-delhi',  8);
-    c.defaultScreens.Bengaluru = getIntVal('default-screens-blr',    7);
+    c.defaultScreens.Mumbai = getIntVal('default-screens-mumbai', 30);
+    c.defaultScreens.Delhi = getIntVal('default-screens-delhi', 8);
+    c.defaultScreens.Bengaluru = getIntVal('default-screens-blr', 7);
 }
 
 function getCompetitorAdjustment(priceDiff) {
@@ -595,13 +574,13 @@ function getCompetitorAdjustment(priceDiff) {
 function computeDemandForPeriod(lambda, muBase, segFactor, yourPrice, compPrice, baseDemand, screens, avgScreens, seasonMult) {
     lambda = -Math.abs(lambda);
     const mu = muBase;
-    const expYou  = Math.exp(lambda * yourPrice);
+    const expYou = Math.exp(lambda * yourPrice);
     const expComp = Math.exp(lambda * compPrice);
     const denominator = expYou + expComp + mu;
-    const shareYou  = expYou  / denominator;
+    const shareYou = expYou / denominator;
     const shareComp = expComp / denominator;
     const adjustedBase = baseDemand * seasonMult * segFactor;
-    const yourDemandRaw = shareYou  * adjustedBase;
+    const yourDemandRaw = shareYou * adjustedBase;
     const compDemandRaw = shareComp * adjustedBase;
     const capacityRatio = screens / avgScreens;
     const yourFinal = yourDemandRaw * capacityRatio;
@@ -611,13 +590,13 @@ function computeDemandForPeriod(lambda, muBase, segFactor, yourPrice, compPrice,
 }
 
 function simulateCity(city, season, segment, yourWD, yourWE, compWD, compWE, screensAlloc) {
-    var c       = simulationState.config;
-    var baseWD  = c.marketAssumptions[city].baseWeekday;
-    var baseWE  = c.marketAssumptions[city].baseWeekend;
-    var fin     = c.financials[city];
-    var lambda  = c.logit.lambda;
-    var muBase  = c.logit.muBase;
-    var segFactor  = c.movieSegments[segment]  || 1.0;
+    var c = simulationState.config;
+    var baseWD = c.marketAssumptions[city].baseWeekday;
+    var baseWE = c.marketAssumptions[city].baseWeekend;
+    var fin = c.financials[city];
+    var lambda = c.logit.lambda;
+    var muBase = c.logit.muBase;
+    var segFactor = c.movieSegments[segment] || 1.0;
     var seasonMult = c.seasonMultipliers[season] || 1.0;
     var avgScreens = c.theatreCapacity[city].avgScreens || 15;
     var wdDays = c.operational.weekdayDays;
@@ -626,79 +605,286 @@ function simulateCity(city, season, segment, yourWD, yourWE, compWD, compWE, scr
     var wdR = computeDemandForPeriod(lambda, muBase, segFactor, yourWD, compWD, baseWD, screensAlloc, avgScreens, seasonMult);
     var weR = computeDemandForPeriod(lambda, muBase, segFactor, yourWE, compWE, baseWE, screensAlloc, avgScreens, seasonMult);
 
-    var yourDemandWD    = wdR.yourFinal * wdDays;
-    var yourDemandWE    = weR.yourFinal * weDays;
+    var yourDemandWD = wdR.yourFinal * wdDays;
+    var yourDemandWE = weR.yourFinal * weDays;
     var totalYourDemand = yourDemandWD + yourDemandWE;
-    var compDemandWD    = wdR.compFinal * wdDays;
-    var compDemandWE    = weR.compFinal * weDays;
-    var lostSalesWD     = wdR.lostSales * wdDays;
-    var lostSalesWE     = weR.lostSales * weDays;
+    var compDemandWD = wdR.compFinal * wdDays;
+    var compDemandWE = weR.compFinal * weDays;
+    var lostSalesWD = wdR.lostSales * wdDays;
+    var lostSalesWE = weR.lostSales * weDays;
 
-    var revenue    = (yourDemandWD * yourWD) + (yourDemandWE * yourWE);
-    var varCost    = totalYourDemand * fin.variableCost;
-    var fixedCost  = screensAlloc * fin.seatsPerScreen * 30 * fin.fixedCostPerSeat;
-    var profit     = revenue - varCost - fixedCost;
-    var capRatio   = screensAlloc / avgScreens;
+    var revenue = (yourDemandWD * yourWD) + (yourDemandWE * yourWE);
+    var varCost = totalYourDemand * fin.variableCost;
+    var fixedCost = screensAlloc * fin.seatsPerScreen * 30 * fin.fixedCostPerSeat;
+    var profit = revenue - varCost - fixedCost;
+    var capRatio = screensAlloc / avgScreens;
 
     return {
-        yourDemand:      Math.round(totalYourDemand),
-        yourDemandWD:    Math.round(yourDemandWD),
-        yourDemandWE:    Math.round(yourDemandWE),
-        compDemandWD:    Math.round(compDemandWD),
-        compDemandWE:    Math.round(compDemandWE),
-        lostSalesWD:     Math.round(lostSalesWD),
-        lostSalesWE:     Math.round(lostSalesWE),
-        revenue:         revenue,
-        varCostTotal:    varCost,
-        fixedCostTotal:  fixedCost,
-        costTotal:       varCost + fixedCost,
-        profit:          profit,
-        capacityRatio:   capRatio,
-        studentScreens:  screensAlloc,
-        totalScreens:    avgScreens,
-        weekdayPrice:    yourWD,
-        weekendPrice:    yourWE,
+        yourDemand: Math.round(totalYourDemand),
+        yourDemandWD: Math.round(yourDemandWD),
+        yourDemandWE: Math.round(yourDemandWE),
+        compDemandWD: Math.round(compDemandWD),
+        compDemandWE: Math.round(compDemandWE),
+        lostSalesWD: Math.round(lostSalesWD),
+        lostSalesWE: Math.round(lostSalesWE),
+        revenue: revenue,
+        varCostTotal: varCost,
+        fixedCostTotal: fixedCost,
+        costTotal: varCost + fixedCost,
+        profit: profit,
+        capacityRatio: capRatio,
+        studentScreens: screensAlloc,
+        totalScreens: avgScreens,
+        weekdayPrice: yourWD,
+        weekendPrice: yourWE,
         competitorWeekdayBase: compWD,
         competitorWeekendBase: compWE,
         contributionMargin: revenue > 0 ? ((revenue - varCost) / revenue) * 100 : 0,
-        netMargin:          revenue > 0 ? (profit / revenue) * 100 : 0,
-        weekdayRevenue:  yourDemandWD * yourWD,
-        weekendRevenue:  yourDemandWE * yourWE
+        netMargin: revenue > 0 ? (profit / revenue) * 100 : 0,
+        weekdayRevenue: yourDemandWD * yourWD,
+        weekendRevenue: yourDemandWE * yourWE
     };
 }
 
 function simulateRound(roundIdx, decisions, screens) {
-    var round   = simulationState.rounds[roundIdx];
-    var season  = round.season;
+    var round = simulationState.rounds[roundIdx];
+    var season = round.season;
     var segment = round.movieSegment;
     var cityRes = {};
-    var totalP  = 0;
+    var totalP = 0;
     ['Mumbai','Delhi','Bengaluru'].forEach(function(city) {
         var compWD = round.competitors[city].weekdayPrice;
         var compWE = round.competitors[city].weekendPrice;
-        var scr    = screens[city];
-        var res    = simulateCity(city, season, segment,
-                        decisions[city].weekday, decisions[city].weekend,
-                        compWD, compWE, scr);
+        var scr = screens[city];
+        var res = simulateCity(city, season, segment,
+            decisions[city].weekday, decisions[city].weekend,
+            compWD, compWE, scr);
         cityRes[city] = res;
         totalP += res.profit;
     });
     return { cityResults: cityRes, totalProfit: totalP };
 }
 
-function buildDashboardTable(displayRounds, tab) { /* same as before, omitted for brevity but fully functional */ return ''; }
-function destroyCityCharts() { ['Mumbai','Delhi','Bengaluru'].forEach(function(c) { var k = '_chart_demandChart' + c; if (window[k]) { window[k].destroy(); window[k] = null; } }); }
-function renderTabCharts(displayRounds, tab) { /* same as before, omitted */ }
+function buildDashboardTable(displayRounds, tab) {
+    var cities = ['Mumbai','Delhi','Bengaluru'];
+    var html = '';
+    if (tab === 'pricing') {
+        html += '<table class="metrics-table"><thead><tr><th>Month</th><th>Season / Segment</th><th>City</th><th>Your WD (Rs)</th><th>Your WE (Rs)</th><th>Comp WD (Rs)</th><th>Comp WE (Rs)</th><th>Screens / Avg</th></tr></thead><tbody>';
+        displayRounds.forEach(function(round) {
+            var prev = round.isPreview ? ' <span class="preview-badge">Preview</span>' : '';
+            cities.forEach(function(city, ci) {
+                var cr = round.results.cityResults[city];
+                html += '<tr>';
+                if (ci === 0) {
+                    html += '<td rowspan="3" style="vertical-align:middle;font-weight:600;background:#f8fafc;">Month ' + round.roundNumber + prev + '</td>';
+                    html += '<td rowspan="3" style="vertical-align:middle;color:#6b7280;background:#f8fafc;">' + round.season + ' / ' + round.movieSegment + '</td>';
+                }
+                html += '<td><strong>' + city + '</strong></td>';
+                html += '<td>Rs' + cr.weekdayPrice + '</td>';
+                html += '<td>Rs' + cr.weekendPrice + '</td>';
+                html += '<td>Rs' + cr.competitorWeekdayBase + '</td>';
+                html += '<td>Rs' + cr.competitorWeekendBase + '</td>';
+                html += '<td>' + cr.studentScreens + ' / ' + cr.totalScreens + '</td>';
+                html += '</tr>';
+            });
+        });
+        html += '</tbody></table>';
+    } else if (tab === 'demand') {
+        html += '<table class="metrics-table"><thead><tr><th>Month</th><th>Season / Segment</th><th>City</th><th>Your WD Demand</th><th>Competitor WD</th><th>Lost Sales WD</th><th>Your WE Demand</th><th>Competitor WE</th><th>Lost Sales WE</th></tr></thead><tbody>';
+        displayRounds.forEach(function(round) {
+            var prev = round.isPreview ? ' <span class="preview-badge">Preview</span>' : '';
+            cities.forEach(function(city, ci) {
+                var cr = round.results.cityResults[city];
+                html += '<tr>';
+                if (ci === 0) {
+                    html += '<td rowspan="3" style="vertical-align:middle;font-weight:600;background:#f8fafc;">Month ' + round.roundNumber + prev + '</td>';
+                    html += '<td rowspan="3" style="vertical-align:middle;color:#6b7280;background:#f8fafc;">' + round.season + ' / ' + round.movieSegment + '</td>';
+                }
+                html += '<td><strong>' + city + '</strong></td>';
+                html += '<td>' + fmtN(cr.yourDemandWD) + '</td>';
+                html += '<td>' + fmtN(cr.compDemandWD) + '</td>';
+                html += '<td class="' + (cr.lostSalesWD > 0 ? 'metric-value-negative' : '') + '">' + fmtN(cr.lostSalesWD) + '</td>';
+                html += '<td>' + fmtN(cr.yourDemandWE) + '</td>';
+                html += '<td>' + fmtN(cr.compDemandWE) + '</td>';
+                html += '<td class="' + (cr.lostSalesWE > 0 ? 'metric-value-negative' : '') + '">' + fmtN(cr.lostSalesWE) + '</td>';
+                html += '</tr>';
+            });
+        });
+        html += '</tbody></table>';
+    } else if (tab === 'utilization') {
+        html += '<table class="metrics-table"><thead><tr><th>Month</th><th>Season / Segment</th><th>City</th><th>Screens Allocated</th><th>Avg Screens</th><th>Capacity Ratio</th><th>Utilization</th></tr></thead><tbody>';
+        displayRounds.forEach(function(round) {
+            var prev = round.isPreview ? ' <span class="preview-badge">Preview</span>' : '';
+            cities.forEach(function(city, ci) {
+                var cr = round.results.cityResults[city];
+                var pct = cr.capacityRatio * 100;
+                var cls = pct >= 80 ? 'metric-value-positive' : pct >= 50 ? '' : 'metric-value-negative';
+                html += '<tr>';
+                if (ci === 0) {
+                    html += '<td rowspan="3" style="vertical-align:middle;font-weight:600;background:#f8fafc;">Month ' + round.roundNumber + prev + '</td>';
+                    html += '<td rowspan="3" style="vertical-align:middle;color:#6b7280;background:#f8fafc;">' + round.season + ' / ' + round.movieSegment + '</td>';
+                }
+                html += '<td><strong>' + city + '</strong></td>';
+                html += '<td>' + cr.studentScreens + '</td>';
+                html += '<td>' + cr.totalScreens + '</td>';
+                html += '<td>' + cr.capacityRatio.toFixed(2) + '</td>';
+                html += '<td><span class="' + cls + '">' + pct.toFixed(1) + '%</span></td>';
+                html += '</tr>';
+            });
+        });
+        html += '</tbody></table>';
+    } else if (tab === 'revenue') {
+        html += '<table class="metrics-table"><thead><tr><th>Month</th><th>Season / Segment</th><th>City</th><th>WD Revenue (Rs)</th><th>WE Revenue (Rs)</th><th>Total Revenue (Rs)</th></tr></thead><tbody>';
+        displayRounds.forEach(function(round) {
+            var prev = round.isPreview ? ' <span class="preview-badge">Preview</span>' : '';
+            cities.forEach(function(city, ci) {
+                var cr = round.results.cityResults[city];
+                html += '<tr>';
+                if (ci === 0) {
+                    html += '<td rowspan="3" style="vertical-align:middle;font-weight:600;background:#f8fafc;">Month ' + round.roundNumber + prev + '</td>';
+                    html += '<td rowspan="3" style="vertical-align:middle;color:#6b7280;background:#f8fafc;">' + round.season + ' / ' + round.movieSegment + '</td>';
+                }
+                html += '<td><strong>' + city + '</strong></td>';
+                html += '<td>' + fmtC(cr.weekdayRevenue) + '</td>';
+                html += '<td>' + fmtC(cr.weekendRevenue) + '</td>';
+                html += '<td class="metric-value-positive">' + fmtC(cr.revenue) + '</td>';
+                html += '</tr>';
+            });
+        });
+        html += '</tbody></table>';
+    } else if (tab === 'costs') {
+        html += '<table class="metrics-table"><thead><tr><th>Month</th><th>Season / Segment</th><th>City</th><th>Variable Cost (Rs)</th><th>Fixed Cost (Rs)</th><th>Total Cost (Rs)</th><th>Cost/Ticket (Rs)</th></tr></thead><tbody>';
+        displayRounds.forEach(function(round) {
+            var prev = round.isPreview ? ' <span class="preview-badge">Preview</span>' : '';
+            cities.forEach(function(city, ci) {
+                var cr = round.results.cityResults[city];
+                var cpt = cr.yourDemand > 0 ? cr.costTotal / cr.yourDemand : 0;
+                html += '<tr>';
+                if (ci === 0) {
+                    html += '<td rowspan="3" style="vertical-align:middle;font-weight:600;background:#f8fafc;">Month ' + round.roundNumber + prev + '</td>';
+                    html += '<td rowspan="3" style="vertical-align:middle;color:#6b7280;background:#f8fafc;">' + round.season + ' / ' + round.movieSegment + '</td>';
+                }
+                html += '<td><strong>' + city + '</strong></td>';
+                html += '<td>' + fmtC(cr.varCostTotal) + '</td>';
+                html += '<td>' + fmtC(cr.fixedCostTotal) + '</td>';
+                html += '<td>' + fmtC(cr.costTotal) + '</td>';
+                html += '<td>Rs' + cpt.toFixed(0) + '</td>';
+                html += '</tr>';
+            });
+        });
+        html += '</tbody></table>';
+    } else {
+        html += '<table class="metrics-table"><thead><tr><th>Month</th><th>Season / Segment</th><th>City</th><th>Revenue (Rs)</th><th>Total Cost (Rs)</th><th>Profit (Rs)</th><th>Net Margin</th></tr></thead><tbody>';
+        displayRounds.forEach(function(round) {
+            var prev = round.isPreview ? ' <span class="preview-badge">Preview</span>' : '';
+            cities.forEach(function(city, ci) {
+                var cr = round.results.cityResults[city];
+                var pC = cr.profit >= 0 ? 'metric-value-positive' : 'metric-value-negative';
+                var nC = cr.netMargin >= 20 ? 'metric-value-positive' : cr.netMargin >= 0 ? '' : 'metric-value-negative';
+                html += '<tr>';
+                if (ci === 0) {
+                    html += '<td rowspan="3" style="vertical-align:middle;font-weight:600;background:#f8fafc;">Month ' + round.roundNumber + prev + '</td>';
+                    html += '<td rowspan="3" style="vertical-align:middle;color:#6b7280;background:#f8fafc;">' + round.season + ' / ' + round.movieSegment + '</td>';
+                }
+                html += '<td><strong>' + city + '</strong></td>';
+                html += '<td>' + fmtC(cr.revenue) + '</td>';
+                html += '<td>' + fmtC(cr.costTotal) + '</td>';
+                html += '<td><span class="' + pC + '">' + fmtC(cr.profit) + '</span></td>';
+                html += '<td><span class="' + nC + '">' + (cr.netMargin || 0).toFixed(1) + '%</span></td>';
+                html += '</tr>';
+            });
+        });
+        html += '</tbody></table>';
+    }
+    return html;
+}
+
+function destroyCityCharts() {
+    ['Mumbai','Delhi','Bengaluru'].forEach(function(c) {
+        var k = '_chart_demandChart' + c;
+        if (window[k]) { window[k].destroy(); window[k] = null; }
+    });
+}
+
+function renderTabCharts(displayRounds, tab) {
+    destroyCityCharts();
+    var cityConfigs = [
+        { city: 'Mumbai', id: 'demandChartMumbai', color: '#1f77b4', color2: '#aec7e8', color3: '#ff9896' },
+        { city: 'Delhi', id: 'demandChartDelhi', color: '#ff7f0e', color2: '#ffbb78', color3: '#98df8a' },
+        { city: 'Bengaluru', id: 'demandChartBengaluru', color: '#2ca02c', color2: '#c5b0d5', color3: '#c49c94' }
+    ];
+    var labels = displayRounds.map(function(r) { return 'M' + r.roundNumber + (r.isPreview ? ' (P)' : ''); });
+    cityConfigs.forEach(function(cfg) {
+        var ctx = document.getElementById(cfg.id);
+        if (!ctx) return;
+        var datasets = [];
+        if (tab === 'demand') {
+            datasets = [
+                { label: 'Your WD', data: displayRounds.map(function(r) { return r.results.cityResults[cfg.city].yourDemandWD; }), backgroundColor: cfg.color, borderRadius: 4, order: 2 },
+                { label: 'Your WE', data: displayRounds.map(function(r) { return r.results.cityResults[cfg.city].yourDemandWE; }), backgroundColor: cfg.color2, borderRadius: 4, order: 2 },
+                { label: 'Lost WD', data: displayRounds.map(function(r) { return Math.max(0, r.results.cityResults[cfg.city].lostSalesWD); }), backgroundColor: 'rgba(231,76,60,0.6)', borderRadius: 4, order: 2 },
+                { label: 'Total (line)', data: displayRounds.map(function(r) { return r.results.cityResults[cfg.city].yourDemand; }), type: 'line', borderColor: '#2c3e50', backgroundColor: 'transparent', borderWidth: 2.5, pointBackgroundColor: '#2c3e50', pointRadius: 5, tension: 0.35, order: 1 }
+            ];
+        } else if (tab === 'pricing') {
+            datasets = [
+                { label: 'Your WD Price', data: displayRounds.map(function(r) { return r.results.cityResults[cfg.city].weekdayPrice; }), backgroundColor: cfg.color, borderRadius: 4, order: 2 },
+                { label: 'Your WE Price', data: displayRounds.map(function(r) { return r.results.cityResults[cfg.city].weekendPrice; }), backgroundColor: cfg.color2, borderRadius: 4, order: 2 },
+                { label: 'Comp WD (line)', data: displayRounds.map(function(r) { return r.results.cityResults[cfg.city].competitorWeekdayBase; }), type: 'line', borderColor: cfg.color3, backgroundColor: 'transparent', borderWidth: 2, borderDash: [5,5], pointRadius: 4, tension: 0.35, order: 1 }
+            ];
+        } else if (tab === 'utilization') {
+            datasets = [{ label: 'Capacity %', data: displayRounds.map(function(r) { return (r.results.cityResults[cfg.city].capacityRatio * 100); }), backgroundColor: cfg.color, borderRadius: 4, order: 2 }];
+        } else if (tab === 'revenue') {
+            datasets = [
+                { label: 'WD Revenue', data: displayRounds.map(function(r) { return r.results.cityResults[cfg.city].weekdayRevenue; }), backgroundColor: cfg.color, borderRadius: 4, order: 2 },
+                { label: 'WE Revenue', data: displayRounds.map(function(r) { return r.results.cityResults[cfg.city].weekendRevenue; }), backgroundColor: cfg.color2, borderRadius: 4, order: 2 }
+            ];
+        } else if (tab === 'costs') {
+            datasets = [
+                { label: 'Variable Cost', data: displayRounds.map(function(r) { return r.results.cityResults[cfg.city].varCostTotal; }), backgroundColor: cfg.color, borderRadius: 4, order: 2 },
+                { label: 'Fixed Cost', data: displayRounds.map(function(r) { return r.results.cityResults[cfg.city].fixedCostTotal; }), backgroundColor: cfg.color2, borderRadius: 4, order: 2 }
+            ];
+        } else {
+            datasets = [
+                { label: 'Revenue', data: displayRounds.map(function(r) { return r.results.cityResults[cfg.city].revenue; }), backgroundColor: cfg.color2, borderRadius: 4, order: 2 },
+                { label: 'Cost', data: displayRounds.map(function(r) { return r.results.cityResults[cfg.city].costTotal; }), backgroundColor: 'rgba(231,76,60,0.55)', borderRadius: 4, order: 2 },
+                { label: 'Profit (line)', data: displayRounds.map(function(r) { return r.results.cityResults[cfg.city].profit; }), type: 'line', borderColor: cfg.color, backgroundColor: 'transparent', borderWidth: 2.5, pointBackgroundColor: cfg.color, pointRadius: 5, tension: 0.35, order: 1 }
+            ];
+        }
+        var allVals = [];
+        datasets.forEach(function(ds) { if (ds.type !== 'line') allVals = allVals.concat(ds.data); });
+        var maxVal = allVals.length ? Math.max.apply(null, allVals) : 100;
+        var minVal = allVals.length ? Math.min.apply(null, allVals) : 0;
+        var yMin = minVal >= 0 ? 0 : minVal * 1.15;
+        var yMax = maxVal * 1.25;
+        if (yMax === 0) yMax = 100;
+        window['_chart_' + cfg.id] = new Chart(ctx, {
+            type: 'bar',
+            data: { labels: labels, datasets: datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 }, padding: 8 } },
+                    tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': ' + (typeof c.parsed.y === 'number' ? c.parsed.y.toLocaleString('en-IN') : c.parsed.y); } } }
+                },
+                scales: {
+                    x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+                    y: { min: yMin, max: yMax, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 11 }, callback: function(v) { return v.toLocaleString('en-IN'); } } }
+                }
+            }
+        });
+    });
+}
 
 function updateDashboardSection() {
     var _dAvg = simulationState.completedRounds > 0 ? Math.round(simulationState.totalProfit / simulationState.completedRounds) : 0;
     var _el = function(id, val) { var e = document.getElementById(id); if(e) e.textContent = val; };
-    _el('dash-total-rounds',     simulationState.rounds.length);
+    _el('dash-total-rounds', simulationState.rounds.length);
     _el('dash-completed-rounds', simulationState.completedRounds);
-    _el('dash-total-profit',     fmtC(simulationState.totalProfit));
-    _el('dash-avg-profit',       fmtC(_dAvg));
+    _el('dash-total-profit', fmtC(simulationState.totalProfit));
+    _el('dash-avg-profit', fmtC(_dAvg));
     
-    // Update header progress bar
     var total = simulationState.rounds.length;
     var completed = simulationState.completedRounds;
     var pct = total > 0 ? Math.round((completed / total) * 100) : 0;
@@ -714,9 +900,17 @@ function updateDashboardSection() {
     var completedRounds = simulationState.rounds.filter(function(r) { return r.results !== null; });
     var displayRounds = [];
     completedRounds.forEach(function(r) { displayRounds.push({ roundNumber: r.roundNumber, season: r.season, movieSegment: r.movieSegment, results: r.results, isPreview: false }); });
-    if (simulationState.tempEvaluation) { var tr = simulationState.rounds[simulationState.tempEvaluation.roundNumber - 1]; if (tr) displayRounds.push({ roundNumber: simulationState.tempEvaluation.roundNumber, season: tr.season, movieSegment: tr.movieSegment, results: simulationState.tempEvaluation.results, isPreview: true }); }
+    if (simulationState.tempEvaluation) {
+        var tr = simulationState.rounds[simulationState.tempEvaluation.roundNumber - 1];
+        if (tr) displayRounds.push({ roundNumber: simulationState.tempEvaluation.roundNumber, season: tr.season, movieSegment: tr.movieSegment, results: simulationState.tempEvaluation.results, isPreview: true });
+    }
     displayRounds.sort(function(a, b) { return a.roundNumber - b.roundNumber; });
-    if (!displayRounds.length) { container.innerHTML = '<div class="no-data-message">No months to display yet. Submit or Evaluate a month to see results here.</div>'; if (chartWrap) chartWrap.classList.add('hidden'); destroyCityCharts(); return; }
+    if (!displayRounds.length) {
+        container.innerHTML = '<div class="no-data-message">No months to display yet. Submit or Evaluate a month to see results here.</div>';
+        if (chartWrap) chartWrap.classList.add('hidden');
+        destroyCityCharts();
+        return;
+    }
     var tab = simulationState.currentMetricTab;
     container.innerHTML = buildDashboardTable(displayRounds, tab);
     if (chartWrap) chartWrap.classList.remove('hidden');
@@ -729,63 +923,431 @@ function updateProgressSection() {
     var ph = simulationState.performanceHistory;
     if (sumEl) {
         if (ph.length > 0) {
-            var best  = ph.reduce(function(b, r) { return r.profit > b.profit ? r : b; }, { profit: -Infinity, round: 0 });
-            var worst = ph.reduce(function(w, r) { return r.profit < w.profit ? r : w; }, { profit:  Infinity, round: 0 });
+            var best = ph.reduce(function(b, r) { return r.profit > b.profit ? r : b; }, { profit: -Infinity, round: 0 });
+            var worst = ph.reduce(function(w, r) { return r.profit < w.profit ? r : w; }, { profit: Infinity, round: 0 });
             sumEl.innerHTML = '<div class="result-row"><span class="result-label">Avg profit / month:</span><span class="result-value">' + fmtC(simulationState.completedRounds > 0 ? Math.round(simulationState.totalProfit / simulationState.completedRounds) : 0) + '</span></div><div class="result-row"><span class="result-label">Best month:</span><span class="result-value">Month ' + best.round + ' (' + fmtC(best.profit) + ')</span></div><div class="result-row"><span class="result-label">Worst month:</span><span class="result-value">Month ' + worst.round + ' (' + fmtC(worst.profit) + ')</span></div><div class="result-row"><span class="result-label">Completion:</span><span class="result-value">' + pct + '%</span></div>';
-        } else { sumEl.innerHTML = '<p class="muted">Complete months to see your performance summary.</p>'; }
+        } else {
+            sumEl.innerHTML = '<p class="muted">Complete months to see your performance summary.</p>';
+        }
     }
 }
 
-function renderRoundConfig() { /* same */ }
-function renderRoundPreview() { /* same */ }
-function syncAdminInputs() { /* same */ }
-function readPricesAndScreens(rn) { /* same */ }
-window.createRounds = function() { gatherConfigFromInputs(); var n = getIntVal('rounds', 3); var compPrices = { Mumbai: { weekdayPrice: getVal('default-comp-mumbai-wd', 240), weekendPrice: getVal('default-comp-mumbai-we', 340) }, Delhi: { weekdayPrice: getVal('default-comp-delhi-wd', 210), weekendPrice: getVal('default-comp-delhi-we', 310) }, Bengaluru: { weekdayPrice: getVal('default-comp-blr-wd', 190), weekendPrice: getVal('default-comp-blr-we', 290) } }; simulationState.rounds = []; for (var i = 1; i <= n; i++) simulationState.rounds.push(makeRound(i, compPrices)); simulationState.currentRoundIndex = 1; simulationState.completedRounds = 0; simulationState.totalProfit = 0; simulationState.performanceHistory = []; simulationState.tempEvaluation = null; editingRoundIndex = null; renderRoundConfig(); renderRoundPreview(); saveToLocalStorage(); showToast('Created ' + n + ' months.', 'success'); updateDashboardSection(); updateProgressSection(); };
-window.deleteAllRounds = function() { simulationState.rounds = []; simulationState.currentRoundIndex = 1; simulationState.completedRounds = 0; simulationState.totalProfit = 0; simulationState.performanceHistory = []; simulationState.tempEvaluation = null; editingRoundIndex = null; renderRoundConfig(); renderRoundPreview(); saveToLocalStorage(); showToast('All months deleted.', 'danger'); updateDashboardSection(); updateProgressSection(); };
-window.editRoundConfig = function(i) { editingRoundIndex = i; var r = simulationState.rounds[i]; document.getElementById('editing-round-number').textContent = r.roundNumber; document.getElementById('edit-status').value = r.status; document.getElementById('edit-mumbaiWeekday').value = r.competitors.Mumbai.weekdayPrice; document.getElementById('edit-mumbaiWeekend').value = r.competitors.Mumbai.weekendPrice; document.getElementById('edit-delhiWeekday').value = r.competitors.Delhi.weekdayPrice; document.getElementById('edit-delhiWeekend').value = r.competitors.Delhi.weekendPrice; document.getElementById('edit-blrWeekday').value = r.competitors.Bengaluru.weekdayPrice; document.getElementById('edit-blrWeekend').value = r.competitors.Bengaluru.weekendPrice; document.getElementById('round-detail-editor').classList.remove('hidden'); document.querySelectorAll('.round-config-card').forEach(function(c) { c.classList.remove('active'); }); var card = document.getElementById('round-card-' + i); if (card) card.classList.add('active'); };
-window.saveRoundConfig = function() { if (editingRoundIndex === null) return; var r = simulationState.rounds[editingRoundIndex]; r.status = document.getElementById('edit-status').value; r.competitors.Mumbai.weekdayPrice = parseFloat(document.getElementById('edit-mumbaiWeekday').value) || 240; r.competitors.Mumbai.weekendPrice = parseFloat(document.getElementById('edit-mumbaiWeekend').value) || 270; r.competitors.Delhi.weekdayPrice = parseFloat(document.getElementById('edit-delhiWeekday').value) || 240; r.competitors.Delhi.weekendPrice = parseFloat(document.getElementById('edit-delhiWeekend').value) || 300; r.competitors.Bengaluru.weekdayPrice = parseFloat(document.getElementById('edit-blrWeekday').value) || 220; r.competitors.Bengaluru.weekendPrice = parseFloat(document.getElementById('edit-blrWeekend').value) || 310; renderRoundConfig(); renderRoundPreview(); window.cancelEdit(); saveToLocalStorage(); showToast('Month saved.', 'success'); updateDashboardSection(); };
-window.cancelEdit = function() { editingRoundIndex = null; document.getElementById('round-detail-editor').classList.add('hidden'); document.querySelectorAll('.round-config-card').forEach(function(c) { c.classList.remove('active'); }); };
-window.deleteRound = function() { if (editingRoundIndex !== null) window.deleteSingleRound(editingRoundIndex); };
-window.deleteSingleRound = function(i) { simulationState.rounds.splice(i, 1); simulationState.rounds.forEach(function(r, idx) { r.roundNumber = idx + 1; }); if (simulationState.currentRoundIndex > simulationState.rounds.length) simulationState.currentRoundIndex = Math.max(1, simulationState.rounds.length); simulationState.completedRounds = simulationState.rounds.filter(function(r) { return r.results; }).length; simulationState.totalProfit = simulationState.rounds.reduce(function(s, r) { return s + (r.results ? r.results.totalProfit : 0); }, 0); simulationState.performanceHistory = simulationState.rounds.filter(function(r) { return r.results; }).map(function(r) { return { round: r.roundNumber, profit: r.results.totalProfit }; }); simulationState.tempEvaluation = null; editingRoundIndex = null; document.getElementById('round-detail-editor').classList.add('hidden'); renderRoundConfig(); renderRoundPreview(); saveToLocalStorage(); showToast('Month deleted.', 'danger'); updateDashboardSection(); updateProgressSection(); };
-window.applyCompetitorPricesToAll = function() { if (editingRoundIndex === null) return; var src = simulationState.rounds[editingRoundIndex]; simulationState.rounds.forEach(function(r) { r.competitors = JSON.parse(JSON.stringify(src.competitors)); }); renderRoundConfig(); renderRoundPreview(); saveToLocalStorage(); showToast('Competitor prices applied to all months.', 'success'); updateDashboardSection(); };
-window.selectStudentRound = function(rn) { var prev = simulationState.rounds.filter(function(r) { return r.roundNumber === rn - 1; })[0]; if (rn > 1 && prev && !prev.results) { showToast('Complete the previous month first.', 'warning'); return; } simulationState.currentRoundIndex = rn; loadStudentRound(); };
-window.nextStudentRound = function() { if (simulationState.currentRoundIndex >= simulationState.rounds.length) return; var cur = simulationState.rounds.filter(function(r) { return r.roundNumber === simulationState.currentRoundIndex; })[0]; if (!cur || !cur.results) { showToast('Complete current month first.', 'warning'); return; } simulationState.currentRoundIndex++; loadStudentRound(); };
-window.prevStudentRound = function() { if (simulationState.currentRoundIndex > 1) { simulationState.currentRoundIndex--; loadStudentRound(); } };
-window.resetStudentProgress = function() { simulationState.rounds.forEach(function(r, i) { r.studentDecisions = r.screenAllocations = r.results = r.timestamp = r.season = r.movieSegment = null; r.status = i === 0 ? 'active' : 'planned'; }); simulationState.currentRoundIndex = 1; simulationState.completedRounds = 0; simulationState.totalProfit = 0; simulationState.performanceHistory = []; simulationState.tempEvaluation = null; saveToLocalStorage(); loadStudentRound(); setTimeout(updateDashboardSection, 100); updateProgressSection(); showToast('Progress reset.', 'success'); };
-window.evaluateRound = function(rn) { var parsed = readPricesAndScreens(rn); if (parsed.errs.length) { showToast(parsed.errs[0], 'warning'); return; } var result = simulateRound(rn - 1, parsed.prices, parsed.screens); simulationState.tempEvaluation = { roundNumber: rn, results: result }; setTimeout(updateDashboardSection, 100); switchModule('dashboard'); showToast('Evaluation done - see Dashboard (Preview)', 'success'); };
-window.submitRoundPrices = function(rn) { var idx = rn - 1; var round = simulationState.rounds[idx]; var parsed = readPricesAndScreens(rn); if (parsed.errs.length) { showToast(parsed.errs[0], 'warning'); return; } var result = simulateRound(idx, parsed.prices, parsed.screens); round.studentDecisions = parsed.prices; round.screenAllocations = parsed.screens; round.results = result; round.timestamp = new Date().toISOString(); round.status = 'completed'; simulationState.completedRounds++; simulationState.totalProfit += result.totalProfit; simulationState.performanceHistory.push({ round: rn, profit: result.totalProfit }); if (idx + 1 < simulationState.rounds.length) { var nextRound = simulationState.rounds[idx + 1]; ['Mumbai','Delhi','Bengaluru'].forEach(function(city) { var diffWD = parsed.prices[city].weekday - round.competitors[city].weekdayPrice; nextRound.competitors[city].weekdayPrice = Math.max(50, Math.min(1000, Math.round(round.competitors[city].weekdayPrice + getCompetitorAdjustment(diffWD)))); var diffWE = parsed.prices[city].weekend - round.competitors[city].weekendPrice; nextRound.competitors[city].weekendPrice = Math.max(50, Math.min(1000, Math.round(round.competitors[city].weekendPrice + getCompetitorAdjustment(diffWE)))); }); simulationState.rounds[idx + 1].status = 'active'; } if (simulationState.tempEvaluation && simulationState.tempEvaluation.roundNumber === rn) simulationState.tempEvaluation = null; saveToLocalStorage(); loadStudentRound(); setTimeout(updateDashboardSection, 100); updateProgressSection(); showToast('Month ' + rn + ' done! Profit: ' + fmtC(result.totalProfit), 'success'); };
-window.switchMetricTab = function(event, tabId) { simulationState.currentMetricTab = tabId; document.querySelectorAll('.metric-tab').forEach(function(t) { t.classList.remove('active'); }); event.target.classList.add('active'); setTimeout(updateDashboardSection, 50); };
-window.switchModule = function(module) { document.querySelectorAll('[id$="-section"]').forEach(function(el) { el.classList.add('hidden'); }); document.getElementById(module + '-section').classList.remove('hidden'); document.querySelectorAll('.nav-item').forEach(function(el) { el.classList.remove('active'); if ((el.getAttribute('onclick') || '').indexOf("'" + module + "'") !== -1) el.classList.add('active'); }); if (module === 'student') loadStudentRound(); if (module === 'dashboard') { updateProgressSection(); var cur = simulationState.currentMetricTab; document.querySelectorAll('.metric-tab').forEach(function(t) { t.classList.toggle('active', (t.getAttribute('onclick') || '').indexOf("'" + cur + "'") !== -1); }); setTimeout(updateDashboardSection, 100); } if (module === 'instructor') { syncAdminInputs(); renderRoundConfig(); renderRoundPreview(); } };
+function renderRoundConfig() {
+    var c = document.getElementById('round-config-container');
+    var rc = document.getElementById('round-count');
+    if (!c) return;
+    if (rc) rc.textContent = simulationState.rounds.length;
+    if (!simulationState.rounds.length) {
+        c.innerHTML = '<p class="muted" style="text-align:center;padding:20px;">No months yet. Click "Create Months".</p>';
+        return;
+    }
+    c.innerHTML = simulationState.rounds.map(function(r, i) {
+        return '<div class="round-config-card ' + (editingRoundIndex === i ? 'active' : '') + '" id="round-card-' + i + '" onclick="editRoundConfig(' + i + ')">' +
+            '<div class="round-config-header"><div class="round-number-badge">Month ' + r.roundNumber + '</div>' +
+            '<div><span class="round-status-indicator status-' + r.status + '"></span><span style="font-size:0.8em;text-transform:capitalize;">' + r.status + '</span></div></div>' +
+            '<div class="round-summary"><p><strong>Competitor Prices Set</strong></p>' +
+            (r.results ? '<p><strong>Profit:</strong> ' + fmtC(r.results.totalProfit) + '</p>' : '') + '</div></div>';
+    }).join('');
+}
+
+function renderRoundPreview() {
+    var c = document.getElementById('round-preview-container');
+    if (!c) return;
+    if (!simulationState.rounds.length) {
+        c.innerHTML = '<p class="muted" style="text-align:center;padding:20px;">No months created yet.</p>';
+        return;
+    }
+    c.innerHTML = simulationState.rounds.map(function(r, i) {
+        return '<div class="round-preview"><div class="round-preview-number">' + r.roundNumber + '</div>' +
+            '<div class="round-preview-details"><h4 style="margin:0 0 5px;">Month ' + r.roundNumber + '</h4>' +
+            '<p style="margin:0;color:#6b7280;font-size:0.9em;">Status: <span style="text-transform:capitalize;">' + r.status + '</span>' +
+            (r.results ? ' | ' + r.season + ' | ' + r.movieSegment : ' | Season/Segment randomized') + '</p>' +
+            (r.results ? '<p style="margin:5px 0 0;font-size:0.9em;"><strong>Profit:</strong> ' + fmtC(r.results.totalProfit) + '</p>' : '') + '</div>' +
+            '<div class="round-preview-actions">' +
+            '<button class="btn" onclick="editRoundConfig(' + i + ')" style="padding:5px 10px;font-size:0.9em;margin-top:0;">Edit</button>' +
+            '<button class="delete-round-btn" onclick="deleteSingleRound(' + i + ')">Delete</button></div></div>';
+    }).join('');
+}
+
+function syncAdminInputs() {
+    var c = simulationState.config;
+    function s(id, v) { var el = document.getElementById(id); if (el) el.value = v; }
+    s('param-lambda', c.logit.lambda);
+    s('param-mu', c.logit.muBase);
+    s('param-mumbai-wd', c.marketAssumptions.Mumbai.baseWeekday);
+    s('param-mumbai-we', c.marketAssumptions.Mumbai.baseWeekend);
+    s('param-delhi-wd', c.marketAssumptions.Delhi.baseWeekday);
+    s('param-delhi-we', c.marketAssumptions.Delhi.baseWeekend);
+    s('param-blr-wd', c.marketAssumptions.Bengaluru.baseWeekday);
+    s('param-blr-we', c.marketAssumptions.Bengaluru.baseWeekend);
+    s('season-normal', c.seasonMultipliers.Normal);
+    s('season-festive', c.seasonMultipliers.Festive);
+    s('season-exam', c.seasonMultipliers.Exam);
+    s('season-monsoon', c.seasonMultipliers.Monsoon);
+    s('segment-block-factor', c.movieSegments.blockbuster);
+    s('segment-main-factor', c.movieSegments.mainstream);
+    s('segment-niche-factor', c.movieSegments.niche);
+    s('cost-mumbai-var', c.financials.Mumbai.variableCost);
+    s('cost-mumbai-seats', c.financials.Mumbai.seatsPerScreen);
+    s('cost-mumbai-fixed', c.financials.Mumbai.fixedCostPerSeat);
+    s('cost-delhi-var', c.financials.Delhi.variableCost);
+    s('cost-delhi-seats', c.financials.Delhi.seatsPerScreen);
+    s('cost-delhi-fixed', c.financials.Delhi.fixedCostPerSeat);
+    s('cost-blr-var', c.financials.Bengaluru.variableCost);
+    s('cost-blr-seats', c.financials.Bengaluru.seatsPerScreen);
+    s('cost-blr-fixed', c.financials.Bengaluru.fixedCostPerSeat);
+    s('weekday-days', c.operational.weekdayDays);
+    s('weekend-days', c.operational.weekendDays);
+    s('cap-mumbai-screens', c.theatreCapacity.Mumbai.avgScreens);
+    s('cap-delhi-screens', c.theatreCapacity.Delhi.avgScreens);
+    s('cap-blr-screens', c.theatreCapacity.Bengaluru.avgScreens);
+    s('default-screens-mumbai', c.defaultScreens.Mumbai);
+    s('default-screens-delhi', c.defaultScreens.Delhi);
+    s('default-screens-blr', c.defaultScreens.Bengaluru);
+    var r0 = simulationState.rounds[0];
+    if (r0) {
+        s('default-comp-mumbai-wd', r0.competitors.Mumbai.weekdayPrice);
+        s('default-comp-mumbai-we', r0.competitors.Mumbai.weekendPrice);
+        s('default-comp-delhi-wd', r0.competitors.Delhi.weekdayPrice);
+        s('default-comp-delhi-we', r0.competitors.Delhi.weekendPrice);
+        s('default-comp-blr-wd', r0.competitors.Bengaluru.weekdayPrice);
+        s('default-comp-blr-we', r0.competitors.Bengaluru.weekendPrice);
+    }
+}
+
+function readPricesAndScreens(rn) {
+    var km = { Mumbai: 'mumbai', Delhi: 'delhi', Bengaluru: 'bengaluru' };
+    var prices = {}, screens = {}, errs = [];
+    ['Mumbai','Delhi','Bengaluru'].forEach(function(city) {
+        var k = km[city];
+        var wd = parseInt(document.getElementById('price-' + k + '-weekday').value) || 0;
+        var we = parseInt(document.getElementById('price-' + k + '-weekend').value) || 0;
+        var sc = parseInt(document.getElementById('screens-' + k).value) || 1;
+        prices[city] = { weekday: wd, weekend: we };
+        screens[city] = sc;
+        if (wd < 50 || wd > 1000) errs.push(city + ' weekday price must be Rs50-1000');
+        if (we < 50 || we > 1000) errs.push(city + ' weekend price must be Rs50-1000');
+        if (sc < 1 || sc > 40) errs.push(city + ' screens must be 1-40');
+    });
+    return { prices: prices, screens: screens, errs: errs };
+}
+
+window.createRounds = function() {
+    gatherConfigFromInputs();
+    var n = getIntVal('rounds', 3);
+    var compPrices = {
+        Mumbai: { weekdayPrice: getVal('default-comp-mumbai-wd', 240), weekendPrice: getVal('default-comp-mumbai-we', 340) },
+        Delhi: { weekdayPrice: getVal('default-comp-delhi-wd', 210), weekendPrice: getVal('default-comp-delhi-we', 310) },
+        Bengaluru: { weekdayPrice: getVal('default-comp-blr-wd', 190), weekendPrice: getVal('default-comp-blr-we', 290) }
+    };
+    simulationState.rounds = [];
+    for (var i = 1; i <= n; i++) simulationState.rounds.push(makeRound(i, compPrices));
+    simulationState.currentRoundIndex = 1;
+    simulationState.completedRounds = 0;
+    simulationState.totalProfit = 0;
+    simulationState.performanceHistory = [];
+    simulationState.tempEvaluation = null;
+    editingRoundIndex = null;
+    renderRoundConfig();
+    renderRoundPreview();
+    saveToLocalStorage();
+    showToast('Created ' + n + ' months.', 'success');
+    if (document.getElementById('dashboard-section').classList.contains('hidden') === false) {
+        updateDashboardSection();
+        updateProgressSection();
+    }
+};
+
+window.deleteAllRounds = function() {
+    simulationState.rounds = [];
+    simulationState.currentRoundIndex = 1;
+    simulationState.completedRounds = 0;
+    simulationState.totalProfit = 0;
+    simulationState.performanceHistory = [];
+    simulationState.tempEvaluation = null;
+    editingRoundIndex = null;
+    renderRoundConfig();
+    renderRoundPreview();
+    saveToLocalStorage();
+    showToast('All months deleted.', 'danger');
+    if (document.getElementById('dashboard-section').classList.contains('hidden') === false) {
+        updateDashboardSection();
+        updateProgressSection();
+    }
+};
+
+window.editRoundConfig = function(i) {
+    editingRoundIndex = i;
+    var r = simulationState.rounds[i];
+    document.getElementById('editing-round-number').textContent = r.roundNumber;
+    document.getElementById('edit-status').value = r.status;
+    document.getElementById('edit-mumbaiWeekday').value = r.competitors.Mumbai.weekdayPrice;
+    document.getElementById('edit-mumbaiWeekend').value = r.competitors.Mumbai.weekendPrice;
+    document.getElementById('edit-delhiWeekday').value = r.competitors.Delhi.weekdayPrice;
+    document.getElementById('edit-delhiWeekend').value = r.competitors.Delhi.weekendPrice;
+    document.getElementById('edit-blrWeekday').value = r.competitors.Bengaluru.weekdayPrice;
+    document.getElementById('edit-blrWeekend').value = r.competitors.Bengaluru.weekendPrice;
+    document.getElementById('round-detail-editor').classList.remove('hidden');
+    document.querySelectorAll('.round-config-card').forEach(function(c) { c.classList.remove('active'); });
+    var card = document.getElementById('round-card-' + i);
+    if (card) card.classList.add('active');
+    document.getElementById('round-detail-editor').scrollIntoView({ behavior: 'smooth' });
+};
+
+window.saveRoundConfig = function() {
+    if (editingRoundIndex === null) return;
+    var r = simulationState.rounds[editingRoundIndex];
+    r.status = document.getElementById('edit-status').value;
+    r.competitors.Mumbai.weekdayPrice = parseFloat(document.getElementById('edit-mumbaiWeekday').value) || 240;
+    r.competitors.Mumbai.weekendPrice = parseFloat(document.getElementById('edit-mumbaiWeekend').value) || 270;
+    r.competitors.Delhi.weekdayPrice = parseFloat(document.getElementById('edit-delhiWeekday').value) || 240;
+    r.competitors.Delhi.weekendPrice = parseFloat(document.getElementById('edit-delhiWeekend').value) || 300;
+    r.competitors.Bengaluru.weekdayPrice = parseFloat(document.getElementById('edit-blrWeekday').value) || 220;
+    r.competitors.Bengaluru.weekendPrice = parseFloat(document.getElementById('edit-blrWeekend').value) || 310;
+    renderRoundConfig();
+    renderRoundPreview();
+    window.cancelEdit();
+    saveToLocalStorage();
+    showToast('Month saved.', 'success');
+};
+
+window.cancelEdit = function() {
+    editingRoundIndex = null;
+    document.getElementById('round-detail-editor').classList.add('hidden');
+    document.querySelectorAll('.round-config-card').forEach(function(c) { c.classList.remove('active'); });
+};
+
+window.deleteRound = function() {
+    if (editingRoundIndex !== null) window.deleteSingleRound(editingRoundIndex);
+};
+
+window.deleteSingleRound = function(i) {
+    simulationState.rounds.splice(i, 1);
+    simulationState.rounds.forEach(function(r, idx) { r.roundNumber = idx + 1; });
+    if (simulationState.currentRoundIndex > simulationState.rounds.length)
+        simulationState.currentRoundIndex = Math.max(1, simulationState.rounds.length);
+    simulationState.completedRounds = simulationState.rounds.filter(function(r) { return r.results; }).length;
+    simulationState.totalProfit = simulationState.rounds.reduce(function(s, r) { return s + (r.results ? r.results.totalProfit : 0); }, 0);
+    simulationState.performanceHistory = simulationState.rounds.filter(function(r) { return r.results; }).map(function(r) { return { round: r.roundNumber, profit: r.results.totalProfit }; });
+    simulationState.tempEvaluation = null;
+    editingRoundIndex = null;
+    document.getElementById('round-detail-editor').classList.add('hidden');
+    renderRoundConfig();
+    renderRoundPreview();
+    saveToLocalStorage();
+    showToast('Month deleted.', 'danger');
+    if (document.getElementById('dashboard-section').classList.contains('hidden') === false) {
+        updateDashboardSection();
+        updateProgressSection();
+    }
+};
+
+window.applyCompetitorPricesToAll = function() {
+    if (editingRoundIndex === null) return;
+    var src = simulationState.rounds[editingRoundIndex];
+    simulationState.rounds.forEach(function(r) { r.competitors = JSON.parse(JSON.stringify(src.competitors)); });
+    renderRoundConfig();
+    renderRoundPreview();
+    saveToLocalStorage();
+    showToast('Competitor prices applied to all months.', 'success');
+};
+
+window.selectStudentRound = function(rn) {
+    var prev = simulationState.rounds.filter(function(r) { return r.roundNumber === rn - 1; })[0];
+    if (rn > 1 && prev && !prev.results) {
+        showToast('Complete the previous month first.', 'warning');
+        return;
+    }
+    simulationState.currentRoundIndex = rn;
+    loadStudentRound();
+};
+
+window.nextStudentRound = function() {
+    if (simulationState.currentRoundIndex >= simulationState.rounds.length) return;
+    var cur = simulationState.rounds.filter(function(r) { return r.roundNumber === simulationState.currentRoundIndex; })[0];
+    if (!cur || !cur.results) {
+        showToast('Complete current month first.', 'warning');
+        return;
+    }
+    simulationState.currentRoundIndex++;
+    loadStudentRound();
+};
+
+window.prevStudentRound = function() {
+    if (simulationState.currentRoundIndex > 1) {
+        simulationState.currentRoundIndex--;
+        loadStudentRound();
+    }
+};
+
+window.resetStudentProgress = function() {
+    simulationState.rounds.forEach(function(r, i) {
+        r.studentDecisions = r.screenAllocations = r.results = r.timestamp = r.season = r.movieSegment = null;
+        r.status = i === 0 ? 'active' : 'planned';
+    });
+    simulationState.currentRoundIndex = 1;
+    simulationState.completedRounds = 0;
+    simulationState.totalProfit = 0;
+    simulationState.performanceHistory = [];
+    simulationState.tempEvaluation = null;
+    saveToLocalStorage();
+    loadStudentRound();
+    if (document.getElementById('dashboard-section').classList.contains('hidden') === false) {
+        setTimeout(updateDashboardSection, 100);
+        updateProgressSection();
+    }
+    showToast('Progress reset.', 'success');
+};
+
+window.evaluateRound = function(rn) {
+    var parsed = readPricesAndScreens(rn);
+    if (parsed.errs.length) {
+        showToast(parsed.errs[0], 'warning');
+        return;
+    }
+    var result = simulateRound(rn - 1, parsed.prices, parsed.screens);
+    simulationState.tempEvaluation = { roundNumber: rn, results: result };
+    setTimeout(updateDashboardSection, 100);
+    switchModule('dashboard');
+    showToast('Evaluation done - see Dashboard (Preview)', 'success');
+};
+
+window.submitRoundPrices = function(rn) {
+    var idx = rn - 1;
+    var round = simulationState.rounds[idx];
+    var parsed = readPricesAndScreens(rn);
+    if (parsed.errs.length) {
+        showToast(parsed.errs[0], 'warning');
+        return;
+    }
+    var result = simulateRound(idx, parsed.prices, parsed.screens);
+    round.studentDecisions = parsed.prices;
+    round.screenAllocations = parsed.screens;
+    round.results = result;
+    round.timestamp = new Date().toISOString();
+    round.status = 'completed';
+    simulationState.completedRounds++;
+    simulationState.totalProfit += result.totalProfit;
+    simulationState.performanceHistory.push({ round: rn, profit: result.totalProfit });
+    if (idx + 1 < simulationState.rounds.length) {
+        var nextRound = simulationState.rounds[idx + 1];
+        ['Mumbai','Delhi','Bengaluru'].forEach(function(city) {
+            var diffWD = parsed.prices[city].weekday - round.competitors[city].weekdayPrice;
+            nextRound.competitors[city].weekdayPrice = Math.max(50, Math.min(1000, Math.round(round.competitors[city].weekdayPrice + getCompetitorAdjustment(diffWD))));
+            var diffWE = parsed.prices[city].weekend - round.competitors[city].weekendPrice;
+            nextRound.competitors[city].weekendPrice = Math.max(50, Math.min(1000, Math.round(round.competitors[city].weekendPrice + getCompetitorAdjustment(diffWE))));
+        });
+        simulationState.rounds[idx + 1].status = 'active';
+    }
+    if (simulationState.tempEvaluation && simulationState.tempEvaluation.roundNumber === rn)
+        simulationState.tempEvaluation = null;
+    saveToLocalStorage();
+    loadStudentRound();
+    if (document.getElementById('dashboard-section').classList.contains('hidden') === false) {
+        setTimeout(updateDashboardSection, 100);
+        updateProgressSection();
+    }
+    showToast('Month ' + rn + ' done! Profit: ' + fmtC(result.totalProfit), 'success');
+};
+
+window.switchMetricTab = function(event, tabId) {
+    simulationState.currentMetricTab = tabId;
+    document.querySelectorAll('.metric-tab').forEach(function(t) { t.classList.remove('active'); });
+    event.target.classList.add('active');
+    setTimeout(updateDashboardSection, 50);
+};
+
+window.switchModule = function(module) {
+    document.querySelectorAll('[id$="-section"]').forEach(function(el) { el.classList.add('hidden'); });
+    document.getElementById(module + '-section').classList.remove('hidden');
+    document.querySelectorAll('.nav-item').forEach(function(el) {
+        el.classList.remove('active');
+        if ((el.getAttribute('onclick') || '').indexOf("'" + module + "'") !== -1) el.classList.add('active');
+    });
+    if (module === 'student') loadStudentRound();
+    if (module === 'dashboard') {
+        updateProgressSection();
+        var cur = simulationState.currentMetricTab;
+        document.querySelectorAll('.metric-tab').forEach(function(t) {
+            t.classList.toggle('active', (t.getAttribute('onclick') || '').indexOf("'" + cur + "'") !== -1);
+        });
+        setTimeout(updateDashboardSection, 100);
+    }
+    if (module === 'instructor') {
+        syncAdminInputs();
+        renderRoundConfig();
+        renderRoundPreview();
+    }
+};
 
 function loadStudentRound() {
-    var sel = document.getElementById('round-selector'); var disp = document.getElementById('current-round-display');
-    if (!simulationState.rounds.length) { sel.innerHTML = '<p class="muted">No months configured. Ask instructor to create months.</p>'; disp.innerHTML = '<div class="card"><h3>No Months Available</h3><p class="muted">Please ask your instructor to create months first.</p></div>'; document.getElementById('prev-round-btn').style.display = 'none'; document.getElementById('next-round-btn').style.display = 'none'; return; }
-    sel.innerHTML = simulationState.rounds.map(function(r) { var prev = simulationState.rounds.filter(function(x) { return x.roundNumber === r.roundNumber - 1; })[0]; var locked = r.roundNumber > 1 && prev && !prev.results; return '<button class="round-select-btn ' + (r.roundNumber === simulationState.currentRoundIndex ? 'active' : '') + ' ' + (r.results ? 'completed' : '') + '" onclick="selectStudentRound(' + r.roundNumber + ')" ' + (locked ? 'disabled' : '') + '>Month ' + r.roundNumber + (r.results ? ' ' : '') + '</button>'; }).join('');
+    var sel = document.getElementById('round-selector');
+    var disp = document.getElementById('current-round-display');
+    if (!simulationState.rounds.length) {
+        sel.innerHTML = '<p class="muted">No months configured. Ask instructor to create months.</p>';
+        disp.innerHTML = '<div class="card"><h3>No Months Available</h3><p class="muted">Please ask your instructor to create months first.</p></div>';
+        document.getElementById('prev-round-btn').style.display = 'none';
+        document.getElementById('next-round-btn').style.display = 'none';
+        return;
+    }
+    sel.innerHTML = simulationState.rounds.map(function(r) {
+        var prev = simulationState.rounds.filter(function(x) { return x.roundNumber === r.roundNumber - 1; })[0];
+        var locked = r.roundNumber > 1 && prev && !prev.results;
+        return '<button class="round-select-btn ' + (r.roundNumber === simulationState.currentRoundIndex ? 'active' : '') +
+               ' ' + (r.results ? 'completed' : '') + '" onclick="selectStudentRound(' + r.roundNumber + ')" ' +
+               (locked ? 'disabled' : '') + '>Month ' + r.roundNumber + (r.results ? ' ' : '') + '</button>';
+    }).join('');
     var cur = simulationState.rounds.filter(function(r) { return r.roundNumber === simulationState.currentRoundIndex; })[0];
     if (!cur) return;
     if (!cur.season) { cur.season = getRandomSeason(); saveToLocalStorage(); }
     if (!cur.movieSegment) { cur.movieSegment = getRandomSegment(); saveToLocalStorage(); }
     var done = cur.results !== null;
-    var avgM = simulationState.config.theatreCapacity.Mumbai.avgScreens;
-    var avgD = simulationState.config.theatreCapacity.Delhi.avgScreens;
-    var avgB = simulationState.config.theatreCapacity.Bengaluru.avgScreens;
     var defM = (cur.screenAllocations && cur.screenAllocations.Mumbai) || simulationState.config.defaultScreens.Mumbai || 30;
     var defD = (cur.screenAllocations && cur.screenAllocations.Delhi) || simulationState.config.defaultScreens.Delhi || 8;
     var defB = (cur.screenAllocations && cur.screenAllocations.Bengaluru) || simulationState.config.defaultScreens.Bengaluru || 7;
     var seaLbl = cur.season.charAt(0).toUpperCase() + cur.season.slice(1);
     var segLbl = cur.movieSegment.charAt(0).toUpperCase() + cur.movieSegment.slice(1);
-    var html = '<div class="card"><h4>Month ' + cur.roundNumber + ' - Market Conditions</h4><div class="grid-3"><div class="card" style="border-left-color:#9b59b6;"><h4>Season</h4><p style="font-size:1.3em;font-weight:700;">' + seaLbl + '</p><p class="muted">Affects total market size.</p></div><div class="card" style="border-left-color:#27ae60;"><h4>Movie Segment</h4><p style="font-size:1.3em;font-weight:700;">' + segLbl + '</p><p class="muted">Affects your final demand.</p></div></div><p style="margin-top:10px;"><strong>Status:</strong> <span style="text-transform:capitalize;">' + cur.status + '</span></p>' + (done ? '<p><strong>Completed:</strong> ' + (cur.timestamp ? new Date(cur.timestamp).toLocaleString() : 'N/A') + '</p>' : '');
+    var html = '<div class="card"><h4>Month ' + cur.roundNumber + ' - Market Conditions</h4>' +
+        '<div class="grid-3" style="margin-top:10px;">' +
+        '<div class="card" style="border-left-color:#9b59b6;"><h4>Season</h4><p style="font-size:1.3em;font-weight:700;">' + seaLbl + '</p><p class="muted">Affects total market size.</p></div>' +
+        '<div class="card" style="border-left-color:#27ae60;"><h4>Movie Segment</h4><p style="font-size:1.3em;font-weight:700;">' + segLbl + '</p><p class="muted">Affects your final demand.</p></div>' +
+        '</div>' +
+        '<p style="margin-top:10px;"><strong>Status:</strong> <span style="text-transform:capitalize;">' + cur.status + '</span></p>' +
+        (done ? '<p><strong>Completed:</strong> ' + (cur.timestamp ? new Date(cur.timestamp).toLocaleString() : 'N/A') + '</p>' : '');
     if (done) {
         var totalLost = ['Mumbai','Delhi','Bengaluru'].reduce(function(s, c) { var cr = cur.results.cityResults[c]; return s + (cr.lostSalesWD||0) + (cr.lostSalesWE||0); }, 0);
-        html += '<div class="alert alert-success" style="margin-top:20px;"><h4>Month Completed</h4><p>Total profit: <strong>' + fmtC(cur.results.totalProfit) + '</strong></p><p>Screens used - Mumbai: ' + (cur.screenAllocations ? cur.screenAllocations.Mumbai : 'N/A') + ', Delhi: ' + (cur.screenAllocations ? cur.screenAllocations.Delhi : 'N/A') + ', Bengaluru: ' + (cur.screenAllocations ? cur.screenAllocations.Bengaluru : 'N/A') + '</p><p>Total Lost Demand: <strong>' + fmtN(totalLost) + ' tickets</strong></p><button class="btn btn-primary" style="margin-top:10px;" onclick="switchModule(\'dashboard\')">View Dashboard -></button></div>';
+        html += '<div class="alert alert-success" style="margin-top:20px;"><h4>Month Completed</h4>' +
+            '<p>Total profit: <strong>' + fmtC(cur.results.totalProfit) + '</strong></p>' +
+            '<p>Screens used - Mumbai: ' + (cur.screenAllocations ? cur.screenAllocations.Mumbai : 'N/A') +
+            ', Delhi: ' + (cur.screenAllocations ? cur.screenAllocations.Delhi : 'N/A') +
+            ', Bengaluru: ' + (cur.screenAllocations ? cur.screenAllocations.Bengaluru : 'N/A') + '</p>' +
+            '<p>Total Lost Demand: <strong>' + fmtN(totalLost) + ' tickets</strong></p>' +
+            '<button class="btn btn-primary" style="margin-top:10px;" onclick="switchModule(\'dashboard\')">View Dashboard -></button></div>';
     } else {
         var prevWD = function(city) { return cur.studentDecisions && cur.studentDecisions[city] ? cur.studentDecisions[city].weekday : 0; };
         var prevWE = function(city) { return cur.studentDecisions && cur.studentDecisions[city] ? cur.studentDecisions[city].weekend : 0; };
-        html += '<div style="margin-top:20px;"><h4>Set Your Prices &amp; Screen Allocation</h4><p class="muted">More screens = higher demand. Prices affect your logit market share vs competitor.</p><div class="alert alert-info"><strong>Market conditions above are fixed.</strong> Set prices and screens to maximise profit this month.</div><table class="param-table"><thead><tr><th rowspan="2">City</th><th colspan="2">Weekday Price (Rs)</th><th colspan="2">Weekend Price (Rs)</th><th rowspan="2">Screens</th></tr><tr><th>Your Price</th><th style="color:#6b7280;">Competitor</th><th>Your Price</th><th style="color:#6b7280;">Competitor</th></tr></thead><tbody><tr><td><strong>Mumbai</strong></td><td><input type="number" id="price-mumbai-weekday" min="50" max="1000" value="' + (prevWD('Mumbai') || 230) + '"></td><td style="background:#f3f4f6;color:#6b7280;text-align:center;">Rs ' + cur.competitors.Mumbai.weekdayPrice + '</td><td><input type="number" id="price-mumbai-weekend" min="50" max="1000" value="' + (prevWE('Mumbai') || 320) + '"></td><td style="background:#f3f4f6;color:#6b7280;text-align:center;">Rs ' + cur.competitors.Mumbai.weekendPrice + '</td><td><input type="number" id="screens-mumbai" min="1" max="40" value="' + defM + '"></td></tr><tr><td><strong>Delhi</strong></td><td><input type="number" id="price-delhi-weekday" min="50" max="1000" value="' + (prevWD('Delhi') || 210) + '"></td><td style="background:#f3f4f6;color:#6b7280;text-align:center;">Rs ' + cur.competitors.Delhi.weekdayPrice + '</td><td><input type="number" id="price-delhi-weekend" min="50" max="1000" value="' + (prevWE('Delhi') || 270) + '"></td><td style="background:#f3f4f6;color:#6b7280;text-align:center;">Rs ' + cur.competitors.Delhi.weekendPrice + '</td><td><input type="number" id="screens-delhi" min="1" max="40" value="' + defD + '"></td></tr><tr><td><strong>Bengaluru</strong></td><td><input type="number" id="price-bengaluru-weekday" min="50" max="1000" value="' + (prevWD('Bengaluru') || 190) + '"></td><td style="background:#f3f4f6;color:#6b7280;text-align:center;">Rs ' + cur.competitors.Bengaluru.weekdayPrice + '</td><td><input type="number" id="price-bengaluru-weekend" min="50" max="1000" value="' + (prevWE('Bengaluru') || 280) + '"></td><td style="background:#f3f4f6;color:#6b7280;text-align:center;">Rs ' + cur.competitors.Bengaluru.weekendPrice + '</td><td><input type="number" id="screens-bengaluru" min="1" max="40" value="' + defB + '"></td></tr></tbody></table><div style="display:flex;gap:10px;margin-top:15px;"><button class="btn btn-warning" onclick="evaluateRound(' + cur.roundNumber + ')">Evaluate (Preview)</button><button class="btn btn-primary" onclick="submitRoundPrices(' + cur.roundNumber + ')">Submit Month ' + cur.roundNumber + '</button></div></div>';
+        html += '<div style="margin-top:20px;"><h4>Set Your Prices &amp; Screen Allocation</h4>' +
+            '<p class="muted" style="margin-bottom:10px;">More screens = higher demand. Prices affect your logit market share vs competitor.</p>' +
+            '<div class="alert alert-info"><strong>Market conditions above are fixed.</strong> Set prices and screens to maximise profit this month.</div>' +
+            '<table class="param-table"><thead>' +
+            '<tr><th rowspan="2">City</th><th colspan="2" style="text-align:center;">Weekday Price (Rs)</th><th colspan="2" style="text-align:center;">Weekend Price (Rs)</th><th rowspan="2">Screens</th></tr>' +
+            '<tr><th>Your Price</th><th style="color:#6b7280;font-weight:500;background:#f3f4f6;">Competitor</th><th>Your Price</th><th style="color:#6b7280;font-weight:500;background:#f3f4f6;">Competitor</th></tr>' +
+            '</thead><tbody>' +
+            '<tr><td><strong>Mumbai</strong></td><td><input type="number" id="price-mumbai-weekday" min="50" max="1000" value="' + (prevWD('Mumbai') || 230) + '"></td><td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Mumbai.weekdayPrice + '</td><td><input type="number" id="price-mumbai-weekend" min="50" max="1000" value="' + (prevWE('Mumbai') || 320) + '"></td><td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Mumbai.weekendPrice + '</td><td><input type="number" id="screens-mumbai" min="1" max="40" value="' + defM + '"></td></tr>' +
+            '<tr><td><strong>Delhi</strong></td><td><input type="number" id="price-delhi-weekday" min="50" max="1000" value="' + (prevWD('Delhi') || 210) + '"></td><td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Delhi.weekdayPrice + '</td><td><input type="number" id="price-delhi-weekend" min="50" max="1000" value="' + (prevWE('Delhi') || 270) + '"></td><td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Delhi.weekendPrice + '</td><td><input type="number" id="screens-delhi" min="1" max="40" value="' + defD + '"></td></tr>' +
+            '<tr><td><strong>Bengaluru</strong></td><td><input type="number" id="price-bengaluru-weekday" min="50" max="1000" value="' + (prevWD('Bengaluru') || 190) + '"></td><td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Bengaluru.weekdayPrice + '</td><td><input type="number" id="price-bengaluru-weekend" min="50" max="1000" value="' + (prevWE('Bengaluru') || 280) + '"></td><td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Bengaluru.weekendPrice + '</td><td><input type="number" id="screens-bengaluru" min="1" max="40" value="' + defB + '"></td></tr>' +
+            '</tbody></table>' +
+            '<div style="display:flex;gap:10px;margin-top:15px;">' +
+            '<button class="btn btn-warning" onclick="evaluateRound(' + cur.roundNumber + ')">Evaluate (Preview)</button>' +
+            '<button class="btn btn-primary" onclick="submitRoundPrices(' + cur.roundNumber + ')">Submit Month ' + cur.roundNumber + '</button>' +
+            '</div></div>';
     }
     html += '</div>';
     disp.innerHTML = html;
-    if (simulationState.tempEvaluation && simulationState.tempEvaluation.roundNumber !== cur.roundNumber) { simulationState.tempEvaluation = null; setTimeout(updateDashboardSection, 100); }
+    if (simulationState.tempEvaluation && simulationState.tempEvaluation.roundNumber !== cur.roundNumber) {
+        simulationState.tempEvaluation = null;
+        setTimeout(updateDashboardSection, 100);
+    }
     document.getElementById('prev-round-btn').style.display = simulationState.currentRoundIndex > 1 ? 'inline-block' : 'none';
     document.getElementById('next-round-btn').style.display = simulationState.currentRoundIndex < simulationState.rounds.length ? 'inline-block' : 'none';
 }
