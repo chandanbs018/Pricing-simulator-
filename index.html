@@ -265,11 +265,11 @@
                 <div class="card">
                     <h4>Screens Configuration</h4>
                     <table class="param-table">
-                        <thead><tr><th>City</th><th>Avg Screens (market)</th><th>Default Allocation (student)</th></tr></thead>
+                        <thead><tr><th>City</th><th>Avg Screens (market)</th></thead>
                         <tbody>
-                            <tr><td>Mumbai</td><td><input type="number" id="cap-mumbai-screens" value="20" min="1" step="1"></td><td><input type="number" id="default-screens-mumbai" value="30" min="1" max="100" step="1"></td></tr>
-                            <tr><td>Delhi</td><td><input type="number" id="cap-delhi-screens" value="15" min="1" step="1"></td><td><input type="number" id="default-screens-delhi" value="8" min="1" max="100" step="1"></td></tr>
-                            <tr><td>Bengaluru</td><td><input type="number" id="cap-blr-screens" value="14" min="1" step="1"></td><td><input type="number" id="default-screens-blr" value="7" min="1" max="100" step="1"></td></tr>
+                            <tr><td>Mumbai</td><td><input type="number" id="cap-mumbai-screens" value="20" min="1" step="1"></td></tr>
+                            <tr><td>Delhi</td><td><input type="number" id="cap-delhi-screens" value="15" min="1" step="1"></td></tr>
+                            <tr><td>Bengaluru</td><td><input type="number" id="cap-blr-screens" value="14" min="1" step="1"></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -528,7 +528,7 @@ function fmtN(v) { return Math.round(v).toLocaleString('en-IN'); }
 
 function gatherConfigFromInputs() {
     var c = simulationState.config;
-    c.logit.lambda = getVal('param-lambda', -0.015);
+    c.logit.lambda = -Math.abs(getVal('param-lambda', -0.015));
     c.logit.muBase = getVal('param-mu', 40);
     c.marketAssumptions.Mumbai.baseWeekday = getVal('param-mumbai-wd', 2200);
     c.marketAssumptions.Mumbai.baseWeekend = getVal('param-mumbai-we', 4200);
@@ -562,33 +562,61 @@ function gatherConfigFromInputs() {
     c.defaultScreens.Bengaluru = getIntVal('default-screens-blr', 7);
 }
 
+// FIXED: Competitor reaction now correctly uses sign of price difference
 function getCompetitorAdjustment(priceDiff) {
     var rules = simulationState.config.competitorReaction;
-    var absDiff = Math.abs(priceDiff);
     var chosen = rules[0];
-    rules.forEach(function(r) { if (absDiff >= r.diff) chosen = r; });
+    
+    rules.forEach(function(r) {
+        if (priceDiff >= r.diff) chosen = r;
+    });
+    
     var adjustment = (0.5 + Math.random() * 0.5) * chosen.adjust;
-    return priceDiff >= 0 ? adjustment : -adjustment;
+    return adjustment;
 }
 
+// UPDATED: computeDemandForPeriod with your exact Excel logic
 function computeDemandForPeriod(lambda, muBase, segFactor, yourPrice, compPrice, baseDemand, screens, avgScreens, seasonMult) {
-    lambda = -Math.abs(lambda);
-    const mu = muBase;
+    // Step 1: exponentials
     const expYou = Math.exp(lambda * yourPrice);
     const expComp = Math.exp(lambda * compPrice);
+    
+    // Step 2: MU (your unique logic - muBase * baseDemand, NOT exp)
+    const mu = muBase * baseDemand;
+    
+    // Step 3: denominator
     const denominator = expYou + expComp + mu;
-    const shareYou = expYou / denominator;
-    const shareComp = expComp / denominator;
-    const adjustedBase = baseDemand * seasonMult * segFactor;
-    const yourDemandRaw = shareYou * adjustedBase;
-    const compDemandRaw = shareComp * adjustedBase;
-    const capacityRatio = screens / avgScreens;
-    const yourFinal = yourDemandRaw * capacityRatio;
-    const compFinal = compDemandRaw;
-    const lostSales = Math.max(0, adjustedBase - (yourFinal + compFinal));
-    return { yourFinal, compFinal, lostSales, capacityRatio };
+    
+    // Step 4: your demand (raw)
+    const yourDemandRaw = (expYou / denominator) * baseDemand;
+    
+    // Step 5: competitor demand (same logic, no capacity scaling later)
+    const compDemandRaw = (expComp / denominator) * baseDemand;
+    
+    // Step 6: capacity adjustment (YOUR formula: avgScreens / screens, NOT screens / avgScreens)
+    const capacityAdjYour = yourDemandRaw * (avgScreens / screens);
+    const capacityAdjComp = compDemandRaw; // competitor NOT scaled by capacity
+    
+    // Step 7: segment adjustment
+    const segAdjYour = capacityAdjYour * segFactor;
+    const segAdjComp = capacityAdjComp * segFactor;
+    
+    // Step 8: season adjustment (FINAL DEMAND)
+    const finalYour = segAdjYour * seasonMult;
+    const finalComp = segAdjComp * seasonMult;
+    
+    // Step 9: lost sales (unserved market)
+    const lostSales = Math.max(0, baseDemand - (finalYour + finalComp));
+    
+    return {
+        yourFinal: finalYour,
+        compFinal: finalComp,
+        lostSales: lostSales,
+        capacityRatio: avgScreens / screens  // Your formula
+    };
 }
 
+// UPDATED: simulateCity to work with the new computeDemandForPeriod
 function simulateCity(city, season, segment, yourWD, yourWE, compWD, compWE, screensAlloc) {
     var c = simulationState.config;
     var baseWD = c.marketAssumptions[city].baseWeekday;
@@ -601,10 +629,12 @@ function simulateCity(city, season, segment, yourWD, yourWE, compWD, compWE, scr
     var avgScreens = c.theatreCapacity[city].avgScreens || 15;
     var wdDays = c.operational.weekdayDays;
     var weDays = c.operational.weekendDays;
-
+    
+    // Use the updated computeDemandForPeriod function
     var wdR = computeDemandForPeriod(lambda, muBase, segFactor, yourWD, compWD, baseWD, screensAlloc, avgScreens, seasonMult);
     var weR = computeDemandForPeriod(lambda, muBase, segFactor, yourWE, compWE, baseWE, screensAlloc, avgScreens, seasonMult);
-
+    
+    // Multiply by days to get monthly totals
     var yourDemandWD = wdR.yourFinal * wdDays;
     var yourDemandWE = weR.yourFinal * weDays;
     var totalYourDemand = yourDemandWD + yourDemandWE;
@@ -612,13 +642,14 @@ function simulateCity(city, season, segment, yourWD, yourWE, compWD, compWE, scr
     var compDemandWE = weR.compFinal * weDays;
     var lostSalesWD = wdR.lostSales * wdDays;
     var lostSalesWE = weR.lostSales * weDays;
-
+    
+    // Financial calculations
     var revenue = (yourDemandWD * yourWD) + (yourDemandWE * yourWE);
     var varCost = totalYourDemand * fin.variableCost;
     var fixedCost = screensAlloc * fin.seatsPerScreen * 30 * fin.fixedCostPerSeat;
     var profit = revenue - varCost - fixedCost;
-    var capRatio = screensAlloc / avgScreens;
-
+    var capRatio = wdR.capacityRatio; // or weR.capacityRatio (same value)
+    
     return {
         yourDemand: Math.round(totalYourDemand),
         yourDemandWD: Math.round(yourDemandWD),
@@ -1001,9 +1032,6 @@ function syncAdminInputs() {
     s('cap-mumbai-screens', c.theatreCapacity.Mumbai.avgScreens);
     s('cap-delhi-screens', c.theatreCapacity.Delhi.avgScreens);
     s('cap-blr-screens', c.theatreCapacity.Bengaluru.avgScreens);
-    s('default-screens-mumbai', c.defaultScreens.Mumbai);
-    s('default-screens-delhi', c.defaultScreens.Delhi);
-    s('default-screens-blr', c.defaultScreens.Bengaluru);
     var r0 = simulationState.rounds[0];
     if (r0) {
         s('default-comp-mumbai-wd', r0.competitors.Mumbai.weekdayPrice);
@@ -1327,15 +1355,28 @@ function loadStudentRound() {
         var prevWD = function(city) { return cur.studentDecisions && cur.studentDecisions[city] ? cur.studentDecisions[city].weekday : 0; };
         var prevWE = function(city) { return cur.studentDecisions && cur.studentDecisions[city] ? cur.studentDecisions[city].weekend : 0; };
         html += '<div style="margin-top:20px;"><h4>Set Your Prices &amp; Screen Allocation</h4>' +
-            '<p class="muted" style="margin-bottom:10px;">More screens = higher demand. Prices affect your logit market share vs competitor.</p>' +
+            '<p class="muted" style="margin-bottom:10px;">Prices affect your logit market share vs competitor.</p>' +
             '<div class="alert alert-info"><strong>Market conditions above are fixed.</strong> Set prices and screens to maximise profit this month.</div>' +
             '<table class="param-table"><thead>' +
             '<tr><th rowspan="2">City</th><th colspan="2" style="text-align:center;">Weekday Price (Rs)</th><th colspan="2" style="text-align:center;">Weekend Price (Rs)</th><th rowspan="2">Screens</th></tr>' +
             '<tr><th>Your Price</th><th style="color:#6b7280;font-weight:500;background:#f3f4f6;">Competitor</th><th>Your Price</th><th style="color:#6b7280;font-weight:500;background:#f3f4f6;">Competitor</th></tr>' +
             '</thead><tbody>' +
-            '<tr><td><strong>Mumbai</strong></td><td><input type="number" id="price-mumbai-weekday" min="50" max="1000" value="' + (prevWD('Mumbai') || 230) + '"></td><td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Mumbai.weekdayPrice + '</td><td><input type="number" id="price-mumbai-weekend" min="50" max="1000" value="' + (prevWE('Mumbai') || 320) + '"></td><td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Mumbai.weekendPrice + '</td><td><input type="number" id="screens-mumbai" min="1" max="40" value="' + defM + '"></td></tr>' +
-            '<tr><td><strong>Delhi</strong></td><td><input type="number" id="price-delhi-weekday" min="50" max="1000" value="' + (prevWD('Delhi') || 210) + '"></td><td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Delhi.weekdayPrice + '</td><td><input type="number" id="price-delhi-weekend" min="50" max="1000" value="' + (prevWE('Delhi') || 270) + '"></td><td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Delhi.weekendPrice + '</td><td><input type="number" id="screens-delhi" min="1" max="40" value="' + defD + '"></td></tr>' +
-            '<tr><td><strong>Bengaluru</strong></td><td><input type="number" id="price-bengaluru-weekday" min="50" max="1000" value="' + (prevWD('Bengaluru') || 190) + '"></td><td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Bengaluru.weekdayPrice + '</td><td><input type="number" id="price-bengaluru-weekend" min="50" max="1000" value="' + (prevWE('Bengaluru') || 280) + '"></td><td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Bengaluru.weekendPrice + '</td><td><input type="number" id="screens-bengaluru" min="1" max="40" value="' + defB + '"></td></tr>' +
+            '<tr><td><strong>Mumbai</strong></td>:<input type="number" id="price-mumbai-weekday" min="50" max="1000" value="' + (prevWD('Mumbai') || 230) + '"></td><td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Mumbai.weekdayPrice + '</td>' +
+            '<td><input type="number" id="price-mumbai-weekend" min="50" max="1000" value="' + (prevWE('Mumbai') || 320) + '"></td>' +
+            '<td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Mumbai.weekendPrice + '</td>' +
+            '<td><input type="number" id="screens-mumbai" min="1" max="40" value="' + defM + '"></td></tr>' +
+            '<tr><td><strong>Delhi</strong></td>' +
+            '<td><input type="number" id="price-delhi-weekday" min="50" max="1000" value="' + (prevWD('Delhi') || 210) + '"></td>' +
+            '<td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Delhi.weekdayPrice + '</td>' +
+            '<td><input type="number" id="price-delhi-weekend" min="50" max="1000" value="' + (prevWE('Delhi') || 270) + '"></td>' +
+            '<td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Delhi.weekendPrice + '</td>' +
+            '<td><input type="number" id="screens-delhi" min="1" max="40" value="' + defD + '"></td></tr>' +
+            '<tr><td><strong>Bengaluru</strong></td>' +
+            '<td><input type="number" id="price-bengaluru-weekday" min="50" max="1000" value="' + (prevWD('Bengaluru') || 190) + '"></td>' +
+            '<td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Bengaluru.weekdayPrice + '</td>' +
+            '<td><input type="number" id="price-bengaluru-weekend" min="50" max="1000" value="' + (prevWE('Bengaluru') || 280) + '"></td>' +
+            '<td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Bengaluru.weekendPrice + '</td>' +
+            '<td><input type="number" id="screens-bengaluru" min="1" max="40" value="' + defB + '"></td></tr>' +
             '</tbody></table>' +
             '<div style="display:flex;gap:10px;margin-top:15px;">' +
             '<button class="btn btn-warning" onclick="evaluateRound(' + cur.roundNumber + ')">Evaluate (Preview)</button>' +
