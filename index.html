@@ -276,13 +276,14 @@
                 <div class="card">
                     <h4>Financial Parameters</h4>
                     <table class="param-table">
-                        <thead><tr><th>City</th><th>Variable Cost / Ticket (Rs)</th><th>Seats per Screen</th><th>Fixed Cost per Seat per Day (Rs)</th></tr></thead>
+                        <thead><tr><th>City</th><th>Variable Cost / Ticket (Rs)</th><th>Fixed Daily Cost (Rs) per full theatre</th></tr></thead>
                         <tbody>
-                            <tr><td>Mumbai</td><td><input type="number" id="cost-mumbai-var" value="5" step="1"></td><td><input type="number" id="cost-mumbai-seats" value="220" step="10"></td><td><input type="number" id="cost-mumbai-fixed" value="2" step="1"></td></tr>
-                            <tr><td>Delhi</td><td><input type="number" id="cost-delhi-var" value="5" step="1"></td><td><input type="number" id="cost-delhi-seats" value="200" step="10"></td><td><input type="number" id="cost-delhi-fixed" value="2" step="1"></td></tr>
-                            <tr><td>Bengaluru</td><td><input type="number" id="cost-blr-var" value="5" step="1"></td><td><input type="number" id="cost-blr-seats" value="180" step="10"></td><td><input type="number" id="cost-blr-fixed" value="2" step="1"></td></tr>
+                            <tr><td>Mumbai</td><td><input type="number" id="cost-mumbai-var" value="35" step="1"></td><td><input type="number" id="cost-mumbai-fixed" value="250000" step="5000"></td></tr>
+                            <tr><td>Delhi</td><td><input type="number" id="cost-delhi-var" value="30" step="1"></td><td><input type="number" id="cost-delhi-fixed" value="200000" step="5000"></td></tr>
+                            <tr><td>Bengaluru</td><td><input type="number" id="cost-blr-var" value="28" step="1"></td><td><input type="number" id="cost-blr-fixed" value="180000" step="5000"></td></tr>
                         </tbody>
                     </table>
+                    <p class="muted" style="margin-top:5px;">Fixed cost is per day for the entire theatre (all screens combined).</p>
                 </div>
                 <div class="card">
                     <h4>Operational Calendar</h4>
@@ -452,9 +453,9 @@ var simulationState = {
         theatreCapacity: { Mumbai: { avgScreens: 20 }, Delhi: { avgScreens: 15 }, Bengaluru: { avgScreens: 14 } },
         defaultScreens: { Mumbai: 20, Delhi: 15, Bengaluru: 14 },
         financials: {
-            Mumbai: { variableCost: 5, seatsPerScreen: 220, fixedCostPerSeat: 2 },
-            Delhi: { variableCost: 5, seatsPerScreen: 200, fixedCostPerSeat: 2 },
-            Bengaluru: { variableCost: 5, seatsPerScreen: 180, fixedCostPerSeat: 2 }
+            Mumbai: { variableCost: 35, fixedCostPerDay: 250000 },
+            Delhi: { variableCost: 30, fixedCostPerDay: 200000 },
+            Bengaluru: { variableCost: 28, fixedCostPerDay: 180000 }
         },
         operational: { weekdayDays: 22, weekendDays: 8 },
         competitorReaction: [
@@ -543,15 +544,12 @@ function gatherConfigFromInputs() {
     c.movieSegments.blockbuster = getVal('segment-block-factor', 1.5);
     c.movieSegments.mainstream = getVal('segment-main-factor', 1.0);
     c.movieSegments.niche = getVal('segment-niche-factor', 0.6);
-    c.financials.Mumbai.variableCost = getVal('cost-mumbai-var', 5);
-    c.financials.Mumbai.seatsPerScreen = getVal('cost-mumbai-seats', 220);
-    c.financials.Mumbai.fixedCostPerSeat = getVal('cost-mumbai-fixed', 2);
-    c.financials.Delhi.variableCost = getVal('cost-delhi-var', 5);
-    c.financials.Delhi.seatsPerScreen = getVal('cost-delhi-seats', 200);
-    c.financials.Delhi.fixedCostPerSeat = getVal('cost-delhi-fixed', 2);
-    c.financials.Bengaluru.variableCost = getVal('cost-blr-var', 5);
-    c.financials.Bengaluru.seatsPerScreen = getVal('cost-blr-seats', 180);
-    c.financials.Bengaluru.fixedCostPerSeat = getVal('cost-blr-fixed', 2);
+    c.financials.Mumbai.variableCost = getVal('cost-mumbai-var', 35);
+    c.financials.Mumbai.fixedCostPerDay = getVal('cost-mumbai-fixed', 250000);
+    c.financials.Delhi.variableCost = getVal('cost-delhi-var', 30);
+    c.financials.Delhi.fixedCostPerDay = getVal('cost-delhi-fixed', 200000);
+    c.financials.Bengaluru.variableCost = getVal('cost-blr-var', 28);
+    c.financials.Bengaluru.fixedCostPerDay = getVal('cost-blr-fixed', 180000);
     c.operational.weekdayDays = getIntVal('weekday-days', 22);
     c.operational.weekendDays = getIntVal('weekend-days', 8);
     ['Mumbai','Delhi','Bengaluru'].forEach(function(city) {
@@ -559,7 +557,6 @@ function gatherConfigFromInputs() {
     });
 }
 
-// FIXED: Competitor reaction now correctly uses sign of price difference
 function getCompetitorAdjustment(priceDiff) {
     var rules = simulationState.config.competitorReaction;
     var chosen = rules[0];
@@ -572,48 +569,29 @@ function getCompetitorAdjustment(priceDiff) {
     return adjustment;
 }
 
-// UPDATED: computeDemandForPeriod with your exact Excel logic
 function computeDemandForPeriod(lambda, muBase, segFactor, yourPrice, compPrice, baseDemand, screens, avgScreens, seasonMult) {
-    // Step 1: exponentials
     const expYou = Math.exp(lambda * yourPrice);
     const expComp = Math.exp(lambda * compPrice);
-    
-    // Step 2: MU (your unique logic - muBase * baseDemand, NOT exp)
     const mu = muBase * baseDemand;
-    
-    // Step 3: denominator
     const denominator = expYou + expComp + mu;
-    
-    // Step 4: your demand (raw)
     const yourDemandRaw = (expYou / denominator) * baseDemand;
-    
-    // Step 5: competitor demand (same logic, no capacity scaling later)
     const compDemandRaw = (expComp / denominator) * baseDemand;
-    
-    // Step 6: capacity adjustment (YOUR formula: avgScreens / screens, NOT screens / avgScreens)
     const capacityAdjYour = yourDemandRaw * (avgScreens / screens);
-    const capacityAdjComp = compDemandRaw; // competitor NOT scaled by capacity
-    
-    // Step 7: segment adjustment
+    const capacityAdjComp = compDemandRaw;
     const segAdjYour = capacityAdjYour * segFactor;
     const segAdjComp = capacityAdjComp * segFactor;
-    
-    // Step 8: season adjustment (FINAL DEMAND)
     const finalYour = segAdjYour * seasonMult;
     const finalComp = segAdjComp * seasonMult;
-    
-    // Step 9: lost sales (unserved market)
     const lostSales = Math.max(0, baseDemand - (finalYour + finalComp));
     
     return {
         yourFinal: finalYour,
         compFinal: finalComp,
         lostSales: lostSales,
-        capacityRatio: avgScreens / screens  // Your formula
+        capacityRatio: avgScreens / screens
     };
 }
 
-// UPDATED: simulateCity to work with the new computeDemandForPeriod
 function simulateCity(city, season, segment, yourWD, yourWE, compWD, compWE, screensAlloc) {
     var c = simulationState.config;
     var baseWD = c.marketAssumptions[city].baseWeekday;
@@ -627,11 +605,9 @@ function simulateCity(city, season, segment, yourWD, yourWE, compWD, compWE, scr
     var wdDays = c.operational.weekdayDays;
     var weDays = c.operational.weekendDays;
     
-    // Use the updated computeDemandForPeriod function
     var wdR = computeDemandForPeriod(lambda, muBase, segFactor, yourWD, compWD, baseWD, screensAlloc, avgScreens, seasonMult);
     var weR = computeDemandForPeriod(lambda, muBase, segFactor, yourWE, compWE, baseWE, screensAlloc, avgScreens, seasonMult);
     
-    // Multiply by days to get monthly totals
     var yourDemandWD = wdR.yourFinal * wdDays;
     var yourDemandWE = weR.yourFinal * weDays;
     var totalYourDemand = yourDemandWD + yourDemandWE;
@@ -640,12 +616,11 @@ function simulateCity(city, season, segment, yourWD, yourWE, compWD, compWE, scr
     var lostSalesWD = wdR.lostSales * wdDays;
     var lostSalesWE = weR.lostSales * weDays;
     
-    // Financial calculations
     var revenue = (yourDemandWD * yourWD) + (yourDemandWE * yourWE);
     var varCost = totalYourDemand * fin.variableCost;
-    var fixedCost = screensAlloc * fin.seatsPerScreen * 30 * fin.fixedCostPerSeat;
+    var fixedCost = fin.fixedCostPerDay * 30; // Monthly fixed cost (30 days)
     var profit = revenue - varCost - fixedCost;
-    var capRatio = wdR.capacityRatio; // or weR.capacityRatio (same value)
+    var capRatio = wdR.capacityRatio;
     
     return {
         yourDemand: Math.round(totalYourDemand),
@@ -762,7 +737,7 @@ function buildDashboardTable(displayRounds, tab) {
         });
         html += '</tbody></table>';
     } else if (tab === 'revenue') {
-        html += '<table class="metrics-table"><thead><tr><th>Month</th><th>Season / Segment</th><th>City</th><th>WD Revenue (Rs)</th><th>WE Revenue (Rs)</th><th>Total Revenue (Rs)</th></tr></thead><tbody>';
+        html += '<table class="metrics-table"><thead><tr><th>Month</th><th>Season / Segment</th><th>City</th><th>WD Revenue (Rs)</th><th>WE Revenue (Rs)</th><th>Total Revenue (Rs)</th><tr></thead><tbody>';
         displayRounds.forEach(function(round) {
             var prev = round.isPreview ? ' <span class="preview-badge">Preview</span>' : '';
             cities.forEach(function(city, ci) {
@@ -1016,14 +991,11 @@ function syncAdminInputs() {
     s('segment-main-factor', c.movieSegments.mainstream);
     s('segment-niche-factor', c.movieSegments.niche);
     s('cost-mumbai-var', c.financials.Mumbai.variableCost);
-    s('cost-mumbai-seats', c.financials.Mumbai.seatsPerScreen);
-    s('cost-mumbai-fixed', c.financials.Mumbai.fixedCostPerSeat);
+    s('cost-mumbai-fixed', c.financials.Mumbai.fixedCostPerDay);
     s('cost-delhi-var', c.financials.Delhi.variableCost);
-    s('cost-delhi-seats', c.financials.Delhi.seatsPerScreen);
-    s('cost-delhi-fixed', c.financials.Delhi.fixedCostPerSeat);
+    s('cost-delhi-fixed', c.financials.Delhi.fixedCostPerDay);
     s('cost-blr-var', c.financials.Bengaluru.variableCost);
-    s('cost-blr-seats', c.financials.Bengaluru.seatsPerScreen);
-    s('cost-blr-fixed', c.financials.Bengaluru.fixedCostPerSeat);
+    s('cost-blr-fixed', c.financials.Bengaluru.fixedCostPerDay);
     s('weekday-days', c.operational.weekdayDays);
     s('weekend-days', c.operational.weekendDays);
     s('cap-mumbai-screens', c.theatreCapacity.Mumbai.avgScreens);
