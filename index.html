@@ -236,9 +236,18 @@
                     <table class="param-table">
                         <thead><tr><th>City</th><th>Base Weekday Demand</th><th>Base Weekend Demand</th></tr></thead>
                         <tbody>
-                            <tr><td>Mumbai</td><td><input type="number" id="param-mumbai-wd" value="2200" step="100"></td><td><input type="number" id="param-mumbai-we" value="4200" step="100"></td></tr>
-                            <tr><td>Delhi</td><td><input type="number" id="param-delhi-wd" value="2000" step="100"></td><td><input type="number" id="param-delhi-we" value="3900" step="100"></td></tr>
-                            <tr><td>Bengaluru</td><td><input type="number" id="param-blr-wd" value="1800" step="100"></td><td><input type="number" id="param-blr-we" value="3600" step="100"></td></tr>
+                            <tr><td>Mumbai</td>
+                                <td><input type="number" id="param-mumbai-wd" value="2200" step="100"></td>
+                                <td><input type="number" id="param-mumbai-we" value="4200" step="100"></td>
+                            </tr>
+                            <tr>。<td>Delhi</td>
+                                <td><input type="number" id="param-delhi-wd" value="2000" step="100"></td>
+                                <td><input type="number" id="param-delhi-we" value="3900" step="100"></td>
+                            </tr>
+                            <tr>。<td>Bengaluru</td>
+                                <td><input type="number" id="param-blr-wd" value="1800" step="100"></td>
+                                <td><input type="number" id="param-blr-we" value="3600" step="100"></td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -256,27 +265,29 @@
                     <table class="param-table">
                         <thead><tr><th>Category</th><th>Segment Adjustment Factor</th></tr></thead>
                         <tbody>
-                            <tr><td>Blockbuster</td><td><input type="number" id="segment-block-factor" value="1.5" step="0.1"></td></tr>
-                            <tr><td>Mainstream</td><td><input type="number" id="segment-main-factor" value="1.0" step="0.1"></td></tr>
-                            <tr><td>Niche</td><td><input type="number" id="segment-niche-factor" value="0.6" step="0.1"></td></tr>
+                            <tr>。<td>Blockbuster</td><td><input type="number" id="segment-block-factor" value="1.5" step="0.1"></td></tr>
+                            <tr>。<td>Mainstream</td><td><input type="number" id="segment-main-factor" value="1.0" step="0.1"></td></tr>
+                            <tr>。<td>Niche</td><td><input type="number" id="segment-niche-factor" value="0.6" step="0.1"></td></tr>
                         </tbody>
                     </table>
                 </div>
                 <div class="card">
                     <h4>Screens Configuration</h4>
                     <table class="param-table">
-                        <thead><tr><th>City</th><th>Avg Screens (market)</th></tr></thead>
+                        <thead><tr><th>City</th><th>Avg Screens (market)</th></thead>
                         <tbody>
-                            <tr><td>Mumbai</td><td><input type="number" id="cap-mumbai-screens" value="20" min="1" step="1"></td></tr>
-                            <tr><td>Delhi</td><td><input type="number" id="cap-delhi-screens" value="15" min="1" step="1"></td></tr>
-                            <tr><td>Bengaluru</td><td><input type="number" id="cap-blr-screens" value="14" min="1" step="1"></td></tr>
+                            <tr>。<td>Mumbai</td><td><input type="number" id="cap-mumbai-screens" value="20" min="1" step="1"></td></tr>
+                            <tr>。<td>Delhi</td><td><input type="number" id="cap-delhi-screens" value="15" min="1" step="1"></td></tr>
+                            <tr>。<td>Bengaluru</td><td><input type="number" id="cap-blr-screens" value="14" min="1" step="1"></td></tr>
                         </tbody>
                     </table>
                 </div>
                 <div class="card">
                     <h4>Financial Parameters</h4>
                     <table class="param-table">
-                        <thead><tr><th>City</th><th>Variable Cost / Ticket (Rs)</th><th>Fixed Daily Cost (Rs) per full theatre</th></tr></thead>
+                        <thead>
+                            <tr><th>City</th><th>Variable Cost / Ticket (Rs)</th><th>Fixed Daily Cost (Rs) per full theatre</th></tr>
+                        </thead>
                         <tbody>
                             <tr><td>Mumbai</td><td><input type="number" id="cost-mumbai-var" value="35" step="1"></td><td><input type="number" id="cost-mumbai-fixed" value="250000" step="5000"></td></tr>
                             <tr><td>Delhi</td><td><input type="number" id="cost-delhi-var" value="30" step="1"></td><td><input type="number" id="cost-delhi-fixed" value="200000" step="5000"></td></tr>
@@ -618,7 +629,7 @@ function simulateCity(city, season, segment, yourWD, yourWE, compWD, compWE, scr
     
     var revenue = (yourDemandWD * yourWD) + (yourDemandWE * yourWE);
     var varCost = totalYourDemand * fin.variableCost;
-    var fixedCost = fin.fixedCostPerDay * 30; // Monthly fixed cost (30 days)
+    var fixedCost = fin.fixedCostPerDay * 30;
     var profit = revenue - varCost - fixedCost;
     var capRatio = wdR.capacityRatio;
     
@@ -737,7 +748,7 @@ function buildDashboardTable(displayRounds, tab) {
         });
         html += '</tbody></table>';
     } else if (tab === 'revenue') {
-        html += '<table class="metrics-table"><thead><tr><th>Month</th><th>Season / Segment</th><th>City</th><th>WD Revenue (Rs)</th><th>WE Revenue (Rs)</th><th>Total Revenue (Rs)</th><tr></thead><tbody>';
+        html += '<table class="metrics-table"><thead><tr><th>Month</th><th>Season / Segment</th><th>City</th><th>WD Revenue (Rs)</th><th>WE Revenue (Rs)</th><th>Total Revenue (Rs)</th></tr></thead><tbody>';
         displayRounds.forEach(function(round) {
             var prev = round.isPreview ? ' <span class="preview-badge">Preview</span>' : '';
             cities.forEach(function(city, ci) {
@@ -1330,23 +1341,27 @@ function loadStudentRound() {
             '<tr><th rowspan="2">City</th><th colspan="2" style="text-align:center;">Weekday Price (Rs)</th><th colspan="2" style="text-align:center;">Weekend Price (Rs)</th><th rowspan="2">Screens</th></tr>' +
             '<tr><th>Your Price</th><th style="color:#6b7280;font-weight:500;background:#f3f4f6;">Competitor</th><th>Your Price</th><th style="color:#6b7280;font-weight:500;background:#f3f4f6;">Competitor</th></tr>' +
             '</thead><tbody>' +
-            '<tr><td><strong>Mumbai</strong></td>:<input type="number" id="price-mumbai-weekday" min="20" max="500" value="' + (prevWD('Mumbai') || 140) + '"></td><td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Mumbai.weekdayPrice + '</td>' +
+            '<tr>。<strong>Mumbai</strong></td>。<input type="number" id="price-mumbai-weekday" min="20" max="500" value="' + (prevWD('Mumbai') || 140) + '"></td><td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Mumbai.weekdayPrice + '</td>' +
             '<td><input type="number" id="price-mumbai-weekend" min="20" max="500" value="' + (prevWE('Mumbai') || 170) + '"></td>' +
             '<td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Mumbai.weekendPrice + '</td>' +
-            '<td><input type="number" id="screens-mumbai" min="1" max="40" value="' + defM + '"></td></tr>' +
-            '<tr><td><strong>Delhi</strong></td>' +
+            '<td><input type="number" id="screens-mumbai" min="1" max="40" value="' + defM + '"></td>' +
+            '</tr>' +
+            '<tr>。<strong>Delhi</strong></td>' +
             '<td><input type="number" id="price-delhi-weekday" min="20" max="500" value="' + (prevWD('Delhi') || 130) + '"></td>' +
             '<td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Delhi.weekdayPrice + '</td>' +
             '<td><input type="number" id="price-delhi-weekend" min="20" max="500" value="' + (prevWE('Delhi') || 160) + '"></td>' +
             '<td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Delhi.weekendPrice + '</td>' +
-            '<td><input type="number" id="screens-delhi" min="1" max="40" value="' + defD + '"></td></tr>' +
-            '<tr><td><strong>Bengaluru</strong></td>' +
+            '<td><input type="number" id="screens-delhi" min="1" max="40" value="' + defD + '"></td>' +
+            '</tr>' +
+            '<tr>。<strong>Bengaluru</strong></td>' +
             '<td><input type="number" id="price-bengaluru-weekday" min="20" max="500" value="' + (prevWD('Bengaluru') || 120) + '"></td>' +
             '<td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Bengaluru.weekdayPrice + '</td>' +
             '<td><input type="number" id="price-bengaluru-weekend" min="20" max="500" value="' + (prevWE('Bengaluru') || 150) + '"></td>' +
             '<td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Bengaluru.weekendPrice + '</td>' +
-            '<td><input type="number" id="screens-bengaluru" min="1" max="40" value="' + defB + '"></td></tr>' +
-            '</tbody></table>' +
+            '<td><input type="number" id="screens-bengaluru" min="1" max="40" value="' + defB + '"></td>' +
+            '</tr>' +
+            '</tbody>' +
+            '</table>' +
             '<div style="display:flex;gap:10px;margin-top:15px;">' +
             '<button class="btn btn-warning" onclick="evaluateRound(' + cur.roundNumber + ')">Evaluate (Preview)</button>' +
             '<button class="btn btn-primary" onclick="submitRoundPrices(' + cur.roundNumber + ')">Submit Month ' + cur.roundNumber + '</button>' +
