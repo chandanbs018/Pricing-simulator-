@@ -265,11 +265,11 @@
                 <div class="card">
                     <h4>Screens Configuration</h4>
                     <table class="param-table">
-                        <thead><tr><th>City</th><th>Avg Screens (market)</th></thead>
+                        <thead><tr><th>City</th><th>Avg Screens (market)</th><th>Default Allocation (student)</th></tr></thead>
                         <tbody>
-                            <tr><td>Mumbai</td><td><input type="number" id="cap-mumbai-screens" value="20" min="1" step="1"></td></tr>
-                            <tr><td>Delhi</td><td><input type="number" id="cap-delhi-screens" value="15" min="1" step="1"></td></tr>
-                            <tr><td>Bengaluru</td><td><input type="number" id="cap-blr-screens" value="14" min="1" step="1"></td></tr>
+                            <tr><td>Mumbai</td><td><input type="number" id="cap-mumbai-screens" value="20" min="1" step="1"></td><td><input type="number" id="default-screens-mumbai" value="30" min="1" max="100" step="1"></td></tr>
+                            <tr><td>Delhi</td><td><input type="number" id="cap-delhi-screens" value="15" min="1" step="1"></td><td><input type="number" id="default-screens-delhi" value="8" min="1" max="100" step="1"></td></tr>
+                            <tr><td>Bengaluru</td><td><input type="number" id="cap-blr-screens" value="14" min="1" step="1"></td><td><input type="number" id="default-screens-blr" value="7" min="1" max="100" step="1"></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -562,17 +562,13 @@ function gatherConfigFromInputs() {
     c.defaultScreens.Bengaluru = getIntVal('default-screens-blr', 7);
 }
 
-// FIXED: Competitor reaction now correctly uses sign of price difference
 function getCompetitorAdjustment(priceDiff) {
     var rules = simulationState.config.competitorReaction;
+    var absDiff = Math.abs(priceDiff);
     var chosen = rules[0];
-    
-    rules.forEach(function(r) {
-        if (priceDiff >= r.diff) chosen = r;
-    });
-    
+    rules.forEach(function(r) { if (absDiff >= r.diff) chosen = r; });
     var adjustment = (0.5 + Math.random() * 0.5) * chosen.adjust;
-    return adjustment;
+    return priceDiff >= 0 ? adjustment : -adjustment;
 }
 
 // UPDATED: computeDemandForPeriod with your exact Excel logic
@@ -1032,6 +1028,9 @@ function syncAdminInputs() {
     s('cap-mumbai-screens', c.theatreCapacity.Mumbai.avgScreens);
     s('cap-delhi-screens', c.theatreCapacity.Delhi.avgScreens);
     s('cap-blr-screens', c.theatreCapacity.Bengaluru.avgScreens);
+    s('default-screens-mumbai', c.defaultScreens.Mumbai);
+    s('default-screens-delhi', c.defaultScreens.Delhi);
+    s('default-screens-blr', c.defaultScreens.Bengaluru);
     var r0 = simulationState.rounds[0];
     if (r0) {
         s('default-comp-mumbai-wd', r0.competitors.Mumbai.weekdayPrice);
@@ -1355,13 +1354,13 @@ function loadStudentRound() {
         var prevWD = function(city) { return cur.studentDecisions && cur.studentDecisions[city] ? cur.studentDecisions[city].weekday : 0; };
         var prevWE = function(city) { return cur.studentDecisions && cur.studentDecisions[city] ? cur.studentDecisions[city].weekend : 0; };
         html += '<div style="margin-top:20px;"><h4>Set Your Prices &amp; Screen Allocation</h4>' +
-            '<p class="muted" style="margin-bottom:10px;">Prices affect your logit market share vs competitor.</p>' +
+            '<p class="muted" style="margin-bottom:10px;">More screens = higher demand. Prices affect your logit market share vs competitor.</p>' +
             '<div class="alert alert-info"><strong>Market conditions above are fixed.</strong> Set prices and screens to maximise profit this month.</div>' +
             '<table class="param-table"><thead>' +
             '<tr><th rowspan="2">City</th><th colspan="2" style="text-align:center;">Weekday Price (Rs)</th><th colspan="2" style="text-align:center;">Weekend Price (Rs)</th><th rowspan="2">Screens</th></tr>' +
             '<tr><th>Your Price</th><th style="color:#6b7280;font-weight:500;background:#f3f4f6;">Competitor</th><th>Your Price</th><th style="color:#6b7280;font-weight:500;background:#f3f4f6;">Competitor</th></tr>' +
             '</thead><tbody>' +
-            '<tr><td><strong>Mumbai</strong></td>:<input type="number" id="price-mumbai-weekday" min="50" max="1000" value="' + (prevWD('Mumbai') || 230) + '"></td><td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Mumbai.weekdayPrice + '</td>' +
+            '<tr><td><strong>Mumbai</strong></td><td><input type="number" id="price-mumbai-weekday" min="50" max="1000" value="' + (prevWD('Mumbai') || 230) + '"></td><td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Mumbai.weekdayPrice + '</td>' +
             '<td><input type="number" id="price-mumbai-weekend" min="50" max="1000" value="' + (prevWE('Mumbai') || 320) + '"></td>' +
             '<td style="background:#f3f4f6;color:#6b7280;font-weight:600;text-align:center;padding:8px;">Rs ' + cur.competitors.Mumbai.weekendPrice + '</td>' +
             '<td><input type="number" id="screens-mumbai" min="1" max="40" value="' + defM + '"></td></tr>' +
