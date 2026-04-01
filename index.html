@@ -168,15 +168,27 @@ th{background:#f3f4f6;font-weight:600;color:#000;}
 <!-- INTRO -->
 <div id="intro-section">
 <h2>Simulation Overview</h2>
-<p class="muted" style="margin-bottom:14px;">You are regional pricing manager for a multiplex chain in Mumbai, Delhi and Bengaluru. Each month you set ticket prices and screen allocation. Competitors react to your decisions in subsequent months.</p>
-<div class="grid-3">
-    <div class="card"><h4>Demand Model</h4><p class="muted">Logit model: your share = EXP(&lambda;&middot;price) / (EXP(yours) + EXP(comp) + &mu;). &mu; = muBase &times; season.</p></div>
-    <div class="card"><h4>Cities</h4><p class="muted">Mumbai (avg 20 screens), Delhi (avg 15), Bengaluru (avg 14). Allocate screens each month.</p></div>
-    <div class="card"><h4>Competitor Reaction</h4><p class="muted">Competitor adjusts prices next month based on your pricing gap, with random variation (0.5&ndash;1.0&times;).</p></div>
+<p style="margin-bottom:20px;">You play the role of regional pricing manager for a multiplex chain in Mumbai, Delhi, and Bengaluru. Each month you make pricing and screen allocation decisions. Competitors react to your pricing decisions in future months.</p>
+
+<div class="card" style="margin-bottom:16px;">
+    <h4>Business context</h4>
+    <p>You set weekday and weekend ticket prices for each city. Demand responds to your prices, the current season, and competitive positioning. Your screen allocation scales demand proportionally to average screens.</p>
+    <p class="muted" style="margin-top:8px;">The objective is to maximise cumulative profit across all months while anticipating competitor reactions.</p>
 </div>
-<div class="card" style="margin-top:14px;">
-    <h4>Formula Flow</h4>
-    <p class="muted">EXP(your price) &rarr; Logit share &rarr; &times; Base demand = Raw demand &rarr; &times; (student screens / avg screens) = Capacity adj &rarr; &times; Segment factor = Segment adj &rarr; &times; Season multiplier = <strong>Final demand / day</strong></p>
+
+<div class="grid-3">
+    <div class="card">
+        <h4>Cities &amp; screens</h4>
+        <p class="muted">Mumbai (20 avg), Delhi (15 avg), Bengaluru (14 avg). You choose screens each month.</p>
+    </div>
+    <div class="card">
+        <h4>Your decisions</h4>
+        <p class="muted">Set weekday/weekend prices and screens per city, based on season and competitor prices.</p>
+    </div>
+    <div class="card">
+        <h4>Competitor reactions</h4>
+        <p class="muted">Competitors adjust prices next month based on your pricing gap, with random variation.</p>
+    </div>
 </div>
 </div>
 
