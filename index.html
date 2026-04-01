@@ -16,7 +16,7 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg
 .container{max-width:1400px;margin:0 auto;padding:20px;}
 
 /* Header */
-.header-wrapper{display:grid;grid-template-columns:200px 1fr;gap:20px;margin-bottom:24px;align-items:center;}
+.header-wrapper{display:flex;align-items:stretch;gap:16px;margin-bottom:24px;}
 .logo-area{background:var(--white);border-radius:8px;padding:16px;text-align:center;box-shadow:0 2px 4px rgba(0,0,0,.08);}
 .logo-text{font-size:1.6rem;font-weight:800;color:var(--primary);letter-spacing:1px;}
 .logo-sub{font-size:0.7rem;color:#6b7280;margin-top:2px;}
@@ -144,11 +144,11 @@ th{background:#f3f4f6;font-weight:600;color:#000;}
 <div id="toast-container"></div>
 <div class="container">
 
-<div class="header-wrapper" style="grid-template-columns:auto 1fr;gap:20px;">
-    <div style="display:flex;align-items:center;justify-content:center;">
-        <img src="logo.png" alt="Cineprice" style="height:70px;width:auto;border-radius:6px;" onerror="this.style.display='none'">
+<div class="header-wrapper">
+    <div style="background:#fff;border-radius:8px;padding:0 20px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 4px rgba(0,0,0,.08);flex-shrink:0;">
+        <img src="logo.png" alt="Cineprice" style="height:64px;width:auto;" onerror="this.parentElement.style.display='none'">
     </div>
-    <div class="header-banner">
+    <div class="header-banner" style="flex:1;">
         <h1>Cineprice Strategic Pricing Simulation</h1>
     </div>
 </div>
@@ -327,36 +327,30 @@ th{background:#f3f4f6;font-weight:600;color:#000;}
 
 <!-- DASHBOARD -->
 <div id="dashboard-section" class="hidden">
-<!-- Dashboard top: left = h2 + KPIs, right = progress card -->
-<div style="display:flex;gap:20px;align-items:flex-start;margin-bottom:16px;flex-wrap:wrap;">
+<h2>Executive Dashboard</h2>
 
-    <!-- Left column: title + KPIs -->
-    <div style="flex:1;min-width:300px;">
-        <h2 style="margin:0 0 14px 0;padding-bottom:8px;border-bottom:2px solid var(--primary);">Executive Dashboard</h2>
-        <div class="status-row" style="margin:0;">
-            <div class="status-card"><h4>Total Months</h4><div class="status-value" id="kpi-total">0</div></div>
-            <div class="status-card"><h4>Completed</h4><div class="status-value" id="kpi-done">0</div></div>
-            <div class="status-card"><h4>Cumulative Profit</h4><div class="status-value" id="kpi-profit">Rs 0</div></div>
-            <div class="status-card"><h4>Avg Profit / Month</h4><div class="status-value" id="kpi-avg">Rs 0</div></div>
+<!-- KPI cards -->
+<div class="status-row" style="margin-bottom:16px;">
+    <div class="status-card"><h4>Total Months</h4><div class="status-value" id="kpi-total">0</div></div>
+    <div class="status-card"><h4>Completed</h4><div class="status-value" id="kpi-done">0</div></div>
+    <div class="status-card"><h4>Cumulative Profit</h4><div class="status-value" id="kpi-profit">Rs 0</div></div>
+    <div class="status-card"><h4>Avg Profit / Month</h4><div class="status-value" id="kpi-avg">Rs 0</div></div>
+</div>
+
+<!-- Progress + Performance side by side -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
+    <div class="card" style="margin:0;padding:14px 18px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <span style="font-weight:600;font-size:.88em;color:#1e293b;text-transform:uppercase;letter-spacing:.04em;">Completion Progress</span>
+            <strong id="prog-pct" style="color:var(--primary);font-size:1.05em;">0%</strong>
         </div>
+        <div class="progress-bar" style="height:12px;"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+        <div class="muted" style="margin-top:6px;font-size:.82em;" id="prog-text">0 of 0 months completed</div>
     </div>
-
-    <!-- Right column: progress + performance summary -->
-    <div style="flex:0 0 280px;min-width:240px;">
-        <div class="card" style="margin:0 0 10px 0;padding:14px 16px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                <span style="font-weight:600;font-size:.9em;color:#1e293b;">Completion Progress</span>
-                <strong id="prog-pct" style="color:var(--primary);font-size:1.1em;">0%</strong>
-            </div>
-            <div class="progress-bar" style="height:12px;"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
-            <div class="muted" style="margin-top:6px;font-size:.82em;" id="prog-text">0 of 0 months completed</div>
-        </div>
-        <div class="card" style="margin:0;padding:14px 16px;">
-            <div style="font-weight:600;font-size:.88em;color:#1e293b;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;">Performance Summary</div>
-            <div id="perf-summary"><p class="muted" style="font-size:.85em;">Complete months to see summary.</p></div>
-        </div>
+    <div class="card" style="margin:0;padding:14px 18px;">
+        <div style="font-weight:600;font-size:.88em;color:#1e293b;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;">Performance Summary</div>
+        <div id="perf-summary"><p class="muted" style="font-size:.85em;">Complete months to see summary.</p></div>
     </div>
-
 </div>
 
 <div class="metric-tabs" id="metric-tabs">
@@ -474,7 +468,7 @@ function calcPeriod(lambda, muBase, segFactor, yourPrice, compPrice, baseDemand,
     /* Lost sales = base - (your final + comp final) */
     var lostDem  = baseDemand - (finalDem + compDem);
     var capRatio = studScr / avgScr;
-    return { finalDem:finalDem, compDem:compDem, lostDem:lostDem, capRatio:capRatio };
+    return { finalDem:finalDem, compDem:compDem, lostDem:lostDem, capRatio:capRatio, compRaw:compRaw };
 }
 
 function simCity(city, season, seg, yourWD, yourWE, compWD, compWE, studScr) {
@@ -514,7 +508,10 @@ function simCity(city, season, seg, yourWD, yourWE, compWD, compWE, studScr) {
         studScr: studScr, avgScr: avg,
         yourWD: yourWD, yourWE: yourWE,
         compWD: compWD, compWE: compWE,
-        netMargin: rev > 0 ? (prof/rev)*100 : 0
+        netMargin: rev > 0 ? (prof/rev)*100 : 0,
+        /* Pure logit competitor demand: (expC/sum) * base only — no seg/season */
+        compRawWD: Math.round(rWD.compRaw * S.cfg.wdDays),
+        compRawWE: Math.round(rWE.compRaw * S.cfg.weDays)
     };
 }
 
@@ -947,7 +944,7 @@ function buildTable(rows, tab) {
                 var cr=r.results.cityResults[city];
                 h+='<tr>';
                 if(ci===0){h+='<td rowspan="3" style="vertical-align:middle;background:#f8fafc;font-weight:600;">Month '+r.num+' '+prev+'</td><td rowspan="3" style="vertical-align:middle;color:#6b7280;background:#f8fafc;">'+r.season+' / '+r.seg+'</td>';}
-                h+='<td><strong>'+city+'</strong></td><td>'+fmtN(cr.demWD)+'</td><td>'+fmtN(cr.cDemWD)+'</td><td class="'+(cr.lostWD>0?'neg':'')+'">'+(cr.lostWD>0?'':'')+fmtN(cr.lostWD)+'</td><td>'+fmtN(cr.demWE)+'</td><td>'+fmtN(cr.cDemWE)+'</td><td class="'+(cr.lostWE>0?'neg':'')+'">'+(cr.lostWE>0?'':'')+fmtN(cr.lostWE)+'</td></tr>';
+                h+='<td><strong>'+city+'</strong></td><td>'+fmtN(cr.demWD)+'</td><td>'+fmtN(cr.compRawWD)+'</td><td class="'+(cr.lostWD>0?'neg':'')+'">'+(cr.lostWD>0?'&#8595; ':'')+fmtN(cr.lostWD)+'</td><td>'+fmtN(cr.demWE)+'</td><td>'+fmtN(cr.compRawWE)+'</td><td class="'+(cr.lostWE>0?'neg':'')+'">'+(cr.lostWE>0?'&#8595; ':'')+fmtN(cr.lostWE)+'</td></tr>';
             });
         });
     } else if(tab==='utilization'){
