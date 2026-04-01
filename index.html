@@ -7,137 +7,145 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root {
-    --primary:#4F82CC; --success:#27ae60; --warning:#f39c12;
-    --danger:#e74c3c;  --bg:#f4f5fb;      --text:#2c3e50;
-    --white:#ffffff;   --border:#e2e8f0;
+    --primary:#2c5f9a;
+    --primary-dark:#1e3c72;
+    --success:#27ae60;
+    --warning:#f39c12;
+    --danger:#e74c3c;
+    --bg:#f5f7fc;
+    --text:#2c3e50;
+    --white:#ffffff;
+    --border:#e8edf5;
+    --gray-light:#f8fafd;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg);color:var(--text);}
 .container{max-width:1400px;margin:0 auto;padding:20px;}
 
-/* Header */
-.header-wrapper{display:flex;align-items:stretch;gap:16px;margin-bottom:24px;}
-.logo-area{background:var(--white);border-radius:8px;padding:16px;text-align:center;box-shadow:0 2px 4px rgba(0,0,0,.08);}
-.logo-text{font-size:1.6rem;font-weight:800;color:var(--primary);letter-spacing:1px;}
-.logo-sub{font-size:0.7rem;color:#6b7280;margin-top:2px;}
-.header-banner{background:linear-gradient(135deg,var(--primary),#3a6bbf);color:#fff;padding:22px 30px;border-radius:8px;box-shadow:0 4px 6px rgba(0,0,0,.1);}
-.header-banner h1{font-size:2em;margin-bottom:4px;}
-.header-banner p{opacity:.9;font-size:.95em;}
+/* Header - matching reference image */
+.header-wrapper{display:flex;align-items:stretch;gap:20px;margin-bottom:28px;}
+.logo-area{background:var(--white);border-radius:20px;padding:16px 28px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.05);display:flex;align-items:center;justify-content:center;}
+.logo-text{font-size:1.8rem;font-weight:800;color:var(--primary);letter-spacing:1px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.logo-sub{font-size:0.7rem;color:#6b7280;margin-top:2px;font-weight:500;}
+.header-banner{background:linear-gradient(135deg,var(--primary-dark),var(--primary));color:#fff;padding:22px 32px;border-radius:20px;box-shadow:0 6px 14px rgba(0,0,0,0.08);flex:1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;}
+.header-banner h1{font-size:1.9rem;margin-bottom:6px;font-weight:700;letter-spacing:-0.5px;}
+.header-banner p{opacity:.9;font-size:.9rem;font-weight:500;}
+.banner-badge{background:rgba(255,255,255,0.2);padding:6px 16px;border-radius:40px;font-size:0.8rem;font-weight:600;backdrop-filter:blur(4px);}
 
 /* Layout */
-.main-grid{display:grid;grid-template-columns:230px 1fr;gap:20px;}
-.sidebar{background:var(--white);padding:18px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,.08);height:fit-content;position:sticky;top:20px;}
-.sidebar h3{color:#000;margin-bottom:12px;border-bottom:2px solid var(--primary);padding-bottom:8px;font-size:.95em;text-transform:uppercase;letter-spacing:.05em;}
-.nav-item{padding:11px 14px;margin:5px 0;background:var(--bg);border:2px solid transparent;border-radius:6px;cursor:pointer;transition:all .2s;width:100%;text-align:left;font-weight:500;font-size:.92em;}
-.nav-item:hover{background:var(--primary);color:#fff;}
-.nav-item.active{background:var(--primary);color:#fff;border-color:var(--primary);}
-.content{background:var(--white);padding:24px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,.08);min-height:600px;}
-.content h2{color:#000;margin-bottom:18px;border-bottom:2px solid var(--primary);padding-bottom:8px;}
-.content h4{color:#000;margin:14px 0 8px;}
+.main-grid{display:grid;grid-template-columns:250px 1fr;gap:24px;}
+.sidebar{background:var(--white);padding:24px 16px;border-radius:24px;box-shadow:0 4px 12px rgba(0,0,0,0.03);height:fit-content;position:sticky;top:20px;border:1px solid var(--border);}
+.sidebar h3{color:#4a627a;margin-bottom:20px;border-bottom:2px solid var(--primary);padding-bottom:10px;font-size:.75rem;text-transform:uppercase;letter-spacing:1px;font-weight:700;}
+.nav-item{padding:12px 18px;margin:6px 0;background:var(--gray-light);border:1px solid transparent;border-radius:16px;cursor:pointer;transition:all .2s;width:100%;text-align:left;font-weight:600;font-size:.9rem;color:#2c3e50;}
+.nav-item:hover{background:var(--primary);color:#fff;transform:translateX(3px);}
+.nav-item.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 4px 10px rgba(44,95,154,0.2);}
+.content{background:var(--white);padding:28px 32px;border-radius:24px;box-shadow:0 4px 16px rgba(0,0,0,0.04);min-height:600px;}
+.content h2{color:#1f3a5f;margin-bottom:20px;border-left:5px solid var(--primary);padding-left:18px;font-size:1.6rem;font-weight:700;}
+.content h4{color:#1f3a5f;margin:14px 0 8px;font-weight:600;}
 
 /* Cards */
-.card{background:var(--bg);padding:18px;border-left:4px solid var(--primary);margin:12px 0;border-radius:5px;}
-.card h4{color:#000;margin-bottom:8px;}
-.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:12px;}
-.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:12px;}
-.grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:12px;}
-label{display:block;font-size:.88em;color:#6b7280;margin-bottom:4px;}
-.muted{color:#6b7280;font-size:.88em;}
+.card{background:var(--gray-light);padding:18px 20px;border-left:4px solid var(--primary);margin:12px 0;border-radius:16px;}
+.card h4{color:#1f3a5f;margin-bottom:8px;}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:12px;}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:12px;}
+.grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-top:12px;}
+label{display:block;font-size:.75rem;color:#6b7280;margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;}
+.muted{color:#6b7280;font-size:.85rem;}
 
 /* Inputs */
-input[type=number],input[type=text],select{width:100%;padding:7px 10px;font-size:.92em;border-radius:4px;border:1px solid var(--border);margin-bottom:8px;background:#fff;}
-input:focus,select:focus{outline:none;border-color:var(--primary);}
+input[type=number],input[type=text],select{width:100%;padding:10px 14px;font-size:.9rem;border-radius:14px;border:1.5px solid var(--border);margin-bottom:8px;background:#fff;transition:0.2s;}
+input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(44,95,154,0.1);}
 
 /* Buttons */
-.btn{padding:9px 18px;border:none;border-radius:5px;cursor:pointer;font-weight:600;font-size:.9em;display:inline-block;transition:all .2s;margin-top:8px;}
-.btn-primary{background:var(--primary);color:#fff;}
+.btn{padding:10px 22px;border:none;border-radius:40px;cursor:pointer;font-weight:600;font-size:.85rem;display:inline-block;transition:all .2s;margin-top:8px;}
+.btn-primary{background:var(--primary);color:#fff;box-shadow:0 2px 6px rgba(44,95,154,0.3);}
+.btn-primary:hover{background:var(--primary-dark);transform:translateY(-1px);}
 .btn-warning{background:var(--warning);color:#fff;}
 .btn-success{background:var(--success);color:#fff;}
 .btn-danger{background:var(--danger);color:#fff;}
-.btn:hover{opacity:.88;}
-.btn:disabled{background:var(--border);cursor:not-allowed;opacity:.6;}
+.btn:hover{opacity:.9;}
 
 /* Tables */
-table{width:100%;border-collapse:collapse;font-size:.92em;}
-th,td{padding:10px 13px;border-bottom:1px solid var(--border);text-align:left;}
-th{background:#f3f4f6;font-weight:600;color:#000;}
-.param-table th{background:#f3f4f6;padding:10px 13px;}
-.param-table td{padding:10px 13px;}
+table{width:100%;border-collapse:collapse;font-size:.9rem;}
+th,td{padding:12px 14px;border-bottom:1px solid var(--border);text-align:left;}
+th{background:var(--gray-light);font-weight:700;color:#1f3a5f;}
+.param-table th{background:var(--gray-light);padding:12px 14px;}
+.param-table td{padding:12px 14px;}
 .param-table input{margin-bottom:0;}
 
 /* Status cards */
-.status-row{display:flex;flex-wrap:wrap;gap:14px;margin:16px 0;}
-.status-card{flex:1;min-width:150px;background:#fff;padding:14px;border-radius:8px;border:1px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,.05);}
-.status-card h4{color:#6b7280;font-size:.8em;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-weight:600;}
-.status-value{font-size:1.5em;font-weight:700;color:#000;}
+.status-row{display:flex;flex-wrap:wrap;gap:16px;margin:16px 0;}
+.status-card{flex:1;min-width:150px;background:#fff;padding:16px 20px;border-radius:20px;border:1px solid var(--border);box-shadow:0 2px 6px rgba(0,0,0,0.02);}
+.status-card h4{color:#6b7280;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;font-weight:700;}
+.status-value{font-size:1.6rem;font-weight:800;color:#1f3a5f;}
 
 /* Progress / alerts */
-.progress-bar{width:100%;height:16px;background:var(--border);border-radius:8px;overflow:hidden;margin:8px 0;}
-.progress-fill{height:100%;background:var(--success);transition:width .3s;border-radius:8px;}
-.alert{padding:13px 16px;border-radius:5px;margin:12px 0;}
-.alert-success{background:#d4edda;color:#155724;border-left:4px solid var(--success);}
-.alert-info{background:#d1ecf1;color:#0c5460;border-left:4px solid var(--primary);}
+.progress-bar{width:100%;height:12px;background:var(--border);border-radius:20px;overflow:hidden;margin:8px 0;}
+.progress-fill{height:100%;background:var(--success);transition:width .3s;border-radius:20px;}
+.alert{padding:14px 20px;border-radius:20px;margin:12px 0;}
+.alert-success{background:#e6f7ed;color:#155724;border-left:4px solid var(--success);}
+.alert-info{background:#eef6ff;color:#0c5460;border-left:4px solid var(--primary);}
 .hidden{display:none;}
 
 /* Round selector */
-.round-selector{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0;}
-.round-btn{padding:8px 18px;border:2px solid var(--border);background:#fff;border-radius:6px;cursor:pointer;font-weight:500;font-size:.88em;transition:all .2s;}
-.round-btn:hover{background:var(--bg);}
+.round-selector{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0;}
+.round-btn{padding:10px 22px;border:2px solid var(--border);background:#fff;border-radius:40px;cursor:pointer;font-weight:600;font-size:.85rem;transition:all .2s;}
+.round-btn:hover{background:var(--gray-light);}
 .round-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}
 .round-btn.completed{border-color:var(--success);color:var(--success);}
 .round-btn:disabled{opacity:.45;cursor:not-allowed;}
 
 /* Admin round cards */
-.round-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:13px;margin-top:13px;}
-.round-card{background:#fff;padding:13px;border-radius:6px;border:1px solid var(--border);cursor:pointer;transition:all .2s;}
-.round-card:hover{box-shadow:0 3px 8px rgba(0,0,0,.1);}
+.round-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:14px;}
+.round-card{background:#fff;padding:16px;border-radius:18px;border:1px solid var(--border);cursor:pointer;transition:all .2s;}
+.round-card:hover{box-shadow:0 6px 14px rgba(0,0,0,0.08);transform:translateY(-2px);}
 .round-card.active{border-color:var(--primary);background:#f0f7ff;}
-.round-badge{background:var(--primary);color:#fff;padding:4px 10px;border-radius:4px;font-weight:700;font-size:.85em;display:inline-block;}
-.dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:4px;}
+.round-badge{background:var(--primary);color:#fff;padding:5px 12px;border-radius:30px;font-weight:700;font-size:.8rem;display:inline-block;}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:6px;}
 .dot-planned{background:#9ca3af;} .dot-active{background:var(--success);} .dot-completed{background:var(--primary);}
 .round-preview-list{margin-top:10px;}
-.round-preview-item{display:flex;align-items:center;justify-content:space-between;padding:10px 13px;border:1px solid var(--border);border-radius:5px;margin:6px 0;background:#fff;}
+.round-preview-item{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border:1px solid var(--border);border-radius:16px;margin:8px 0;background:#fff;}
 
 /* Dashboard tabs */
-.metric-tabs{display:flex;flex-wrap:wrap;gap:3px;margin:16px 0 0;border-bottom:2px solid var(--border);}
-.metric-tab{padding:9px 16px;background:#fff;border:1px solid var(--border);border-bottom:none;border-radius:6px 6px 0 0;cursor:pointer;font-weight:500;font-size:.88em;transition:all .2s;position:relative;top:2px;}
-.metric-tab:hover{background:var(--bg);}
+.metric-tabs{display:flex;flex-wrap:wrap;gap:4px;margin:16px 0 0;border-bottom:2px solid var(--border);}
+.metric-tab{padding:10px 20px;background:#fff;border:1px solid var(--border);border-bottom:none;border-radius:16px 16px 0 0;cursor:pointer;font-weight:600;font-size:.85rem;transition:all .2s;position:relative;top:2px;}
+.metric-tab:hover{background:var(--gray-light);}
 .metric-tab.active{background:var(--primary);color:#fff;border-color:var(--primary);}
-.table-wrap{overflow-x:auto;border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px;}
-.metrics-table{width:100%;border-collapse:collapse;min-width:600px;font-size:.88em;}
-.metrics-table thead tr{background:#f8fafc;}
-.metrics-table th{padding:10px 13px;font-weight:600;color:#1e293b;border-bottom:2px solid var(--border);white-space:nowrap;}
-.metrics-table td{padding:9px 13px;border-bottom:1px solid var(--border);}
-.metrics-table tbody tr:hover{background:#f8fafc;}
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-top:none;border-radius:0 0 16px 16px;}
+.metrics-table{width:100%;border-collapse:collapse;min-width:600px;font-size:.85rem;}
+.metrics-table thead tr{background:var(--gray-light);}
+.metrics-table th{padding:12px 14px;font-weight:700;color:#1f3a5f;border-bottom:2px solid var(--border);white-space:nowrap;}
+.metrics-table td{padding:10px 14px;border-bottom:1px solid var(--border);}
+.metrics-table tbody tr:hover{background:var(--gray-light);}
 .pos{color:var(--success);font-weight:600;} .neg{color:var(--danger);font-weight:600;}
-.preview-badge{background:var(--warning);color:#fff;padding:2px 7px;border-radius:10px;font-size:.7em;font-weight:700;margin-left:6px;}
-.no-data{text-align:center;padding:40px;color:#9ca3af;font-size:.95em;}
+.preview-badge{background:var(--warning);color:#fff;padding:2px 10px;border-radius:20px;font-size:.7rem;font-weight:700;margin-left:8px;}
+.no-data{text-align:center;padding:50px;color:#9ca3af;font-size:.95rem;}
 
 /* City charts */
-.charts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px;}
-.chart-card{background:#fff;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
-.chart-head{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid var(--border);background:#fafbff;}
-.chart-dot{width:11px;height:11px;border-radius:50%;}
-.chart-title{font-weight:700;font-size:.92em;color:#1e293b;}
-.chart-body{padding:10px 12px 14px;min-height:200px;}
+.charts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:24px;}
+.chart-card{background:#fff;border:1px solid var(--border);border-radius:20px;overflow:hidden;}
+.chart-head{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border);background:#fff;}
+.chart-dot{width:12px;height:12px;border-radius:50%;}
+.chart-title{font-weight:700;font-size:.9rem;color:#1f3a5f;}
+.chart-body{padding:12px 14px 18px;min-height:200px;}
 
 /* Competitor table in student */
 .comp-table{background:#f9fafb;} .comp-table th{background:#e5e7eb;}
 
 /* Toast */
 #toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
-.toast{background:#2c3e50;color:#fff;padding:11px 18px;border-radius:6px;font-size:.88em;font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,.2);max-width:340px;border-left:4px solid var(--primary);animation:toastIn .22s ease;}
+.toast{background:#2c3e50;color:#fff;padding:12px 20px;border-radius:12px;font-size:.85rem;font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,.2);max-width:340px;border-left:4px solid var(--primary);animation:toastIn .22s ease;}
 .toast.success{border-left-color:var(--success);} .toast.danger{border-left-color:var(--danger);} .toast.warning{border-left-color:var(--warning);}
 @keyframes toastIn{from{opacity:0;transform:translateX(28px);}to{opacity:1;transform:translateX(0);}}
 
 /* Misc */
-.quick-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
-.result-row{display:flex;justify-content:space-between;margin:5px 0;font-size:.88em;}
+.quick-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;}
+.result-row{display:flex;justify-content:space-between;margin:6px 0;font-size:.85rem;}
 .result-label{color:#6b7280;} .result-value{font-weight:600;}
-.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.7em;font-weight:700;margin-left:6px;}
+.badge{display:inline-block;padding:3px 10px;border-radius:30px;font-size:.7rem;font-weight:700;margin-left:6px;}
 .badge-purple{background:#9b59b6;color:#fff;} .badge-green{background:var(--success);color:#fff;}
 
-@media(max-width:900px){.main-grid{grid-template-columns:1fr;}.charts-grid{grid-template-columns:1fr;}.header-wrapper{grid-template-columns:1fr;}}
+@media(max-width:900px){.main-grid{grid-template-columns:1fr;}.charts-grid{grid-template-columns:1fr;}.header-wrapper{flex-direction:column;}.header-banner{flex-direction:column;align-items:flex-start;gap:12px;}}
 </style>
 </head>
 <body>
@@ -145,11 +153,18 @@ th{background:#f3f4f6;font-weight:600;color:#000;}
 <div class="container">
 
 <div class="header-wrapper">
-    <div style="background:#fff;border-radius:8px;padding:0 20px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 4px rgba(0,0,0,.08);flex-shrink:0;">
-        <img src="logo.png" alt="Cineprice" style="height:64px;width:auto;" onerror="this.parentElement.style.display='none'">
+    <div class="logo-area">
+        <div>
+            <div class="logo-text">CINEPRICE</div>
+            <div class="logo-sub">strategic pricing simulation</div>
+        </div>
     </div>
-    <div class="header-banner" style="flex:1;">
-        <h1>Cineprice Strategic Pricing Simulation</h1>
+    <div class="header-banner">
+        <div>
+            <h1>Cineprice Strategic Pricing Simulation</h1>
+            <p>Multiplex chain · Mumbai · Delhi · Bengaluru</p>
+        </div>
+        <div class="banner-badge">Logit demand model · AI competitor reaction</div>
     </div>
 </div>
 
@@ -168,13 +183,13 @@ th{background:#f3f4f6;font-weight:600;color:#000;}
 <!-- INTRO -->
 <div id="intro-section">
 <h2>Simulation Overview</h2>
-<p class="muted" style="margin-bottom:14px;">You are regional pricing manager for a multiplex chain in Mumbai, Delhi and Bengaluru. Each month you set ticket prices and screen allocation. Competitors react to your decisions in subsequent months.</p>
+<p class="muted" style="margin-bottom:16px;">You are regional pricing manager for a multiplex chain in Mumbai, Delhi and Bengaluru. Each month you set ticket prices and screen allocation. Competitors react to your decisions in subsequent months.</p>
 <div class="grid-3">
     <div class="card"><h4>Demand Model</h4><p class="muted">Logit model: your share = EXP(&lambda;&middot;price) / (EXP(yours) + EXP(comp) + &mu;). &mu; = muBase &times; season.</p></div>
     <div class="card"><h4>Cities</h4><p class="muted">Mumbai (avg 20 screens), Delhi (avg 15), Bengaluru (avg 14). Allocate screens each month.</p></div>
     <div class="card"><h4>Competitor Reaction</h4><p class="muted">Competitor adjusts prices next month based on your pricing gap, with random variation (0.5&ndash;1.0&times;).</p></div>
 </div>
-<div class="card" style="margin-top:14px;">
+<div class="card" style="margin-top:16px;">
     <h4>Formula Flow</h4>
     <p class="muted">EXP(your price) &rarr; Logit share &rarr; &times; Base demand = Raw demand &rarr; &times; (student screens / avg screens) = Capacity adj &rarr; &times; Segment factor = Segment adj &rarr; &times; Season multiplier = <strong>Final demand / day</strong></p>
 </div>
@@ -285,14 +300,14 @@ th{background:#f3f4f6;font-weight:600;color:#000;}
 <div class="card">
     <h4>Month Configuration &nbsp;<span class="muted" style="font-weight:400;">Total: <span id="round-count">0</span></span></h4>
     <div class="round-grid" id="round-config-container"></div>
-    <div id="round-editor" class="hidden" style="margin-top:18px;padding:16px;background:#fff;border:1px solid var(--border);border-radius:6px;">
+    <div id="round-editor" class="hidden" style="margin-top:20px;padding:18px;background:#fff;border:1px solid var(--border);border-radius:18px;">
         <h4>Editing Month <span id="edit-month-num">1</span></h4>
         <div class="grid-3">
             <div><label>Status</label>
                 <select id="edit-status"><option value="planned">Planned</option><option value="active">Active</option><option value="completed">Completed</option></select>
             </div>
         </div>
-        <h4 style="margin-top:14px;">Competitor Prices</h4>
+        <h4 style="margin-top:16px;">Competitor Prices</h4>
         <div class="grid-3">
             <div><strong>Mumbai</strong><br><label>Weekday (Rs)</label><input type="number" id="edit-mum-wd" value="240"><label>Weekend (Rs)</label><input type="number" id="edit-mum-we" value="270"></div>
             <div><strong>Delhi</strong><br><label>Weekday (Rs)</label><input type="number" id="edit-del-wd" value="240"><label>Weekend (Rs)</label><input type="number" id="edit-del-we" value="300"></div>
@@ -311,16 +326,16 @@ th{background:#f3f4f6;font-weight:600;color:#000;}
     <h4>Month Preview</h4>
     <div id="round-preview-container"></div>
 </div>
-</div><!-- /instructor -->
+</div>
 
 <!-- STUDENT -->
 <div id="student-section" class="hidden">
 <h2>Monthly Planning</h2>
 <div class="round-selector" id="round-selector"></div>
 <div id="current-round-display"></div>
-<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;">
-    <button class="btn" id="prev-btn" style="display:none;" onclick="prevRound()">&larr; Previous Month</button>
-    <button class="btn btn-primary" id="next-btn" style="display:none;" onclick="nextRound()">Next Month &rarr;</button>
+<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px;">
+    <button class="btn" id="prev-btn" style="display:none;" onclick="prevRound()">Previous Month</button>
+    <button class="btn btn-primary" id="next-btn" style="display:none;" onclick="nextRound()">Next Month</button>
     <button class="btn btn-warning" onclick="resetProgress()">Reset Progress</button>
 </div>
 </div>
@@ -329,27 +344,25 @@ th{background:#f3f4f6;font-weight:600;color:#000;}
 <div id="dashboard-section" class="hidden">
 <h2>Executive Dashboard</h2>
 
-<!-- KPI cards -->
-<div class="status-row" style="margin-bottom:16px;">
+<div class="status-row" style="margin-bottom:20px;">
     <div class="status-card"><h4>Total Months</h4><div class="status-value" id="kpi-total">0</div></div>
     <div class="status-card"><h4>Completed</h4><div class="status-value" id="kpi-done">0</div></div>
     <div class="status-card"><h4>Cumulative Profit</h4><div class="status-value" id="kpi-profit">Rs 0</div></div>
     <div class="status-card"><h4>Avg Profit / Month</h4><div class="status-value" id="kpi-avg">Rs 0</div></div>
 </div>
 
-<!-- Progress + Performance side by side -->
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
-    <div class="card" style="margin:0;padding:14px 18px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-            <span style="font-weight:600;font-size:.88em;color:#1e293b;text-transform:uppercase;letter-spacing:.04em;">Completion Progress</span>
-            <strong id="prog-pct" style="color:var(--primary);font-size:1.05em;">0%</strong>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+    <div class="card" style="margin:0;padding:16px 20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <span style="font-weight:700;font-size:.8rem;color:#1f3a5f;text-transform:uppercase;letter-spacing:.04em;">Completion Progress</span>
+            <strong id="prog-pct" style="color:var(--primary);font-size:1rem;">0%</strong>
         </div>
-        <div class="progress-bar" style="height:12px;"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
-        <div class="muted" style="margin-top:6px;font-size:.82em;" id="prog-text">0 of 0 months completed</div>
+        <div class="progress-bar" style="height:10px;"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+        <div class="muted" style="margin-top:8px;font-size:.8rem;" id="prog-text">0 of 0 months completed</div>
     </div>
-    <div class="card" style="margin:0;padding:14px 18px;">
-        <div style="font-weight:600;font-size:.88em;color:#1e293b;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;">Performance Summary</div>
-        <div id="perf-summary"><p class="muted" style="font-size:.85em;">Complete months to see summary.</p></div>
+    <div class="card" style="margin:0;padding:16px 20px;">
+        <div style="font-weight:700;font-size:.8rem;color:#1f3a5f;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px;">Performance Summary</div>
+        <div id="perf-summary"><p class="muted" style="font-size:.85rem;">Complete months to see summary.</p></div>
     </div>
 </div>
 
@@ -367,7 +380,7 @@ th{background:#f3f4f6;font-weight:600;color:#000;}
     <div class="chart-card"><div class="chart-head"><span class="chart-dot" style="background:#ff7f0e"></span><span class="chart-title">Delhi</span></div><div class="chart-body" style="position:relative;height:220px;"><canvas id="chartDelhi"></canvas></div></div>
     <div class="chart-card"><div class="chart-head"><span class="chart-dot" style="background:#2ca02c"></span><span class="chart-title">Bengaluru</span></div><div class="chart-body" style="position:relative;height:220px;"><canvas id="chartBengaluru"></canvas></div></div>
 </div>
-</div><!-- /dashboard -->
+</div>
 
 <!-- INSTRUCTOR PANEL -->
 <div id="instructor-panel-section" class="hidden">
@@ -377,13 +390,13 @@ th{background:#f3f4f6;font-weight:600;color:#000;}
 </div>
 </div>
 
-</div><!-- /content -->
-</div><!-- /main-grid -->
-</div><!-- /container -->
+</div>
+</div>
+</div>
 
 <script>
 /* ════════════════════════════════════════════════
-   STATE
+   STATE (All logic preserved exactly)
 ════════════════════════════════════════════════ */
 var S = {
     cfg: {
@@ -407,9 +420,6 @@ var CITIES = ['Mumbai','Delhi','Bengaluru'];
 var SEASONS = ['Normal','Festive','Exam','Monsoon'];
 var SEGS = ['blockbuster','mainstream','niche'];
 
-/* ════════════════════════════════════════════════
-   HELPERS
-════════════════════════════════════════════════ */
 function rnd(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 function g(id){ return document.getElementById(id); }
 function gv(id,fb){ var el=g(id); if(!el) return fb; var v=parseFloat(el.value); return isNaN(v)?fb:v; }
@@ -434,38 +444,18 @@ function load(){
     }catch(e){ return false; }
 }
 
-/* ════════════════════════════════════════════════
-   FORMULA ENGINE — exact as described
-   mu = muBase * seasonMult
-   expY = exp(lambda * yourPrice)
-   expC = exp(lambda * compPrice)
-   sum  = expY + expC + mu
-   rawDemand  = (expY/sum) * baseDemand              [per day]
-   capAdj     = rawDemand * (studentScreens/avgScreens) [per day]
-   segAdj     = segFactor * capAdj                   [per day]
-   finalDemand= seasonMult * segAdj                  [per day] ← used in Demand tab
-   compDemand = (expC/sum) * baseDemand              [per day, no cap/seg/sea]
-   lostSales  = baseDemand - (finalDemand+compDemand)[per day]
-════════════════════════════════════════════════ */
 function calcPeriod(lambda, muBase, segFactor, yourPrice, compPrice, baseDemand, studScr, avgScr, seaMult) {
-    /* mu = muBase * season (same for both) */
     var mu       = muBase * seaMult;
     var expY     = Math.exp(lambda * yourPrice);
     var expC     = Math.exp(lambda * compPrice);
     var sum      = expY + expC + mu;
-
-    /* YOUR demand pipeline: raw -> capacity -> segment -> season */
     var rawDem   = (expY / sum) * baseDemand;
     var capAdj   = rawDem * (studScr / avgScr);
     var segAdj   = segFactor * capAdj;
     var finalDem = seaMult * segAdj;
-
-    /* COMPETITOR demand: logit share * base -> segment -> season (no capacity — competitor screens unknown) */
     var compRaw  = (expC / sum) * baseDemand;
     var compSeg  = segFactor * compRaw;
     var compDem  = seaMult * compSeg;
-
-    /* Lost sales = base - (your final + comp final) */
     var lostDem  = baseDemand - (finalDem + compDem);
     var capRatio = studScr / avgScr;
     return { finalDem:finalDem, compDem:compDem, lostDem:lostDem, capRatio:capRatio, compRaw:compRaw };
@@ -509,7 +499,6 @@ function simCity(city, season, seg, yourWD, yourWE, compWD, compWE, studScr) {
         yourWD: yourWD, yourWE: yourWE,
         compWD: compWD, compWE: compWE,
         netMargin: rev > 0 ? (prof/rev)*100 : 0,
-        /* Pure logit competitor demand: (expC/sum) * base only — no seg/season */
         compRawWD: Math.round(rWD.compRaw * S.cfg.wdDays),
         compRawWE: Math.round(rWE.compRaw * S.cfg.weDays)
     };
@@ -540,9 +529,6 @@ function compReaction(diff) {
     return Math.round(adj * (0.5 + Math.random() * 0.5));
 }
 
-/* ════════════════════════════════════════════════
-   CONFIG SYNC (admin inputs → state)
-════════════════════════════════════════════════ */
 function syncCfg() {
     var c = S.cfg;
     c.lambda = gv('param-lambda', 0.015);
@@ -597,9 +583,6 @@ function pushCfgToInputs() {
     if(r0){ s('comp-mumbai-wd',r0.comp.Mumbai.wd); s('comp-mumbai-we',r0.comp.Mumbai.we); s('comp-delhi-wd',r0.comp.Delhi.wd); s('comp-delhi-we',r0.comp.Delhi.we); s('comp-blr-wd',r0.comp.Bengaluru.wd); s('comp-blr-we',r0.comp.Bengaluru.we); }
 }
 
-/* ════════════════════════════════════════════════
-   ROUND FACTORY
-════════════════════════════════════════════════ */
 function makeRound(i, compPrices) {
     return {
         num: i, status: i===1?'active':'planned',
@@ -613,9 +596,6 @@ function makeRound(i, compPrices) {
     };
 }
 
-/* ════════════════════════════════════════════════
-   ADMIN
-════════════════════════════════════════════════ */
 function createRounds() {
     syncCfg();
     var n = gi('num-rounds', 3);
@@ -657,8 +637,8 @@ function renderPreview() {
             '<div><strong>Month '+r.num+'</strong> &nbsp;<span style="text-transform:capitalize;font-size:.85em;color:#6b7280;">'+r.status+'</span>'+(r.results?' | '+r.season+' | '+r.segment:'')+'</div>' +
             (r.results?'<span class="muted" style="font-size:.85em;">'+fmtC(r.results.totalProfit)+'</span>':'') +
             '<div style="display:flex;gap:6px;">' +
-            '<button class="btn btn-primary" style="padding:4px 10px;font-size:.8em;margin:0;" onclick="editRound('+i+')">Edit</button>' +
-            '<button class="btn btn-danger" style="padding:4px 10px;font-size:.8em;margin:0;" onclick="delRound('+i+')">Del</button>' +
+            '<button class="btn btn-primary" style="padding:4px 12px;font-size:.8em;margin:0;" onclick="editRound('+i+')">Edit</button>' +
+            '<button class="btn btn-danger" style="padding:4px 12px;font-size:.8em;margin:0;" onclick="delRound('+i+')">Del</button>' +
             '</div></div>';
     }).join('');
 }
@@ -716,9 +696,6 @@ function delRound(i) {
     save(); renderAdmin(); toast('Month deleted.','danger');
 }
 
-/* ════════════════════════════════════════════════
-   STUDENT PANEL
-════════════════════════════════════════════════ */
 function loadStudent() {
     var sel  = g('round-selector');
     var disp = g('current-round-display');
@@ -753,27 +730,27 @@ function loadStudent() {
 
     var html = '<div class="card">' +
         '<h4>Month '+cur.num+' — Market Conditions</h4>' +
-        '<div class="grid-3" style="margin-top:10px;">' +
+        '<div class="grid-3" style="margin-top:12px;">' +
         '<div class="card" style="border-left-color:#9b59b6;"><h4>Season</h4><p style="font-size:1.25em;font-weight:700;">'+seaLbl+'</p><p class="muted">Affects &mu; and final demand.</p></div>' +
         '<div class="card" style="border-left-color:#27ae60;"><h4>Movie Segment</h4><p style="font-size:1.25em;font-weight:700;">'+segLbl+'</p><p class="muted">Segment adj factor applied to capacity adj demand.</p></div>' +
         '</div>' +
-        '<p style="margin-top:10px;"><strong>Status:</strong> <span style="text-transform:capitalize;">'+cur.status+'</span></p>' +
+        '<p style="margin-top:12px;"><strong>Status:</strong> <span style="text-transform:capitalize;">'+cur.status+'</span></p>' +
         (done?'<p><strong>Completed:</strong> '+(cur.ts?new Date(cur.ts).toLocaleString():'N/A')+'</p>':'');
 
     if (done) {
         var totalLost = CITIES.reduce(function(s,c){var cr=cur.results.cityResults[c];return s+(cr.lostWD||0)+(cr.lostWE||0);},0);
-        html += '<div class="alert alert-success" style="margin-top:16px;"><h4>Month Completed ✓</h4>' +
+        html += '<div class="alert alert-success" style="margin-top:18px;"><h4>Month Completed</h4>' +
             '<p>Total profit: <strong>'+fmtC(cur.results.totalProfit)+'</strong></p>' +
             '<p>Lost Demand: <strong>'+fmtN(totalLost)+' tickets</strong></p>' +
-            '<button class="btn btn-primary" style="margin-top:10px;" onclick="switchModule(\'dashboard\')">View Dashboard &rarr;</button></div>';
+            '<button class="btn btn-primary" style="margin-top:12px;" onclick="switchModule(\'dashboard\')">View Dashboard</button></div>';
     } else {
         var pWD = function(city){ return prevDec[city]?prevDec[city].wd:0; };
         var pWE = function(city){ return prevDec[city]?prevDec[city].we:0; };
-        html += '<div style="margin-top:16px;">' +
+        html += '<div style="margin-top:18px;">' +
             '<h4>Set Your Prices &amp; Screen Allocation</h4>' +
-            '<p class="muted" style="margin-bottom:10px;">Your price input is next to the competitor price (grey) for easy comparison.</p>' +
+            '<p class="muted" style="margin-bottom:12px;">Your price input is next to the competitor price (grey) for easy comparison.</p>' +
             '<div class="alert alert-info"><strong>Market conditions above are fixed for this month.</strong> Set prices and screens to maximise profit.</div>' +
-            '<table class="param-table" style="margin-top:12px;"><thead>' +
+            '<table class="param-table" style="margin-top:14px;"><thead>' +
             '<tr><th rowspan="2">City</th>' +
             '<th colspan="2" style="text-align:center;border-left:2px solid var(--border);">Weekday Price (Rs)</th>' +
             '<th colspan="2" style="text-align:center;border-left:2px solid var(--border);">Weekend Price (Rs)</th>' +
@@ -795,7 +772,7 @@ function loadStudent() {
                 '<td style="border-left:2px solid var(--border);"><input type="number" id="scr-'+cid+'" min="1" max="60" value="'+defScr[city]+'"></td></tr>';
         });
         html += '</tbody></table>' +
-            '<div style="display:flex;gap:10px;margin-top:14px;">' +
+            '<div style="display:flex;gap:12px;margin-top:18px;">' +
             '<button class="btn btn-warning" onclick="evalRound()">Evaluate (Preview)</button>' +
             '<button class="btn btn-primary" onclick="submitRound()">Submit Month '+cur.num+'</button>' +
             '</div></div>';
@@ -874,25 +851,19 @@ function resetProgress() {
     save();loadStudent();updateDash();toast('Progress reset.','success');
 }
 
-/* ════════════════════════════════════════════════
-   DASHBOARD
-════════════════════════════════════════════════ */
 var _charts={};
 function destroyCharts(){Object.keys(_charts).forEach(function(k){if(_charts[k]){_charts[k].destroy();_charts[k]=null;}});}
 
 function updateDash() {
-    /* KPI cards */
     var avg=S.doneCount>0?Math.round(S.totalProfit/S.doneCount):0;
     g('kpi-total').textContent  = S.rounds.length;
     g('kpi-done').textContent   = S.doneCount;
     g('kpi-profit').textContent = fmtC(S.totalProfit);
     g('kpi-avg').textContent    = fmtC(avg);
-    /* Progress */
     var pct=S.rounds.length>0?Math.round((S.doneCount/S.rounds.length)*100):0;
     g('prog-pct').textContent   = pct+'%';
     g('prog-fill').style.width  = pct+'%';
     g('prog-text').textContent  = S.doneCount+' of '+S.rounds.length+' months completed';
-    /* Performance summary */
     var ph=S.perfHistory, sumEl=g('perf-summary');
     if(ph.length>0){
         var best =ph.reduce(function(a,b){return b.profit>a.profit?b:a},{profit:-Infinity});
@@ -903,7 +874,6 @@ function updateDash() {
             '<div class="result-row"><span class="result-label">Completion:</span><span class="result-value">'+pct+'%</span></div>';
     } else { sumEl.innerHTML='<p class="muted">Complete months to see summary.</p>'; }
 
-    /* Build display rounds */
     var done=S.rounds.filter(function(r){return r.results;});
     var display=done.map(function(r){return{num:r.num,season:r.season,seg:r.segment,results:r.results,preview:false};});
     if(S.tempEval){
@@ -937,18 +907,18 @@ function buildTable(rows, tab) {
             });
         });
     } else if(tab==='demand'){
-        h='<table class="metrics-table"><thead><tr><th>Month</th><th>Season/Seg</th><th>City</th><th>Your WD Demand</th><th>Competitor WD</th><th>Lost WD</th><th>Your WE Demand</th><th>Competitor WE</th><th>Lost WE</th></tr></thead><tbody>';
+        h='<table class="metrics-table"><thead><tr><th>Month</th><th>Season/Seg</th><th>City</th><th>Your WD Demand</th><th>Competitor WD</th><th>Lost WD</th><th>Your WE Demand</th><th>Competitor WE</th><th>Lost WE</th> </tr></thead><tbody>';
         rows.forEach(function(r){
             var prev=r.preview?'<span class="preview-badge">Preview</span>':'';
             CITIES.forEach(function(city,ci){
                 var cr=r.results.cityResults[city];
                 h+='<tr>';
                 if(ci===0){h+='<td rowspan="3" style="vertical-align:middle;background:#f8fafc;font-weight:600;">Month '+r.num+' '+prev+'</td><td rowspan="3" style="vertical-align:middle;color:#6b7280;background:#f8fafc;">'+r.season+' / '+r.seg+'</td>';}
-                h+='<td><strong>'+city+'</strong></td><td>'+fmtN(cr.demWD)+'</td><td>'+fmtN(cr.compRawWD)+'</td><td class="'+(cr.lostWD>0?'neg':'')+'">'+(cr.lostWD>0?'&#8595; ':'')+fmtN(cr.lostWD)+'</td><td>'+fmtN(cr.demWE)+'</td><td>'+fmtN(cr.compRawWE)+'</td><td class="'+(cr.lostWE>0?'neg':'')+'">'+(cr.lostWE>0?'&#8595; ':'')+fmtN(cr.lostWE)+'</td></tr>';
+                h+='<td><strong>'+city+'</strong></td><td>'+fmtN(cr.demWD)+'</td><td>'+fmtN(cr.compRawWD)+'</td><td class="'+(cr.lostWD>0?'neg':'')+'">'+(cr.lostWD>0?'↓ ':'')+fmtN(cr.lostWD)+'</td><td>'+fmtN(cr.demWE)+'</td><td>'+fmtN(cr.compRawWE)+'</td><td class="'+(cr.lostWE>0?'neg':'')+'">'+(cr.lostWE>0?'↓ ':'')+fmtN(cr.lostWE)+'</td></tr>';
             });
         });
     } else if(tab==='utilization'){
-        h='<table class="metrics-table"><thead><tr><th>Month</th><th>Season/Seg</th><th>City</th><th>Screens</th><th>Avg Screens</th><th>Capacity Ratio</th><th>Utilization</th></tr></thead><tbody>';
+        h='<table class="metrics-table"><thead> <tr><th>Month</th><th>Season/Seg</th><th>City</th><th>Screens</th><th>Avg Screens</th><th>Capacity Ratio</th><th>Utilization</th> </tr></thead><tbody>';
         rows.forEach(function(r){
             var prev=r.preview?'<span class="preview-badge">Preview</span>':'';
             CITIES.forEach(function(city,ci){
@@ -1046,7 +1016,6 @@ function buildCharts(rows, tab) {
         var allVals=[]; datasets.forEach(function(ds){if(ds.type!=='line') allVals=allVals.concat(ds.data);});
         var maxV=allVals.length?Math.max.apply(null,allVals):100;
         var minV=allVals.length?Math.min.apply(null,allVals):0;
-        /* Smart y-axis: start just below min, end just above max for readability */
         var yPad  = (maxV - (minV>=0?0:minV)) * 0.15 || maxV * 0.15 || 10;
         var yMin  = minV >= 0 ? 0 : Math.floor(minV - yPad);
         var yMax  = Math.ceil(maxV + yPad);
@@ -1091,9 +1060,6 @@ function switchTab(e, tab) {
     updateDash();
 }
 
-/* ════════════════════════════════════════════════
-   MODULE SWITCHING
-════════════════════════════════════════════════ */
 function switchModule(mod) {
     ['intro','instructor','student','dashboard','instructor-panel'].forEach(function(m){
         var el=g(m+'-section'); if(el) el.classList.add('hidden');
@@ -1108,9 +1074,6 @@ function switchModule(mod) {
     if(mod==='instructor')  { pushCfgToInputs(); renderAdmin(); }
 }
 
-/* ════════════════════════════════════════════════
-   INIT
-════════════════════════════════════════════════ */
 window.addEventListener('DOMContentLoaded',function(){
     if(!load()){
         var cp={Mumbai:{wd:240,we:270},Delhi:{wd:240,we:300},Bengaluru:{wd:220,we:310}};
