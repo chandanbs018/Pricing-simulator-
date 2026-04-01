@@ -812,7 +812,7 @@ function loadStudent() {
                     '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;align-items:end;">' +
                         /* Weekday */
                         '<div>' +
-                            '<div style="font-size:.75em;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;">Weekday Price (Rs)</div>' +
+                            '<div style="display:flex;justify-content:space-between;margin-bottom:6px;">' +'<span style="font-size:.72em;color:var(--primary);font-weight:700;text-transform:uppercase;letter-spacing:.04em;">Weekday</span>' +'</div>' +'<div style="display:flex;gap:4px;margin-bottom:4px;">' +'<div style="font-size:.7em;color:var(--primary);font-weight:600;flex:1;text-align:center;">Your Price</div>' +'<div style="font-size:.7em;color:#6b7280;font-weight:600;flex:0 0 auto;padding:0 4px;">Comp Price</div>' +'</div>' +
                             '<div style="display:flex;gap:6px;align-items:center;">' +
                                 '<input type="number" id="wd-'+cid+'" min="50" max="1000" value="'+(pWD(city)||defWD[city])+'" style="flex:1;">' +
                                 '<div style="background:#f1f5f9;border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-size:.85em;color:#6b7280;font-weight:600;white-space:nowrap;">vs Rs '+cur.comp[city].wd+'</div>' +
@@ -820,7 +820,7 @@ function loadStudent() {
                         '</div>' +
                         /* Weekend */
                         '<div>' +
-                            '<div style="font-size:.75em;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;">Weekend Price (Rs)</div>' +
+                            '<div style="display:flex;justify-content:space-between;margin-bottom:6px;">' +'<span style="font-size:.72em;color:var(--primary);font-weight:700;text-transform:uppercase;letter-spacing:.04em;">Weekend</span>' +'</div>' +'<div style="display:flex;gap:4px;margin-bottom:4px;">' +'<div style="font-size:.7em;color:var(--primary);font-weight:600;flex:1;text-align:center;">Your Price</div>' +'<div style="font-size:.7em;color:#6b7280;font-weight:600;flex:0 0 auto;padding:0 4px;">Comp Price</div>' +'</div>' +
                             '<div style="display:flex;gap:6px;align-items:center;">' +
                                 '<input type="number" id="we-'+cid+'" min="50" max="1000" value="'+(pWE(city)||defWE[city])+'" style="flex:1;">' +
                                 '<div style="background:#f1f5f9;border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-size:.85em;color:#6b7280;font-weight:600;white-space:nowrap;">vs Rs '+cur.comp[city].we+'</div>' +
@@ -965,14 +965,15 @@ function updateDash() {
 function buildTable(rows, tab) {
     var h='';
     if(tab==='pricing'){
-        h='<table class="metrics-table"><thead><tr><th>Month</th><th>Season/Seg</th><th>City</th><th>Your WD (Rs)</th><th>Your WE (Rs)</th><th>Comp WD (Rs)</th><th>Comp WE (Rs)</th><th>Screens/Avg</th></tr></thead><tbody>';
+        h='<table class="metrics-table"><thead><tr><th>Month</th><th>Season/Seg</th><th>City</th><th>Your WD (Rs)</th><th>Comp WD (Rs)</th><th>Your WE (Rs)</th><th>Comp WE (Rs)</th><th>Screens/Avg</th></tr></thead><tbody>';
         rows.forEach(function(r){
             var prev=r.preview?'<span class="preview-badge">Preview</span>':'';
             CITIES.forEach(function(city,ci){
                 var cr=r.results.cityResults[city];
                 h+='<tr>';
                 if(ci===0){h+='<td rowspan="3" style="vertical-align:middle;background:#f8fafc;font-weight:600;">Month '+r.num+' '+prev+'</td><td rowspan="3" style="vertical-align:middle;color:#6b7280;background:#f8fafc;">'+r.season+' / '+r.seg+'</td>';}
-                h+='<td><strong>'+city+'</strong></td><td>Rs '+cr.yourWD+'</td><td>Rs '+cr.yourWE+'</td><td>Rs '+cr.compWD+'</td><td>Rs '+cr.compWE+'</td><td>'+cr.studScr+' / '+cr.avgScr+'</td></tr>';
+                h+='<td><strong>'+city+'</strong></td><td>Rs '+cr.yourWD+'</td><td>Rs '+cr.compWD+'</td><td>Rs '+cr.yourWE+'</td><td>Rs '+cr.compWE+'</td><td>'+cr.studScr+' / '+cr.avgScr+'</td></tr>';
+                if(ci===2) h+='<tr><td colspan="20" style="padding:0;border-bottom:3px solid #334155;"></td></tr>';
             });
         });
     } else if(tab==='demand'){
@@ -984,6 +985,7 @@ function buildTable(rows, tab) {
                 h+='<tr>';
                 if(ci===0){h+='<td rowspan="3" style="vertical-align:middle;background:#f8fafc;font-weight:600;">Month '+r.num+' '+prev+'</td><td rowspan="3" style="vertical-align:middle;color:#6b7280;background:#f8fafc;">'+r.season+' / '+r.seg+'</td>';}
                 h+='<td><strong>'+city+'</strong></td><td>'+fmtN(cr.demWD)+'</td><td>'+fmtN(cr.compRawWD)+'</td><td class="'+(cr.lostWD>0?'neg':'')+'">'+(cr.lostWD>0?'&#8595; ':'')+fmtN(cr.lostWD)+'</td><td>'+fmtN(cr.demWE)+'</td><td>'+fmtN(cr.compRawWE)+'</td><td class="'+(cr.lostWE>0?'neg':'')+'">'+(cr.lostWE>0?'&#8595; ':'')+fmtN(cr.lostWE)+'</td></tr>';
+                if(ci===2) h+='<tr><td colspan="20" style="padding:0;border-bottom:3px solid #334155;"></td></tr>';
             });
         });
     } else if(tab==='utilization'){
@@ -997,6 +999,7 @@ function buildTable(rows, tab) {
                 h+='<tr>';
                 if(ci===0){h+='<td rowspan="3" style="vertical-align:middle;background:#f8fafc;font-weight:600;">Month '+r.num+' '+prev+'</td><td rowspan="3" style="vertical-align:middle;color:#6b7280;background:#f8fafc;">'+r.season+' / '+r.seg+'</td>';}
                 h+='<td><strong>'+city+'</strong></td><td>'+cr.studScr+'</td><td>'+cr.avgScr+'</td><td>'+cr.capRatio.toFixed(2)+'</td><td><span class="'+cls+'">'+pct.toFixed(1)+'%</span></td></tr>';
+                if(ci===2) h+='<tr><td colspan="20" style="padding:0;border-bottom:3px solid #334155;"></td></tr>';
             });
         });
     } else if(tab==='revenue'){
@@ -1008,6 +1011,7 @@ function buildTable(rows, tab) {
                 h+='<tr>';
                 if(ci===0){h+='<td rowspan="3" style="vertical-align:middle;background:#f8fafc;font-weight:600;">Month '+r.num+' '+prev+'</td><td rowspan="3" style="vertical-align:middle;color:#6b7280;background:#f8fafc;">'+r.season+' / '+r.seg+'</td>';}
                 h+='<td><strong>'+city+'</strong></td><td>'+fmtC(cr.weekdayRev)+'</td><td>'+fmtC(cr.weekendRev)+'</td><td class="pos">'+fmtC(cr.revenue)+'</td></tr>';
+                if(ci===2) h+='<tr><td colspan="20" style="padding:0;border-bottom:3px solid #334155;"></td></tr>';
             });
         });
     } else if(tab==='costs'){
@@ -1020,6 +1024,7 @@ function buildTable(rows, tab) {
                 h+='<tr>';
                 if(ci===0){h+='<td rowspan="3" style="vertical-align:middle;background:#f8fafc;font-weight:600;">Month '+r.num+' '+prev+'</td><td rowspan="3" style="vertical-align:middle;color:#6b7280;background:#f8fafc;">'+r.season+' / '+r.seg+'</td>';}
                 h+='<td><strong>'+city+'</strong></td><td>'+fmtC(cr.varCost)+'</td><td>'+fmtC(cr.fixedCost)+'</td><td>'+fmtC(cr.varCost+cr.fixedCost)+'</td><td>Rs '+cpt.toFixed(0)+'</td></tr>';
+                if(ci===2) h+='<tr><td colspan="20" style="padding:0;border-bottom:3px solid #334155;"></td></tr>';
             });
         });
     } else {
@@ -1033,6 +1038,7 @@ function buildTable(rows, tab) {
                 h+='<tr>';
                 if(ci===0){h+='<td rowspan="3" style="vertical-align:middle;background:#f8fafc;font-weight:600;">Month '+r.num+' '+prev+'</td><td rowspan="3" style="vertical-align:middle;color:#6b7280;background:#f8fafc;">'+r.season+' / '+r.seg+'</td>';}
                 h+='<td><strong>'+city+'</strong></td><td>'+fmtC(cr.revenue)+'</td><td>'+fmtC(cr.varCost+cr.fixedCost)+'</td><td><span class="'+pC+'">'+fmtC(cr.profit)+'</span></td><td><span class="'+nC+'">'+(cr.netMargin||0).toFixed(1)+'%</span></td></tr>';
+                if(ci===2) h+='<tr><td colspan="20" style="padding:0;border-bottom:3px solid #334155;"></td></tr>';
             });
         });
     }
@@ -1143,7 +1149,7 @@ function switchModule(mod) {
         if((n.getAttribute('onclick')||'').indexOf("'"+mod+"'")!==-1) n.classList.add('active');
     });
     if(mod==='student')     loadStudent();
-    if(mod==='dashboard')   updateDash();
+    if(mod==='dashboard')   { S.curTab='pricing'; document.querySelectorAll('.metric-tab').forEach(function(t){t.classList.remove('active');}); var pt=document.querySelector('.metric-tab'); if(pt) pt.classList.add('active'); updateDash(); }
     if(mod==='instructor')  { pushCfgToInputs(); renderAdmin(); }
 }
 
