@@ -122,6 +122,11 @@ th{background:#f3f4f6;font-weight:600;color:#000;}
 .chart-title{font-weight:700;font-size:.92em;color:#1e293b;}
 .chart-body{padding:10px 12px 14px;min-height:200px;}
 
+.month-pill{display:block;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:.82em;font-weight:600;text-align:center;border:2px solid var(--border);background:#fff;transition:all .2s;color:var(--text);}
+.month-pill:hover{border-color:var(--primary);color:var(--primary);}
+.month-pill.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+.month-pill.all-pill{background:var(--bg);border-color:var(--border);font-size:.8em;}
+.month-pill.all-pill.active{background:var(--primary);color:#fff;}
 /* Competitor table in student */
 .comp-table{background:#f9fafb;} .comp-table th{background:#e5e7eb;}
 
@@ -366,19 +371,31 @@ th{background:#f3f4f6;font-weight:600;color:#000;}
     </div>
 </div>
 
-<div class="metric-tabs" id="metric-tabs">
-    <div class="metric-tab active" onclick="switchTab(event,'pricing')">Pricing</div>
-    <div class="metric-tab" onclick="switchTab(event,'demand')">Demand</div>
-    <div class="metric-tab" onclick="switchTab(event,'utilization')">Utilization</div>
-    <div class="metric-tab" onclick="switchTab(event,'revenue')">Revenue</div>
-    <div class="metric-tab" onclick="switchTab(event,'costs')">Costs</div>
-    <div class="metric-tab" onclick="switchTab(event,'profit')">Profit &amp; Margins</div>
-</div>
-<div class="table-wrap" id="dash-table-wrap"><div id="dash-table"></div></div>
-<div class="charts-grid" id="dash-charts">
-    <div class="chart-card"><div class="chart-head"><span class="chart-dot" style="background:#1f77b4"></span><span class="chart-title">Mumbai</span></div><div class="chart-body" style="position:relative;height:220px;"><canvas id="chartMumbai"></canvas></div></div>
-    <div class="chart-card"><div class="chart-head"><span class="chart-dot" style="background:#ff7f0e"></span><span class="chart-title">Delhi</span></div><div class="chart-body" style="position:relative;height:220px;"><canvas id="chartDelhi"></canvas></div></div>
-    <div class="chart-card"><div class="chart-head"><span class="chart-dot" style="background:#2ca02c"></span><span class="chart-title">Bengaluru</span></div><div class="chart-body" style="position:relative;height:220px;"><canvas id="chartBengaluru"></canvas></div></div>
+<!-- Dashboard body: month sidebar + main content -->
+<div style="display:grid;grid-template-columns:140px 1fr;gap:16px;margin-top:4px;">
+
+    <!-- Month selector sidebar -->
+    <div style="display:flex;flex-direction:column;gap:6px;" id="month-sidebar">
+        <!-- populated by JS -->
+    </div>
+
+    <!-- Main content: tabs + table + charts -->
+    <div>
+        <div class="metric-tabs" id="metric-tabs">
+            <div class="metric-tab active" onclick="switchTab(event,'pricing')">Pricing</div>
+            <div class="metric-tab" onclick="switchTab(event,'demand')">Demand</div>
+            <div class="metric-tab" onclick="switchTab(event,'utilization')">Utilization</div>
+            <div class="metric-tab" onclick="switchTab(event,'revenue')">Revenue</div>
+            <div class="metric-tab" onclick="switchTab(event,'costs')">Costs</div>
+            <div class="metric-tab" onclick="switchTab(event,'profit')">Profit &amp; Margins</div>
+        </div>
+        <div class="table-wrap" id="dash-table-wrap"><div id="dash-table"></div></div>
+        <div class="charts-grid" id="dash-charts" style="margin-top:16px;">
+            <div class="chart-card"><div class="chart-head"><span class="chart-dot" style="background:#1f77b4"></span><span class="chart-title">Mumbai</span></div><div class="chart-body" style="position:relative;height:220px;"><canvas id="chartMumbai"></canvas></div></div>
+            <div class="chart-card"><div class="chart-head"><span class="chart-dot" style="background:#ff7f0e"></span><span class="chart-title">Delhi</span></div><div class="chart-body" style="position:relative;height:220px;"><canvas id="chartDelhi"></canvas></div></div>
+            <div class="chart-card"><div class="chart-head"><span class="chart-dot" style="background:#2ca02c"></span><span class="chart-title">Bengaluru</span></div><div class="chart-body" style="position:relative;height:220px;"><canvas id="chartBengaluru"></canvas></div></div>
+        </div>
+    </div>
 </div>
 </div><!-- /dashboard -->
 
@@ -415,6 +432,7 @@ var S = {
     rounds: [], curIdx: 1, doneCount: 0,
     totalProfit: 0, perfHistory: [],
     curTab: 'pricing', tempEval: null,
+    selMonth: 'all',
     editIdx: null
 };
 var CITIES = ['Mumbai','Delhi','Bengaluru'];
@@ -929,48 +947,83 @@ function resetProgress() {
 var _charts={};
 function destroyCharts(){Object.keys(_charts).forEach(function(k){if(_charts[k]){_charts[k].destroy();_charts[k]=null;}});}
 
+function buildMonthSidebar(completedRounds) {
+    var sb = g('month-sidebar');
+    if (!sb) return;
+    var pills = '<button class="month-pill all-pill'+(S.selMonth==='all'?' active':'')+'" onclick="selectMonth('all')">All Months</button>';
+    completedRounds.forEach(function(r) {
+        var active = S.selMonth === r.num ? ' active' : '';
+        pills += '<button class="month-pill'+active+'" onclick="selectMonth('+r.num+')">Month '+r.num+'<div style="font-size:.75em;font-weight:400;margin-top:2px;opacity:.8;">'+r.season.slice(0,3)+' / '+r.segment.charAt(0).toUpperCase()+r.segment.slice(0,4)+'</div></button>';
+    });
+    sb.innerHTML = pills;
+}
+
+function selectMonth(m) {
+    S.selMonth = m;
+    updateDash();
+}
+
 function updateDash() {
-    /* KPI cards */
-    var avg=S.doneCount>0?Math.round(S.totalProfit/S.doneCount):0;
+    /* KPI cards - always all months */
+    var avg = S.doneCount > 0 ? Math.round(S.totalProfit / S.doneCount) : 0;
     g('kpi-total').textContent  = S.rounds.length;
     g('kpi-done').textContent   = S.doneCount;
     g('kpi-profit').textContent = fmtC(S.totalProfit);
     g('kpi-avg').textContent    = fmtC(avg);
     /* Progress */
-    var pct=S.rounds.length>0?Math.round((S.doneCount/S.rounds.length)*100):0;
-    g('prog-pct').textContent   = pct+'%';
-    g('prog-fill').style.width  = pct+'%';
-    g('prog-text').textContent  = S.doneCount+' of '+S.rounds.length+' months completed';
+    var pct = S.rounds.length > 0 ? Math.round((S.doneCount / S.rounds.length) * 100) : 0;
+    g('prog-pct').textContent  = pct + '%';
+    g('prog-fill').style.width = pct + '%';
+    g('prog-text').textContent = S.doneCount + ' of ' + S.rounds.length + ' months completed';
     /* Performance summary */
-    var ph=S.perfHistory, sumEl=g('perf-summary');
-    if(ph.length>0){
-        var best =ph.reduce(function(a,b){return b.profit>a.profit?b:a},{profit:-Infinity});
-        var worst=ph.reduce(function(a,b){return b.profit<a.profit?b:a},{profit:Infinity});
-        sumEl.innerHTML='<div class="result-row"><span class="result-label">Avg profit/month:</span><span class="result-value">'+fmtC(avg)+'</span></div>'+
+    var ph = S.perfHistory, sumEl = g('perf-summary');
+    if (ph.length > 0) {
+        var best  = ph.reduce(function(a,b){return b.profit>a.profit?b:a;},{profit:-Infinity});
+        var worst = ph.reduce(function(a,b){return b.profit<a.profit?b:a;},{profit:Infinity});
+        sumEl.innerHTML = '<div class="result-row"><span class="result-label">Avg profit/month:</span><span class="result-value">'+fmtC(avg)+'</span></div>'+
             '<div class="result-row"><span class="result-label">Best:</span><span class="result-value">Month '+best.num+' ('+fmtC(best.profit)+')</span></div>'+
             '<div class="result-row"><span class="result-label">Worst:</span><span class="result-value">Month '+worst.num+' ('+fmtC(worst.profit)+')</span></div>'+
             '<div class="result-row"><span class="result-label">Completion:</span><span class="result-value">'+pct+'%</span></div>';
-    } else { sumEl.innerHTML='<p class="muted">Complete months to see summary.</p>'; }
+    } else { sumEl.innerHTML = '<p class="muted" style="font-size:.85em;">Complete months to see summary.</p>'; }
 
     /* Build display rounds */
-    var done=S.rounds.filter(function(r){return r.results;});
-    var display=done.map(function(r){return{num:r.num,season:r.season,seg:r.segment,results:r.results,preview:false};});
-    if(S.tempEval){
-        var tr=S.rounds.filter(function(r){return r.num===S.tempEval.roundNum;})[0];
-        if(tr) display.push({num:tr.num,season:tr.season,seg:tr.segment,results:S.tempEval.results,preview:true});
+    var done = S.rounds.filter(function(r){return r.results;});
+    var allDisplay = done.map(function(r){return{num:r.num,season:r.season,seg:r.segment,results:r.results,preview:false};});
+    if (S.tempEval) {
+        var tr = S.rounds.filter(function(r){return r.num===S.tempEval.roundNum;})[0];
+        if (tr) allDisplay.push({num:tr.num,season:tr.season,seg:tr.segment,results:S.tempEval.results,preview:true});
     }
-    display.sort(function(a,b){return a.num-b.num;});
+    allDisplay.sort(function(a,b){return a.num-b.num;});
 
-    var dt=g('dash-table');
-    if(!display.length){
-        dt.innerHTML='<div class="no-data">No data yet. Submit or Evaluate a month first.</div>';
+    /* Build month sidebar */
+    buildMonthSidebar(done);
+
+    /* Filter by selected month */
+    var display = S.selMonth === 'all' ? allDisplay : allDisplay.filter(function(r){return r.num === S.selMonth;});
+
+    var dt = g('dash-table');
+    if (!allDisplay.length) {
+        dt.innerHTML = '<div class="no-data">No data yet. Submit or Evaluate a month first.</div>';
+        destroyCharts(); return;
+    }
+    if (!display.length) {
+        dt.innerHTML = '<div class="no-data">No data for selected month yet.</div>';
         destroyCharts(); return;
     }
 
     dt.innerHTML = buildTable(display, S.curTab);
     destroyCharts();
-    setTimeout(function(){ buildCharts(display, S.curTab); },50);
+
+    /* Charts: single month shows per-city bars; All shows trend across months */
+    setTimeout(function(){
+        if (S.selMonth === 'all') {
+            buildCharts(allDisplay, S.curTab);   /* multi-month trend */
+        } else {
+            buildMonthCharts(display[0], S.curTab); /* single month per-city breakdown */
+        }
+    }, 50);
 }
+
 
 function buildTable(rows, tab) {
     var h='';
@@ -994,7 +1047,7 @@ function buildTable(rows, tab) {
                 var cr=r.results.cityResults[city];
                 h+='<tr>';
                 if(ci===0){h+='<td rowspan="3" style="vertical-align:middle;background:#f8fafc;font-weight:600;">Month '+r.num+' '+prev+'</td><td rowspan="3" style="vertical-align:middle;color:#6b7280;background:#f8fafc;">'+r.season+' / '+r.seg+'</td>';}
-                h+='<td><strong>'+city+'</strong></td><td>'+fmtN(cr.demWD)+'</td><td>'+fmtN(cr.compRawWD)+'</td><td class="'+(cr.lostWD>0?'neg':'')+'">'+(cr.lostWD>0?'&#8595; ':'')+fmtN(cr.lostWD)+'</td><td>'+fmtN(cr.demWE)+'</td><td>'+fmtN(cr.compRawWE)+'</td><td class="'+(cr.lostWE>0?'neg':'')+'">'+(cr.lostWE>0?'&#8595; ':'')+fmtN(cr.lostWE)+'</td></tr>';
+                h+='<td><strong>'+city+'</strong></td><td>'+fmtN(cr.demWD)+'</td><td>'+fmtN(cr.compRawWD)+'</td><td>'+fmtN(cr.demWE)+'</td><td>'+fmtN(cr.compRawWE)+'</td></tr>';
                 if(ci===2) h+='<tr><td colspan="20" style="padding:0;border-bottom:3px solid #334155;"></td></tr>';
             });
         });
@@ -1060,6 +1113,13 @@ function buildTable(rows, tab) {
 }
 
 function buildCharts(rows, tab) {
+    /* Restore 3-city layout if single-month view replaced it */
+    var cg = g('dash-charts');
+    if (!cg.querySelector('#chartMumbai')) {
+        cg.innerHTML = '<div class="chart-card"><div class="chart-head"><span class="chart-dot" style="background:#1f77b4"></span><span class="chart-title">Mumbai</span></div><div class="chart-body" style="position:relative;height:220px;"><canvas id="chartMumbai"></canvas></div></div>' +
+            '<div class="chart-card"><div class="chart-head"><span class="chart-dot" style="background:#ff7f0e"></span><span class="chart-title">Delhi</span></div><div class="chart-body" style="position:relative;height:220px;"><canvas id="chartDelhi"></canvas></div></div>' +
+            '<div class="chart-card"><div class="chart-head"><span class="chart-dot" style="background:#2ca02c"></span><span class="chart-title">Bengaluru</span></div><div class="chart-body" style="position:relative;height:220px;"><canvas id="chartBengaluru"></canvas></div></div>';
+    }
     var cfgs=[
         {city:'Mumbai',    id:'chartMumbai',    c1:'#1f77b4',c2:'#aec7e8',c3:'rgba(231,76,60,.55)'},
         {city:'Delhi',     id:'chartDelhi',     c1:'#ff7f0e',c2:'#ffbb78',c3:'rgba(231,76,60,.55)'},
@@ -1142,6 +1202,76 @@ function buildCharts(rows, tab) {
     });
 }
 
+function buildMonthCharts(round, tab) {
+    /* Single month view: grouped bars per city (WD vs WE or similar) */
+    destroyCharts();
+    var cfgs = [
+        {city:'Mumbai',    id:'chartMumbai',    c1:'#1f77b4', c2:'#aec7e8', c3:'rgba(231,76,60,.55)'},
+        {city:'Delhi',     id:'chartDelhi',     c1:'#ff7f0e', c2:'#ffbb78', c3:'rgba(231,76,60,.55)'},
+        {city:'Bengaluru', id:'chartBengaluru', c1:'#2ca02c', c2:'#98df8a', c3:'rgba(231,76,60,.55)'}
+    ];
+    /* For single month: x-axis is cities, compare WD vs WE per city */
+    var cityLabels = ['Mumbai','Delhi','Bengaluru'];
+    var getDatasets = function(tab) {
+        if (tab === 'demand') return [
+            {label:'Weekday Demand', data:cfgs.map(function(c){return round.results.cityResults[c.city].demWD;}), backgroundColor:['#1f77b4','#ff7f0e','#2ca02c'], borderRadius:6},
+            {label:'Weekend Demand', data:cfgs.map(function(c){return round.results.cityResults[c.city].demWE;}), backgroundColor:['#aec7e8','#ffbb78','#98df8a'], borderRadius:6}
+        ];
+        if (tab === 'pricing') return [
+            {label:'Weekday Price', data:cfgs.map(function(c){return round.results.cityResults[c.city].yourWD;}), backgroundColor:['#1f77b4','#ff7f0e','#2ca02c'], borderRadius:6},
+            {label:'Competitor WD', data:cfgs.map(function(c){return round.results.cityResults[c.city].compWD;}), backgroundColor:['#aec7e8','#ffbb78','#98df8a'], borderRadius:6}
+        ];
+        if (tab === 'revenue') return [
+            {label:'Weekday Revenue', data:cfgs.map(function(c){return round.results.cityResults[c.city].weekdayRev;}), backgroundColor:['#1f77b4','#ff7f0e','#2ca02c'], borderRadius:6},
+            {label:'Weekend Revenue', data:cfgs.map(function(c){return round.results.cityResults[c.city].weekendRev;}), backgroundColor:['#aec7e8','#ffbb78','#98df8a'], borderRadius:6}
+        ];
+        if (tab === 'costs') return [
+            {label:'Variable Cost', data:cfgs.map(function(c){return round.results.cityResults[c.city].varCost;}), backgroundColor:['#1f77b4','#ff7f0e','#2ca02c'], borderRadius:6},
+            {label:'Fixed Cost',    data:cfgs.map(function(c){return round.results.cityResults[c.city].fixedCost;}), backgroundColor:['#aec7e8','#ffbb78','#98df8a'], borderRadius:6}
+        ];
+        if (tab === 'utilization') {
+            var spd = S.cfg.showsPerDay||5;
+            return [{label:'Utilization %', data:cfgs.map(function(c){var cr=round.results.cityResults[c.city]; var cap=30*cr.seats*spd*cr.avgScr; return cap>0?((cr.demWD+cr.demWE)/cap)*100:0;}), backgroundColor:['#1f77b4','#ff7f0e','#2ca02c'], borderRadius:6}];
+        }
+        return [
+            {label:'Revenue', data:cfgs.map(function(c){return round.results.cityResults[c.city].revenue;}), backgroundColor:['#aec7e8','#ffbb78','#98df8a'], borderRadius:6},
+            {label:'Profit',  data:cfgs.map(function(c){return round.results.cityResults[c.city].profit;}), backgroundColor:['#1f77b4','#ff7f0e','#2ca02c'], borderRadius:6}
+        ];
+    };
+
+    /* Single combined chart across 3 cities instead of 3 separate charts */
+    var datasets = getDatasets(tab);
+    var allVals = []; datasets.forEach(function(ds){allVals=allVals.concat(ds.data);});
+    var maxV = allVals.length ? Math.max.apply(null,allVals) : 100;
+    var minV = allVals.length ? Math.min.apply(null,allVals) : 0;
+    var yPad = (maxV-Math.max(0,minV))*0.18||10;
+
+    /* Hide individual city chart cards, show one combined chart */
+    var chartsGrid = g('dash-charts');
+    chartsGrid.innerHTML = '<div class="chart-card" style="grid-column:1/-1;"><div class="chart-head"><span class="chart-title">Month '+round.num+' — '+round.season+' / '+round.seg+' — City Comparison</span></div><div class="chart-body" style="position:relative;height:260px;"><canvas id="chartCombined"></canvas></div></div>';
+
+    var ctx = g('chartCombined');
+    if (!ctx) return;
+    _charts['chartCombined'] = new Chart(ctx, {
+        type:'bar',
+        data:{labels:cityLabels, datasets:datasets},
+        options:{
+            responsive:true, maintainAspectRatio:false,
+            interaction:{mode:'group', intersect:false},
+            plugins:{
+                legend:{position:'bottom',labels:{boxWidth:12,font:{size:11},padding:10}},
+                tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+c.parsed.y.toLocaleString('en-IN');}}}
+            },
+            scales:{
+                x:{grid:{display:false},ticks:{font:{size:12},color:'#334155'}},
+                y:{min:minV>=0?0:minV*1.2, max:maxV+yPad, grid:{color:'rgba(0,0,0,.05)'},
+                   ticks:{font:{size:10},maxTicksLimit:6,callback:function(v){if(Math.abs(v)>=1000000)return(v/1000000).toFixed(1)+'M';if(Math.abs(v)>=1000)return(v/1000).toFixed(0)+'K';return v.toLocaleString('en-IN');}}}
+            }
+        }
+    });
+}
+
+
 function switchTab(e, tab) {
     S.curTab=tab;
     document.querySelectorAll('.metric-tab').forEach(function(t){t.classList.remove('active');});
@@ -1162,7 +1292,7 @@ function switchModule(mod) {
         if((n.getAttribute('onclick')||'').indexOf("'"+mod+"'")!==-1) n.classList.add('active');
     });
     if(mod==='student')     loadStudent();
-    if(mod==='dashboard')   { S.curTab='pricing'; document.querySelectorAll('.metric-tab').forEach(function(t){t.classList.remove('active');}); var pt=document.querySelector('.metric-tab'); if(pt) pt.classList.add('active'); updateDash(); }
+    if(mod==='dashboard')   { S.curTab='pricing'; S.selMonth='all'; document.querySelectorAll('.metric-tab').forEach(function(t){t.classList.remove('active');}); var pt=document.querySelector('.metric-tab'); if(pt) pt.classList.add('active'); updateDash(); }
     if(mod==='instructor')  { pushCfgToInputs(); renderAdmin(); }
 }
 
