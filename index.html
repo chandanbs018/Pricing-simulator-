@@ -99,9 +99,10 @@ th{background:#f3f4f6;font-weight:600;color:#000;}
 .round-preview-item{display:flex;align-items:center;justify-content:space-between;padding:10px 13px;border:1px solid var(--border);border-radius:5px;margin:6px 0;background:#fff;}
 
 /* Dashboard tabs */
-.metric-tabs{display:flex;flex-wrap:wrap;gap:3px;margin:16px 0 0;border-bottom:2px solid var(--border);}
-.metric-tab{padding:9px 16px;background:#fff;border:1px solid var(--border);border-bottom:none;border-radius:6px 6px 0 0;cursor:pointer;font-weight:500;font-size:.88em;transition:all .2s;position:relative;top:2px;}
-.metric-tab:hover{background:var(--bg);}
+.metric-tabs{display:flex;margin:16px 0 0;border-bottom:2px solid var(--border);}
+.metric-tab{flex:1;text-align:center;padding:11px 8px;background:#fff;border:1px solid var(--border);border-bottom:none;border-radius:6px 6px 0 0;cursor:pointer;font-weight:500;font-size:.88em;transition:all .2s;position:relative;top:2px;margin-right:2px;white-space:nowrap;}
+.metric-tab:last-child{margin-right:0;}
+.metric-tab:hover{background:var(--bg);color:var(--primary);}
 .metric-tab.active{background:var(--primary);color:#fff;border-color:var(--primary);}
 .table-wrap{overflow-x:auto;border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px;}
 .metrics-table{width:100%;border-collapse:collapse;min-width:600px;font-size:.88em;}
@@ -241,11 +242,11 @@ th{background:#f3f4f6;font-weight:600;color:#000;}
 <div class="card">
     <h4>Screens Configuration</h4>
     <table class="param-table">
-        <thead><tr><th>City</th><th>Avg Screens (market)</th><th>Default Allocation (student)</th></tr></thead>
+        <thead><tr><th>City</th><th>Avg Screens (market)</th></tr></thead>
         <tbody>
-            <tr><td>Mumbai</td><td><input type="number" id="avg-scr-mumbai" value="20" min="1"></td><td><input type="number" id="def-scr-mumbai" value="30" min="1"></td></tr>
-            <tr><td>Delhi</td><td><input type="number" id="avg-scr-delhi" value="15" min="1"></td><td><input type="number" id="def-scr-delhi" value="8" min="1"></td></tr>
-            <tr><td>Bengaluru</td><td><input type="number" id="avg-scr-blr" value="14" min="1"></td><td><input type="number" id="def-scr-blr" value="7" min="1"></td></tr>
+            <tr><td>Mumbai</td><td><input type="number" id="avg-scr-mumbai" value="20" min="1"></td></tr>
+            <tr><td>Delhi</td><td><input type="number" id="avg-scr-delhi" value="15" min="1"></td></tr>
+            <tr><td>Bengaluru</td><td><input type="number" id="avg-scr-blr" value="14" min="1"></td></tr>
         </tbody>
     </table>
 </div>
@@ -253,11 +254,11 @@ th{background:#f3f4f6;font-weight:600;color:#000;}
 <div class="card">
     <h4>Financial Parameters</h4>
     <table class="param-table">
-        <thead><tr><th>City</th><th>Variable Cost / Ticket (Rs)</th><th>Seats per Screen</th><th>Fixed Cost per Seat per Day (Rs)</th></tr></thead>
+        <thead><tr><th>City</th><th>Variable Cost / Ticket (Rs)</th><th>Seats per Screen</th><th>Shows per Day</th><th>Fixed Cost per Seat per Day (Rs)</th></tr></thead>
         <tbody>
-            <tr><td>Mumbai</td><td><input type="number" id="var-cost-mumbai" value="5"></td><td><input type="number" id="seats-mumbai" value="220"></td><td><input type="number" id="fixed-mumbai" value="18"></td></tr>
-            <tr><td>Delhi</td><td><input type="number" id="var-cost-delhi" value="5"></td><td><input type="number" id="seats-delhi" value="200"></td><td><input type="number" id="fixed-delhi" value="18"></td></tr>
-            <tr><td>Bengaluru</td><td><input type="number" id="var-cost-blr" value="5"></td><td><input type="number" id="seats-blr" value="180"></td><td><input type="number" id="fixed-blr" value="18"></td></tr>
+            <tr><td>Mumbai</td><td><input type="number" id="var-cost-mumbai" value="5"></td><td><input type="number" id="seats-mumbai" value="220"></td><td><input type="number" id="shows-mumbai" value="5" min="1"></td><td><input type="number" id="fixed-mumbai" value="18"></td></tr>
+            <tr><td>Delhi</td><td><input type="number" id="var-cost-delhi" value="5"></td><td><input type="number" id="seats-delhi" value="200"></td><td><input type="number" id="shows-delhi" value="5" min="1"></td><td><input type="number" id="fixed-delhi" value="18"></td></tr>
+            <tr><td>Bengaluru</td><td><input type="number" id="var-cost-blr" value="5"></td><td><input type="number" id="seats-blr" value="180"></td><td><input type="number" id="shows-blr" value="5" min="1"></td><td><input type="number" id="fixed-blr" value="18"></td></tr>
         </tbody>
     </table>
     <p class="muted" style="margin-top:6px;">Fixed cost = screens &times; seats/screen &times; 30 days &times; fixed cost/seat</p>
@@ -407,6 +408,7 @@ var S = {
         defScr:  { Mumbai:30, Delhi:8,  Bengaluru:7  },
         varCost: { Mumbai:5,  Delhi:5,   Bengaluru:5  },
         seats:   { Mumbai:220,Delhi:200, Bengaluru:180},
+        showsPerDay: 5,
         fixed:   { Mumbai:18, Delhi:18,  Bengaluru:18 },
         wdDays: 22, weDays: 8
     },
@@ -508,6 +510,10 @@ function simCity(city, season, seg, yourWD, yourWE, compWD, compWE, studScr) {
     var fixC = studScr * c.seats[city] * 30 * c.fixed[city];
     var prof = rev - varC - fixC;
 
+    /* New utilization formula: (demWD + demWE) / (30 * seats * shows * avgScr) * 100 */
+    var totalCap = 30 * c.seats[city] * (c.showsPerDay||5) * avg;
+    var utilPct  = totalCap > 0 ? ((Math.round(demWD) + Math.round(demWE)) / totalCap) * 100 : 0;
+
     return {
         demWD: Math.round(demWD), demWE: Math.round(demWE),
         demTotal: Math.round(demTotal),
@@ -517,7 +523,9 @@ function simCity(city, season, seg, yourWD, yourWE, compWD, compWE, studScr) {
         profit: prof,
         weekdayRev: demWD * yourWD, weekendRev: demWE * yourWE,
         capRatio: rWD.capRatio,
+        utilPct: utilPct,
         studScr: studScr, avgScr: avg,
+        seats: c.seats[city],
         yourWD: yourWD, yourWE: yourWE,
         compWD: compWD, compWE: compWE,
         netMargin: rev > 0 ? (prof/rev)*100 : 0,
@@ -581,6 +589,7 @@ function syncCfg() {
     c.seats.Mumbai    = gi('seats-mumbai', 220);
     c.seats.Delhi     = gi('seats-delhi',  200);
     c.seats.Bengaluru = gi('seats-blr',    180);
+    c.showsPerDay     = gi('shows-mumbai', 5);
     c.fixed.Mumbai    = gv('fixed-mumbai', 18);
     c.fixed.Delhi     = gv('fixed-delhi',  18);
     c.fixed.Bengaluru = gv('fixed-blr',    18);
@@ -603,6 +612,7 @@ function pushCfgToInputs() {
     s('def-scr-mumbai',c.defScr.Mumbai); s('def-scr-delhi',c.defScr.Delhi); s('def-scr-blr',c.defScr.Bengaluru);
     s('var-cost-mumbai',c.varCost.Mumbai); s('var-cost-delhi',c.varCost.Delhi); s('var-cost-blr',c.varCost.Bengaluru);
     s('seats-mumbai',c.seats.Mumbai); s('seats-delhi',c.seats.Delhi); s('seats-blr',c.seats.Bengaluru);
+    s('shows-mumbai',c.showsPerDay||5); s('shows-delhi',c.showsPerDay||5); s('shows-blr',c.showsPerDay||5);
     s('fixed-mumbai',c.fixed.Mumbai); s('fixed-delhi',c.fixed.Delhi); s('fixed-blr',c.fixed.Bengaluru);
     s('weekday-days',c.wdDays); s('weekend-days',c.weDays);
     var r0=S.rounds[0];
@@ -965,7 +975,7 @@ function updateDash() {
 function buildTable(rows, tab) {
     var h='';
     if(tab==='pricing'){
-        h='<table class="metrics-table"><thead><tr><th>Month</th><th>Season/Seg</th><th>City</th><th>Your WD (Rs)</th><th>Comp WD (Rs)</th><th>Your WE (Rs)</th><th>Comp WE (Rs)</th><th>Screens/Avg</th></tr></thead><tbody>';
+        h='<table class="metrics-table"><thead><tr><th>Month</th><th>Season/Seg</th><th>City</th><th>Weekday Price (Rs)</th><th>Competitor Weekday (Rs)</th><th>Weekend Price (Rs)</th><th>Competitor Weekend (Rs)</th><th>Screens / Avg</th></tr></thead><tbody>';
         rows.forEach(function(r){
             var prev=r.preview?'<span class="preview-badge">Preview</span>':'';
             CITIES.forEach(function(city,ci){
@@ -977,7 +987,7 @@ function buildTable(rows, tab) {
             });
         });
     } else if(tab==='demand'){
-        h='<table class="metrics-table"><thead><tr><th>Month</th><th>Season/Seg</th><th>City</th><th>Your WD Demand</th><th>Competitor WD</th><th>Lost WD</th><th>Your WE Demand</th><th>Competitor WE</th><th>Lost WE</th></tr></thead><tbody>';
+        h='<table class="metrics-table"><thead><tr><th>Month</th><th>Season/Seg</th><th>City</th><th>Weekday Demand</th><th>Competitor Weekday</th><th>Weekend Demand</th><th>Competitor Weekend</th></tr></thead><tbody>';
         rows.forEach(function(r){
             var prev=r.preview?'<span class="preview-badge">Preview</span>':'';
             CITIES.forEach(function(city,ci){
@@ -989,21 +999,24 @@ function buildTable(rows, tab) {
             });
         });
     } else if(tab==='utilization'){
-        h='<table class="metrics-table"><thead><tr><th>Month</th><th>Season/Seg</th><th>City</th><th>Screens</th><th>Avg Screens</th><th>Capacity Ratio</th><th>Utilization</th></tr></thead><tbody>';
+        h='<table class="metrics-table"><thead><tr><th>Month</th><th>Season/Seg</th><th>City</th><th>Screens Allocated</th><th>Total Capacity (tickets)</th><th>Total Demand (tickets)</th><th>Utilization %</th></tr></thead><tbody>';
         rows.forEach(function(r){
             var prev=r.preview?'<span class="preview-badge">Preview</span>':'';
             CITIES.forEach(function(city,ci){
                 var cr=r.results.cityResults[city];
-                var pct=cr.capRatio*100;
-                var cls=pct>=80?'pos':pct>=50?'':'neg';
+                var spd=S.cfg.showsPerDay||5;
+                var totCap=30*cr.seats*(spd)*cr.avgScr;
+                var totDem=cr.demWD+cr.demWE;
+                var utilPct=totCap>0?(totDem/totCap)*100:0;
+                var cls=utilPct>=80?'pos':utilPct>=50?'':'neg';
                 h+='<tr>';
                 if(ci===0){h+='<td rowspan="3" style="vertical-align:middle;background:#f8fafc;font-weight:600;">Month '+r.num+' '+prev+'</td><td rowspan="3" style="vertical-align:middle;color:#6b7280;background:#f8fafc;">'+r.season+' / '+r.seg+'</td>';}
-                h+='<td><strong>'+city+'</strong></td><td>'+cr.studScr+'</td><td>'+cr.avgScr+'</td><td>'+cr.capRatio.toFixed(2)+'</td><td><span class="'+cls+'">'+pct.toFixed(1)+'%</span></td></tr>';
+                h+='<td><strong>'+city+'</strong></td><td>'+cr.studScr+'</td><td>'+fmtN(totCap)+'</td><td>'+fmtN(totDem)+'</td><td><span class="'+cls+'">'+utilPct.toFixed(1)+'%</span></td></tr>';
                 if(ci===2) h+='<tr><td colspan="20" style="padding:0;border-bottom:3px solid #334155;"></td></tr>';
             });
         });
     } else if(tab==='revenue'){
-        h='<table class="metrics-table"><thead><tr><th>Month</th><th>Season/Seg</th><th>City</th><th>WD Revenue (Rs)</th><th>WE Revenue (Rs)</th><th>Total Revenue (Rs)</th></tr></thead><tbody>';
+        h='<table class="metrics-table"><thead><tr><th>Month</th><th>Season/Seg</th><th>City</th><th>Weekday Revenue (Rs)</th><th>Weekend Revenue (Rs)</th><th>Total Revenue (Rs)</th></tr></thead><tbody>';
         rows.forEach(function(r){
             var prev=r.preview?'<span class="preview-badge">Preview</span>':'';
             CITIES.forEach(function(city,ci){
@@ -1058,23 +1071,23 @@ function buildCharts(rows, tab) {
         var datasets=[];
         if(tab==='demand'){
             datasets=[
-                {label:'Your WD', data:rows.map(function(r){return r.results.cityResults[cfg.city].demWD;}), backgroundColor:cfg.c1,borderRadius:4,order:2},
-                {label:'Your WE', data:rows.map(function(r){return r.results.cityResults[cfg.city].demWE;}), backgroundColor:cfg.c2,borderRadius:4,order:2},
-                {label:'Lost WD', data:rows.map(function(r){return r.results.cityResults[cfg.city].lostWD;}), backgroundColor:cfg.c3,borderRadius:4,order:2},
+                {label:'Weekday Demand', data:rows.map(function(r){return r.results.cityResults[cfg.city].demWD;}), backgroundColor:cfg.c1,borderRadius:4,order:2},
+                {label:'Weekend Demand', data:rows.map(function(r){return r.results.cityResults[cfg.city].demWE;}), backgroundColor:cfg.c2,borderRadius:4,order:2},
+                {label:'Lost Demand', data:rows.map(function(r){return r.results.cityResults[cfg.city].lostWD;}), backgroundColor:cfg.c3,borderRadius:4,order:2},
                 {label:'Total',   data:rows.map(function(r){return r.results.cityResults[cfg.city].demTotal;}), type:'line',borderColor:'#2c3e50',backgroundColor:'transparent',borderWidth:2.5,pointRadius:5,tension:.35,order:1}
             ];
         } else if(tab==='pricing'){
             datasets=[
-                {label:'Your WD', data:rows.map(function(r){return r.results.cityResults[cfg.city].yourWD;}), backgroundColor:cfg.c1,borderRadius:4,order:2},
-                {label:'Your WE', data:rows.map(function(r){return r.results.cityResults[cfg.city].yourWE;}), backgroundColor:cfg.c2,borderRadius:4,order:2},
+                {label:'Weekday Demand', data:rows.map(function(r){return r.results.cityResults[cfg.city].yourWD;}), backgroundColor:cfg.c1,borderRadius:4,order:2},
+                {label:'Weekend Demand', data:rows.map(function(r){return r.results.cityResults[cfg.city].yourWE;}), backgroundColor:cfg.c2,borderRadius:4,order:2},
                 {label:'Comp WD', data:rows.map(function(r){return r.results.cityResults[cfg.city].compWD;}), type:'line',borderColor:'#e74c3c',borderDash:[5,5],backgroundColor:'transparent',borderWidth:2,pointRadius:4,tension:.35,order:1}
             ];
         } else if(tab==='utilization'){
             datasets=[{label:'Cap %',data:rows.map(function(r){return r.results.cityResults[cfg.city].capRatio*100;}),backgroundColor:cfg.c1,borderRadius:4}];
         } else if(tab==='revenue'){
             datasets=[
-                {label:'WD Revenue',data:rows.map(function(r){return r.results.cityResults[cfg.city].weekdayRev;}),backgroundColor:cfg.c1,borderRadius:4,order:2},
-                {label:'WE Revenue',data:rows.map(function(r){return r.results.cityResults[cfg.city].weekendRev;}),backgroundColor:cfg.c2,borderRadius:4,order:2}
+                {label:'Weekday Revenue',data:rows.map(function(r){return r.results.cityResults[cfg.city].weekdayRev;}),backgroundColor:cfg.c1,borderRadius:4,order:2},
+                {label:'Weekend Revenue',data:rows.map(function(r){return r.results.cityResults[cfg.city].weekendRev;}),backgroundColor:cfg.c2,borderRadius:4,order:2}
             ];
         } else if(tab==='costs'){
             datasets=[
